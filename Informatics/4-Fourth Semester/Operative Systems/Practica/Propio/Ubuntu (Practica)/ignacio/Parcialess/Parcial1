@@ -1,0 +1,3 @@
+#!/bin/bash
+
+aux=$(find /home -maxdepth 2 -d -name "mailDir") 

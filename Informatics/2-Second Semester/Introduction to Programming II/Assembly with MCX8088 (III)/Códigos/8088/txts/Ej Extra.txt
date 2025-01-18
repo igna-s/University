@@ -1,0 +1,62 @@
+;a)	Implemente una subrutina en Assembler que reciba un parámetro A 
+   ;por referencia y un parámetro B por valor y reemplace el valor de A,
+   ;sólo si el valor de B es menor al de A. 
+
+;b)	Implemente un programa en Assembler que, utilizando la subrutina del inciso a),
+    ;reemplace los valores de la TablaA por los de la TablaB cuando corresponda 
+    ;(posición a posición). Por ejemplo, si tenemos las siguientes tablas: 
+
+
+;-	TablaA ? 1, 2, 5, 4, 7,…
+;-	TablaB ? 2, 3, 4, 5, 7,…
+
+;los valores finales serán: TablaA ? 1, 2, 4, 4, 7,…
+
+;Además, el programa debe sumar eficientemente los valores de TablaB mayores a 5
+;y almacenar este resultado en memoria principal. 
+
+
+
+org 1000h
+
+TablaB db 0, 3, 4, 5, 7,7
+TablaA db 1, 2, 5, 4, 7,8
+Suma dw 0
+
+org 2000h
+
+mov ax, Suma
+mov cx, OFFSET TablaA
+mov BX, OFFSET TablaB
+; MOV DX, POSICION DE LA TABLA
+
+repetir: mov dl,[bx]
+         call Rutina
+         
+         cmp dl,6 ;Compara numeros + que 5
+         jc seguir
+         mov dh,0 ; Pone en 0 por las dudas dh
+         add ax,dx ; suma si + 5
+         
+ seguir: add bx,1
+         add cx,1
+         cmp cx,Offset Suma
+         jnz repetir
+
+mov bx,Offset Suma
+mov [bx], ax
+
+org 3000h
+
+Rutina: push bx
+        mov bx, cx
+        cmp [bx],dl
+        jc fin
+        mov dh,0  ; Pone en 0 por las dudas dh
+        mov [bx],dl
+        
+        fin: pop bx
+             ret
+
+hlt
+end

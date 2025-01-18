@@ -1,0 +1,28 @@
+program Recursion;
+
+var
+  num, maximo: integer;
+
+
+
+function digitoMaximo(n:integer):integer;
+var
+  dig,max:integer;
+begin
+    if(n<>0)then begin
+       dig:=n MOD 10;
+
+       max:=digitoMaximo(n div 10);
+       end;
+       if(dig>max) then
+          digitoMaximo:=dig
+    else
+       digitoMaximo:=-1;
+    end;
+
+Begin
+  writeln( 'Ingrese un entero no negativo:');
+  readln (num);
+  writeln('El digito maximo es ',digitoMaximo (num));
+  readln;
+End.                                     

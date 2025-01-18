@@ -1,0 +1,694 @@
+1_ Un error es un problema relacionado con la escritura del codigo, en cambio una advertencia es un caso particuar dondfe el programa puede funcionar, pero no de la manera esperada
+
+ Se puede compilar con errores y con warnings
+
+
+
+a)
+#include <stdio.h>
+int main(){
+ double pi= 3.14;
+ int y= 5;   /*No se usa pero Yqs*/
+ printf("pi= %f \n", pi);
+
+ return (0);
+}
+
+
+
+b)
+#include <stdio.h>
+int main(){
+ int x=10;
+ if (x==5)
+ printf("x = 5\n");
+ return 0;
+}
+-------------------------------------------------------
+
+2) Si se asigna un integer a un char, o visceversa, lo va atomar (El tema es que ese numero represente lo pedido)
+
+#include <stdio.h>
+int main(){
+char c= 'a';
+int x= 64;
+printf("char c= %c\n", c);
+printf("int x= %d\n", x);
+return 0;
+}
+
+  No salto ningun warning
+
+
+b) La diferencia es la presicion (Y por ende el espacio utilizado), no, se pierde presicion
+
+c) En ese caso, se hace de izquierda a derecha (Da 63)
+
+d) El operador ziceof sirve para medir el largo de bytes ocupado por un tipo de dato
+
+#include <stdio.h>
+int main(){
+   int x;
+x = 2*32+10%2-1;
+printf("Mide= %d\n", sizeof (x));
+return 0;
+} 
+(Lee 4)
+
+#include <stdio.h>
+int main(){
+   double x;
+x = 2*32+10%2-1;
+printf("Mide= %d\n", sizeof (x));
+return 0;
+}
+(Lee 8)
+-----------------------------------
+
+3) Los tipos de datos utilizables son BSS, BCS, BExtendido y acortado
+
+Tipo de dato Memoria (bytes) Rango de valores
+
+short int 2 -32.768 a 32.767
+unsigned short int 2 0 a 65.535
+int 4 -2.147.483.648 a 2.147.483.647
+usigned int 4 0 a 4.294.967.295
+long int 4 -2.147.483.648 a 2.147.483.647
+unsigned long int 4 0 a 4.294.967.295
+
+4)
+Aritmeticos
+
+Suma (+) Suma dos números
+Resta (-) Resta dos números
+Multiplicación (*) Multiplica dos números
+División /
+El resultado de la división entre enteros es entero.
+Ej : 22 / 5 da como resultado 4
+22.0 / 5 da como resultado 4.4
+Módulo %
+r % s retorna el resto de dividir r por s.
+Ej : 7 % 4 da como resultado 3
+
+Relacionales
+
+==    x == y    x es igual a y
+!=    x != y    x no es igual a y
+>    x > y x    es mayor que y
+<    x < y x    es menor que y
+>=    x >= y    x es mayor o igual que y
+<=    x <= y    x es menor o igual que y
+
+Operadores lógicos
+
+&& AND
+|| OR
+! NOT
+
+Incrementales 
+
+Incremento ++X
+Dedremento--X
+Lectura e Incremento X++
+Lectura y dedremento X--
+
+Operadfores de asignacion
+= Incremento
+*=      Asignación y multi.
+/=	Asignación y división
+%=	Asignación y resto
++=	Asignación y suma
+-=	Asignación y resta 
+
+Operadores lógicos bit a bit
+
+Se trata de los operadores &, |, ^ y ~. Estos operadores realizan las operaciones lógicas and, or, xor y not, respectivamente, que utilizamos normalmente en operadores booleanos, pero esta vez aplicándolas a cada uno de los bits de los operandos.
+
+
+
+Operador condicional
+ Es el único operador ternario de C
+ Sintaxis
+Expresión lógica ? valor1 : valor2
+
+
+
+5)
+a)
+#include <stdio.h>
+int main(){
+ int x=1;
+
+ while (x<=50){
+   if (x%5==0)
+   printf( "El siguiente numero es multiplo de 5= %d \n", x);
+   x++;
+}
+return (0);
+}
+
+b)
+#include <stdio.h>
+int main(){
+ int x;
+
+for (x=5;x<=50;x+=5){
+   printf( "El siguiente numero es multiplo de 5= %d \n", x);
+    }
+return (0);
+}
+
+
+6)
+#include <stdio.h>
+/* 0,6211180124 Millas ≈ 1 Km (Por regla de tres, ya que 1,61 Km ≈ 1 milla. )*/
+int main(){
+ float kilo;
+ printf("Ingrese los Kilometros ");
+ scanf("%f", &kilo);
+ printf("\n Los Km. ingresados equivalen a %6.2f millas", (kilo*0.6211180124));
+
+return (0);
+}
+
+7) Codigo corregido
+
+#include <stdio.h>
+int main(){
+ char a, b;
+ printf("Ingrese el primer caracter:\n");
+ scanf("%c", &a);
+ scanf("%c", &a);
+ printf("Se leyó el caracter: %c\n", a);
+ printf("Ingrese el segundo caracter:\n");
+ scanf("%c", &b);
+ scanf("%c", &b);
+ printf("Se leyó el caracter: %c\n", b);
+ return 0;
+}
+
+8)
+a)
+#include <stdio.h>
+int main(){
+  int edad;
+  printf ("Ingrese Edad ");
+  scanf("%d",& edad);
+  if (edad >= 40)
+  printf("Tiene %d años o más",40);
+  else
+  printf("Tiene menos de %d años",40);
+   return 0;
+
+b)
+#include <stdio.h>
+int main(){
+  int total=0, x = 1;
+  while (x <= 10) {
+  total += x;
+  ++x;
+ }
+ printf("Total = %d",total);
+   return 0;
+}
+
+c)
+
+#include <stdio.h>
+int main(){
+ int valor;
+ scanf("%d",&valor);
+ switch (valor % 2) {
+ case 0: printf("El valor es par"); break;
+ case 1: printf("El valor es impar"); break;
+}
+
+   return 0;
+}
+
+d)
+
+#include <stdio.h>
+int main(){
+int x, y;
+scanf("%d",&x);
+scanf("%d",&y);
+printf("x + y = %d ",x+y);
+   return 0;
+}
+
+
+
+9) SE PUEDE HACER CON IF ANIDADOS O CON UN CASE (SWITCH)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+    int x; int y; char c;
+
+    printf (" Seleccione A ");
+    scanf("%d",&x);
+    printf (" \n Seleccione B ");
+    scanf("%d",&y);
+    printf (" ");
+    scanf("%c",&c);
+    printf ("\n Seleccione Operacion ");
+    scanf("%c",&c);
+
+    switch(c) {
+             case '+' : printf("El resultado de la operacion es %d" ,x += y); break;
+             case '-': printf("El resultado de la operacion es %d",x -= y); break;
+             case '*' : printf("El resultado de la operacion es %d",x *= y); break;
+             case '/' : if (y!=0){
+                      printf("El resultado de la operacion es %f",  (float)x/y ); break;}
+                      else{
+                       printf("No se puede dividir por 0"); break;}
+      default : printf("Ingrese un operador valido");
+        }
+    return (0);
+
+}
+
+10)
+Sentencia for
+? Sintaxis
+for (inicializaci n ; condici n ; acciones_posteriores)
+/* acci n o bloque de acciones
+pertenecientes al cuerpo del for */
+donde
++ inicializaci n : es una acci n o una secuencia de acciones separadas por
+comas que se ejecuta ANTES de iniciar el for. (Opcional?)
++ condici n : es una expresi n l gica cuyo valor se eval a ANTES de iniciar el
+for y debe ser verdadera para que el for se ejecute.(Obligatoria)
++ acciones_posteriores : es una acci n o una secuencia de acciones
+separadas por comas que se ejecutan LUEGO de las instrucciones del for.(Opcional?)
+
+11)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()   /* a,b,c*/
+{
+    int i;
+
+       for (i = 0; i <= 11; i++)  /* Se imprime del 0 al 11*/
+           printf("%d\n",i);
+
+       for (i = 0; i <= 11; ++i)  /* Se imprime del 0 al 11, no afecta que sea al revez el ++i en ese caso*/
+            printf("%d\n",i);
+
+       for (i = 2; i <= 11; i+=2)  /* Se imprime los numeros pares del 2 al 10, por la forma de actualizacion y los bordes May y Men*/
+           printf("%d\n",i);
+
+
+    return (0);
+
+}
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() /*f,d,e*/
+{
+    int i;
+
+       for (i = 1; i <= 11; i*=2) /* Se imprime 1,2,4 y 8 , por la forma de actualizacion y los bordes May y Men*/
+              printf("%d\n",i);
+
+       for (i = 11; i >= 1; i-=2)  /* Se imprime del 11,9,7,5,3 y 1, por la forma de actualizacion y los bordes May y Men*/
+            printf("%d\n",i);
+
+       for (i = 11; i > 1; i=+1) /* Solo imprime 11, por alguna razon el i=+1 evita que explote, pero el resultado deberia ser igual que i++ que explota*/
+           printf("%d\n",i);
+
+
+    return (0);
+
+}
+
+12)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+int main()
+{
+    int i; /*Funciona con double*/
+
+     printf("Raices cuadradas 1-10: \n");
+     for (i = 0; i <= 10; i++)
+         printf("%f\n",sqrt(i));
+
+     printf("Cuadrados 1-10: \n");
+     for (i = 0; i <= 10; i++)
+         printf("%6.0f\n", pow(i,2));
+
+     printf("Cubos 1-10: \n");
+     for (i = 0; i <= 10; i++)
+         printf("%6.0f\n",pow(i,3));
+
+    return (0);
+
+
+13
+a)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+   int act, b ,x;
+
+     printf("Seleccione entero distinto que 1\n");
+     scanf("%d",&x);
+
+     act=2;
+     b=0;
+
+     while (act<x){
+            if ((x%act)==(0)) break;
+            act++;
+     }
+
+
+     if (act==x)
+          printf("Es Primo\n");
+     else printf("No es Primo\n");
+
+    return 0;
+}
+
+b)
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+   int act,x, repeti=0;
+
+
+    while (repeti<5){
+
+     printf("Seleccione entero distinto que 1\n");
+     scanf("%d",&x);
+
+     act=2;
+
+     while (act<x){
+            if ((x%act)==(0)) break;
+            act++;
+     }
+
+
+     if (act==x){
+          printf("Es Primo\n");
+          repeti++;
+          printf("van %d primos\n", repeti);
+     }
+     else printf("No es Primo\n");
+    }
+    return 0;
+}
+
+14)
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+   int x, y, aux;
+
+   printf("Seleccione un numero a inverir: ");
+   scanf("%d",&x);
+   y=0;
+
+   while (x!=0){
+    aux = x % 10;
+    y= y*10 + aux;
+    x=x/10;
+
+   }
+
+
+
+   printf("El numero invertido es: %d\n", y);
+
+
+    return 0;
+}
+
+15)
+
+a)
+
+int main()
+{
+   int x;
+
+   printf("Seleccione un numero a n!: \n ");
+   scanf("%d",&x);
+   printf("n! es: %d",swap(x));
+
+    return 0;
+}
+
+int swap(int x)
+{
+ int act=1,total=1;
+
+ while (act<=x) {
+     total= total*act;
+     act++;
+
+ }
+    return (total);
+}
+
+b)
+int main()
+{
+   int x, act=1;
+
+   printf("Seleccione un numero a n!: \n ");
+   scanf("%d",&x);
+   printf("n! es: %d",swap(x, act));
+
+    return 0;
+}
+
+int swap(int x, int act)
+{
+    if (act==x)
+      return (1);
+    else {
+      act++;
+      return (act * swap (x,act));
+    }
+}
+
+
+16)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+void swap(int *a, int *b);
+int main()
+{
+ int x, y;
+ x = 10;
+ y = 20;
+ printf("x=%d\ty=%d\n",x,y);
+ swap(&x, &y);
+ printf("x=%d\ty=%d\n",x,y);
+ return 0;
+}
+
+void swap(int *a, int *b)
+{
+ int tmp;
+ tmp = *a; // guarda el valor de a
+ *a = *b; // almacena b en a
+ *b = tmp; // almacena a en b
+}
+
+
+17)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
+/*Escriba una función que reciba como argumento un número entero n y
+que dentro de ella lea n números flotantes desde teclado.
+La función debe retornar el mínimo y el máximo número leído.
+*/
+void MaxMin (int a, float *Max,float* Min);
+
+
+int main()
+{
+ int x;
+ float b=-1,c=9999;
+
+ printf("Ingrese el numero de repeticiones \n");
+ scanf("%d",&x);
+ MaxMin(x,&b,&c);
+ printf("Max : %f, Min= %f",b,c);
+
+ return 0;
+}
+
+void MaxMin (int x, float *Max,float *Min)
+{
+    float aux;
+
+    while (x>0){
+      printf("Ingrese el numero n");
+      scanf("%f",&aux);
+      x--;
+      if(aux<*Min)   *Min=aux;
+      if (aux>*Max) *Max=aux;
+    }
+
+    }
+
+18)
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/*Escriba un programa que imprima 15 números generados pseudo-aleatoriamente.
+¿La secuencia generada es siempre la misma? ¿Por qué? 
+NO, DEPENDE DEL NUMERO INICIAL
+¿Qué se puede hacer para generar secuencias pseudoaleatorias diferentes? 
+QUE EL NUMERO INICUAL DEPENDA DEL TIEMPO*/ 
+
+
+
+int main()
+{
+    int x;
+    
+    printf("Numero random \n");
+    for (x=1;x<=15;x++)
+        printf("Numero %d es %d \n",x,rand());
+
+    printf("Numero random por tiempo\");
+    srand(time(NULL));
+    for (x=1;x<=15;x++)
+        printf("Numero %d es %d \n",x,rand());
+
+    return 0;
+}
+
+19)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/*Una escuela primaria desea evaluar si sus alumnos son capaces de resolver
+operaciones matemáticas de suma de números enteros.
+Para ello se pide realizar un programa que muestre al alumno 4 operaciones de suma
+y le pida que ingrese sus correspondientes resultados.
+Los operandos de las operaciones a resolver deben ser generados aleatoriamente y
+deben estar en el rango de 0 a 100.
+Cada operación respondida de forma correcta suma 1 punto. Al finalizar
+informar la nota obtenida por el alumno de acuerdo a la siguiente tabla:*/
+int main() {
+   int a,b, x,i, tot=0;
+    srand(time(NULL));
+    for (i=1;i<5;i++){
+        a=rand()%100+1;
+        b=rand()%100+1;
+        printf("Ingrese el resultado de %d + %d \n",a,b);
+        scanf(" %d",&x);
+          if (a+b==x){
+                printf("Correto \n");
+                tot++;
+                }
+               else printf("Incorreto \n");
+
+       }
+
+    switch(tot){
+      case 0: printf("Nota final: E"); break;
+      case 1: printf("Nota final: D"); break;
+      case 2: printf("Nota final: C"); break;
+      case 3: printf("Nota final: B"); break;
+        default : printf("Nota final: A"); break;
+    }
+
+return 0;
+}
+
+20)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/*Desarrolle una función llamada damePar(), la cual debe retornar un número entero.
+ damePar() devuelve 0 en el primer llamado, 2 en el segundo, 4 en el tercero,
+ y así sucesivamente.
+ Luego, escriba un programa que lea un número entero positivo n desde teclado y
+ utilizando damePar() imprima los primeros n números pares. */
+
+int damePar();
+
+int main()
+{
+    int x,i;
+
+    printf("Seleccione la cantidad de pares a solicitar\n");
+    scanf("%d",&x);
+
+    for (i=0;i<x;i++)
+        printf("Este llamado dio el numero %d \n",damePar());
+
+    return 0;
+}
+
+int damePar(){
+     static int x=-2;
+     return x+=2;
+}
+
+21)
+#include <stdio.h>
+#include <stdlib.h>
+
+
+int incremento(int);
+int main(){
+ float i;
+ for(i=6; i>0.5; i/=2)
+ printf("i=%5.1f j=%5d\n", i, incremento(i));
+ return 0;
+}
+
+int incremento(int N){
+ static int j=0;
+ j++;
+ return (N%2 ? N : N+j);
+}
+
+/*Imprime*/
+
+//*i=6 ;   j=7  ;
+//*i=3 ;   j=3  ;
+//*i=1.5 ; j=1 ;
+//*i=.8 ; j=4  ;
+
+
+
+
+
+
+
+

@@ -1,0 +1,74 @@
+;a)	Implementen una subrutina reusable que logre realizar el procesamiento de 
+;la rutina en Pascal detallada a continuación. El pasaje de parámetros debe ser
+;por pila. Consideren que los datos son de tipo byte y enteros positivos. 
+
+ 
+
+;b)	Implementen un programa en Assembler que invoque a la subrutina 
+;implementada en a) para aquellos valores de la tabla que sean menores a 20.
+
+;Por ejemplo, si tenemos la siguiente tabla: 
+	
+;TablaA  1, 20, 5, 4, 30; 
+
+;los valores finales serán: TablaA  1, 20, 15, 10, 30. 
+
+;El programa también debe almacenar en memoria la cantidad de valores que 
+;fueron modificados, en el ejemplo anterior sería 3 (por los valores 1, 5 y 4).
+
+org 1000h
+TABLA db 1, 20, 5, 4, 30
+SUMA db 5
+
+org 3000h
+
+rutina: push ax
+        push bx
+        push cx
+        push dx
+        
+        mov bx, sp
+        add bx, 0ah
+        mov bx, [bx]
+        mov al, [bx] ;ax: N
+        
+        mov dl, 0h; DX= RES
+        mov cl,1   ; CX:I
+   FOR: cmp al,cl
+        jc fin
+        ADD Dl,Cl
+        INC Cl
+        JMP FOR
+        
+    fin:MOV AL,DL
+        MOV [BX],Al
+        pop dx
+        pop cx
+        pop bx
+        pop ax
+        
+        ret
+org 2000h
+
+mov bx,Offset TABLA
+mov cx,0
+
+
+Recurso: mov al,[bx]
+         cmp al, 20
+         jns Salto
+         
+         PUSH BX
+         call rutina
+         POP BX
+         inc cx
+         
+  Salto: add bx,1
+         cmp bx, Offset SUMA
+         jnz Recurso
+
+mov bx, Offset SUMA
+mov [bx],cx
+
+hlt
+end

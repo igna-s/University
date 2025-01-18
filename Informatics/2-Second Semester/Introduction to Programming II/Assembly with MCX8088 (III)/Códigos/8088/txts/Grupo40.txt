@@ -1,0 +1,116 @@
+org 1000h
+TABLA db "TiagoIgnacio"
+SUMA db 0
+V db "AEIOUaeiou"
+
+
+org 3000h
+
+Swap:  push ax
+       push bx
+
+       mov bx,cx
+       mov al, [bx]
+       mov bx, dx
+       mov bl,[bx]
+
+       push bx
+       mov bx,dx
+       mov [bx],al
+       pop bx
+       
+    
+       mov al,bl
+       mov bx,cx
+       mov [bx],al
+       
+
+       pop bx
+       pop ax
+ret
+
+
+  ES_VOCAL: push bx  
+            push cx
+            push dx
+            
+            mov bx, sp
+            add bx,8
+            mov aL,[bx]
+            
+            
+            add bx,2
+            mov bx,[bx]
+            mov dL,[bx]
+            mov cx,bx
+            add cx,0ah
+ 
+  COMPARAR: cmp dL,aL
+            jz FLIN
+            inc bx
+            mov DL,[bx]
+            CMP bx,cx
+            JNZ COMPARAR
+            
+            MOV AL,0H
+            JMP FIN
+            FLIN: MOV AL, 0ffH
+           
+           
+            FIN: Pop bx
+                 pop cx
+                 pop dx
+                 RET
+
+org 2000h
+
+mov cx, Offset SUMA-1
+mov dx, Offset TABLA
+
+REPETIR: CALL Swap
+
+         mov ax, Offset V
+         mov bx,cx
+         mov bL,[bx]
+         push ax
+         push bx
+         CALL ES_VOCAL
+         pop bx
+         POP bX
+         
+         cmp al,0ffh
+         JNZ ABAJO
+         mov bx, OFFset SUMA
+         mov Ax, [BX]
+         inc Ax
+         MOV [BX],AX
+        
+        
+         
+         
+         
+  ABAJO: CMP cx,dx
+         jz SEGUIR
+  
+         mov ax, Offset V
+         mov bx,dx
+         
+         push ax
+         push bx
+         CALL ES_VOCAL
+         pop bx
+         pop bx
+         
+         cmp al,0FFH
+         JNZ SEGUIR
+         mov bx, OFFset SUMA
+         mov Ax, [BX]
+         inc Ax
+         MOV [BX],AX
+
+SEGUIR: dec cx
+        inc dx
+        cmp cx,dx
+
+        jnc REPETIR
+        

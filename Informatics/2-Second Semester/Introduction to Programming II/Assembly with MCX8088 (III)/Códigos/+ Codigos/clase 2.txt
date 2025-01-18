@@ -1,0 +1,80 @@
+
+//ejercicio 1 traduccion de pascal a assembler
+ORG 1000h
+HOLA Db 99
+
+ORG  2000h
+ MOV AL,HOLA
+ CMP al,4
+ jz then
+ jmp else
+ 
+ then: mov bl,1
+  inc cl
+  jmp fin
+ 
+ else: mov bl,2
+  dec cl
+ fin: HLT 
+ END
+
+///
+ORG 1000h
+ Hola dw 10
+
+ORG  2000h
+  mov al,Hola
+  mov cl,1
+  for: add ax,ax
+   INC CL
+   CMP CL,10
+   JnZ for
+  HLT
+
+ END
+
+
+
+
+
+///
+ORG 1000h
+  op1 dw ?
+  op2 dw ?
+
+ORG  2000h
+  mov ax, op1
+  mov bx, op2
+  add ax,bx
+  cmp ax,100
+  jnz fin
+  jns decr
+  decr: dec ax
+   cmp ax, 100
+  
+  
+  
+  
+  
+  
+  
+  fin:hlt
+ END
+////
+
+ORG 1000h
+  op1 dw 50
+  op2 dw 50
+
+ORG  2000h
+  mov ax, op1
+  mov bx, op2
+  add ax,bx
+compara:  cmp ax,101
+     js fin
+     dec ax
+     jmp compara
+
+  
+  fin:hlt
+ END

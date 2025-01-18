@@ -1,0 +1,27 @@
+org 1000h
+String db "sssss%"
+Suma dW 0
+
+org 3000h
+
+multi: mov bx, cx
+       mov bl, [bx]
+       cmp bl,25h
+       jz fin
+       mov bx,ax
+       mov dx,[bx]
+       inc dx
+       mov [bx],dX
+       inc cx
+       jmp multi
+       fin:ret
+       
+
+org 2000h
+add ax, Offset Suma
+add cx, Offset String
+
+
+call multi
+hlt
+end

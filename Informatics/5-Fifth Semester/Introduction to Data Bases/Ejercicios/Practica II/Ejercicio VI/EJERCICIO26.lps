@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="EJERCICIO26.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ejrcicio26"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="64"/>
+        <CursorPos X="12" Y="16"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="4">
+      <Position>
+        <Filename Value="EJERCICIO26.lpr"/>
+        <Caret Line="43" Column="29" TopLine="35"/>
+      </Position>
+      <Position>
+        <Filename Value="EJERCICIO26.lpr"/>
+        <Caret Line="90" Column="6" TopLine="74"/>
+      </Position>
+      <Position>
+        <Filename Value="EJERCICIO26.lpr"/>
+        <Caret Line="33" Column="25" TopLine="27"/>
+      </Position>
+      <Position>
+        <Filename Value="EJERCICIO26.lpr"/>
+        <Caret Line="37" Column="8" TopLine="36"/>
+      </Position>
+      <Position>
+        <Filename Value="EJERCICIO26.lpr"/>
+        <Caret Line="21" Column="13" TopLine="8"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

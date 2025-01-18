@@ -1,0 +1,36 @@
+timestamp=1730156261555
+
+[~A]
+ModifyID=1
+Version=74
+
+[~MFT]
+0=14|0Registro.mgf|2460|0
+1=2|1Registro.mgf|1351|0
+3=2|3Registro.mgf|1359|0
+
+[shiftn]
+A/behavior=A/Behavior 21|../src/Shift.vhd|15|1*0
+BinW64/behavior=3*0
+I=0*589
+I/behavior=I/Behavior 0*1295
+M=11|2|vf5|1730156261497|../src/Shift.vhd|0*178*0xa96b5f0416953c1ad168458517c82850020a3fba|0*513*0x23b75c12e3e89f2ef000564498faa8c2
+M/behavior=M/Behavior 21|2|vf5|1730156261499|../src/Shift.vhd|0*624*0x5da7df3237076b57551e3f57a78fe8e899a6d753|0*1207*0x20116f55b147878295aeff36dce7fc50
+R=../src/Shift.vhd|1
+Version=15.0.261.9132 (Windows64)|00000003789cd3f5370600015b00b0|02b3ce1b0c9e11c0786c499b5552f16110faffe8d159d9dbe214af6f81385a54
+Version/behavior=15.0.261.9132 (Windows64)|00000003789cd3f5370600015b00b0|f9bccf16e2dce5a640f0ad5e8eaa0283e08d679eaf1bc9de9439630905b37e5f0ec0a537ed8da56d53a2f25fd332ed94
+
+[test_shiftn]
+A/driver=A/Driver 21|../src/Test.vhd|3|1*1351
+BinW64/driver=3*1359
+I=0*1662
+I/driver=I/Driver 0*2460
+M=11|2|vf5|1730156261529|../src/Test.vhd|0*1467*0xefddec5f4e1916ea21d78d1f69d60936dea0c109|0*1582*0x23b75c12e3e89f2ef000564498faa8c2
+M/driver=M/Driver 21|2|vf5|1730156261531|../src/Test.vhd|0*1702*0x7c8950be9367a4cf3bcddcf1a92d58a2170e5bfe|0*2370*0x20116f55b147878295aeff36dce7fc50
+R=../src/Test.vhd|1
+Version=15.0.261.9132 (Windows64)|00000003789cd3f5370600015b00b0|f6814ac1fb0341606798a65f78c94c662388167fecbccb552ffa0ee66a213d23066ed53d0040c5522fc1bbffe69f5b1f
+Version/driver=15.0.261.9132 (Windows64)|00000003789cd3f5370600015b00b0|32a8809e0c82d5e52151c5a0d1b5382556862bb36bacab7794f1244c364ce57b
+
+[~U]
+shiftn=ShiftN 11|0*0|
+test_shiftn=Test_ShiftN 11|0*1339|

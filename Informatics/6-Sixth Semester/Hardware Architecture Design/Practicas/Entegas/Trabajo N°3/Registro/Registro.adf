@@ -1,0 +1,30 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=4
+Current Config=compile
+[Configurations]
+compile=Registro
+[Library]
+Registro=.\Registro\Registro.lib
+[$LibMap$]
+Registro=.
+Active_lib=
+[Settings]
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+REFRESH_FLOW=1
+FLOWTOOLS=NONE
+FAMILY=
+[Files]
+/DFF.vhd=-1
+/Latch8.vhd=-1
+/TEST.vhd=-1
+[Files.Data]
+.\src\DFF.vhd=VHDL Source Code
+.\src\Latch8.vhd=VHDL Source Code
+.\src\TEST.vhd=VHDL Source Code
+[HierarchyViewer]
+HierarchyInformation=test_latch8|driver|0
+ShowHide=ShowTopLevel
+Selected=

@@ -1,0 +1,1349 @@
+1) Escritura de datos en la pantalla de comandos.
+Implementar un programa en el lenguaje assembler del simulador MSX88 que muestre en la pantalla de comandos un mensaje
+previamente almacenado en memoria de datos, aplicando la interrupción por software INT 7.
+ORG 1000H
+MSJ DB "CONCEPTOS DE "
+DB "ARQUITECTURA DE COMPUTADORAS-"
+DB "FACULTAD DE INFORMATICA-"
+DB 55H
+DB 4EH
+DB 4CH
+DB 50H
+FIN DB ?
+ORG 2000H
+MOV BX, OFFSET MSJ
+MOV AL, OFFSET FIN-OFFSET MSJ
+INT 7
+INT 0
+END
+
+
+2)
+
+; Escribir un programa que muestre en pantalla todos los caract
+; disponibles en el simulador MSX88, comenzando con el
+;caracter cuyo código es el número 01H
+
+
+ORG 1000H
+MSJ  db 01H
+
+ORG 2000H
+MOV AH, MSJ
+MOV BX, OFFSET MSJ
+MOV AL, 1
+BUCLE:CMP MSJ, 0
+      JZ FIN
+     ; MOV BX, OFFSET MSJ
+     ; MOV AL, 1
+      INT 7
+      INC MSJ
+      JMP BUCLE
+
+FIN: HLT
+     END
+
+;3) Escribir un programa que muestre en pantalla las letras del 
+;abecedario, sin espacios, intercalando mayúsculas y minúsculas
+;(AaBb…), sin incluir texto en la memoria de datos del programa. 
+;Tener en cuenta que el código de “A” es 41H, el de “a” es 61H y 
+;que el resto de los códigos son correlativos según el abecedario.
+
+
+
+ORG 1000H
+Inicio  dW ?   
+ORG 2000H
+mov bx, OFFSET Inicio
+MOV AL,2
+
+MOV CL,41H
+MOV CH,61H
+
+Repetir: MOV Inicio,cx
+         cmp cl, 5bh
+         jz FIN
+         INT 7
+         inc cl
+         inc ch
+         jmp Repetir
+         
+
+
+FIN:INT 0
+    END
+
+
+////Solucion DB///////
+;3) Escribir un programa que muestre en pantalla las letras del 
+;abecedario, sin espacios, intercalando mayúsculas y minúsculas
+;(AaBb…), sin incluir texto en la memoria de datos del programa. 
+;Tener en cuenta que el código de “A” es 41H, el de “a” es 61H y 
+;que el resto de los códigos son correlativos según el abecedario.
+
+
+
+ORG 1000H
+Inicio  db ?
+NoUsado db 0
+
+ORG 2000H
+mov bx, OFFSET Inicio
+MOV AL,2
+
+MOV CL,41H
+MOV CH,61H
+
+Repetir: MOV Inicio,cl
+         mov NoUsado, ch
+         cmp cl, 5bh
+         jz FIN
+         INT 7
+         inc cl
+         inc ch
+         jmp Repetir
+         
+
+
+FIN:INT 0
+    END
+
+
+4) Lectura de datos desde el teclado.
+Escribir un programa que solicite el ingreso de un número (de un dígito) por teclado e inmediatamente lo muestre en la pantalla
+de comandos, haciendo uso de las interrupciones por software INT 6 e INT 7.
+ORG 1000H
+MSJ DB "INGRESE UN NUMERO:"
+FIN DB ?
+ORG 1500H
+NUM DB ?
+ORG 2000H
+MOV BX, OFFSET MSJ
+MOV AL, OFFSET FIN-OFFSET MSJ
+INT 7
+MOV BX, OFFSET NUM
+INT 6
+MOV AL, 1
+INT 7
+MOV CL, NUM
+INT 0
+END
+Responder brevemente:
+a) Con referencia a la interrupción INT 7, ¿qué se almacena en los registros BX y AL?   
+ ;En bx se almacena la direccion del inicio de impresion, y en Al la cantidad de veces a imprimir
+b) Con referencia a la interrupción INT 6, ¿qué se almacena en BX?
+;La direccion a partir de la cual se almacena lo escrito
+c) En el programa anterior, ¿qué hace la segunda interrupción INT 7? ¿qué queda almacenado en el registro CL?
+;Imprime lo ingresado, en cl queda almacenado el caracter del numero  ingresado
+
+
+
+5)
+
+Modificar el programa anterior agregando una subrutina llamada ES_NUM que verifique si el caracter ingresado es
+realmente un número. De no serlo, el programa debe mostrar el mensaje “CARACTER NO VALIDO”. La subrutina debe
+recibir el código del caracter por referencia desde el programa principal y debe devolver vía registro el valor 0FFH en caso de
+tratarse de un número o el valor 00H en caso contrario. Tener en cuenta que el código del “0” es 30H y el del “9” es 39H.
+
+
+
+
+ORG 1000H
+MSJ DB "INGRESE UN NUMERO:"
+FIN DB ?
+RESULTADO DB "CARACTER NO VALIDO"
+FIN2 DB ?
+ORG 1500H
+NUM DB ?
+
+org 3000h
+
+Subrutina: mov al,[bx]
+           cmp al,30h
+           js NoEs
+           mov ah,39h
+           cmp ah,al
+           js NoEs
+           mov al,0ffh
+           jmp Final
+           NoEs: mov al,0
+     Final:ret
+
+ORG 2000H
+MOV BX, OFFSET MSJ
+MOV AL, OFFSET FIN-OFFSET MSJ
+INT 7
+MOV BX, OFFSET NUM
+INT 6
+
+call Subrutina
+
+CMP AL,0
+JNZ FINAL
+MOV BX, OFFSET RESULTADO
+MOV AL, OFFSET FIN2 - Offset RESULTADO  
+INT 7
+
+
+FINAL: MOV BX, OFFSET NUM
+CMP AL, 0FFH
+JNZ FINALISIMO
+MOV AL,1
+INT 7
+
+
+FINALISIMO:INT 0
+            END
+
+6)
+
+
+
+;Escribir un programa que solicite el ingreso de un número 
+;(de un dígito) por teclado y muestre en pantalla dicho número
+;expresado en letras. Luego que solicite el ingreso de otro 
+;y así sucesivamente. 
+;Se debe finalizar la ejecución al ingresarse en
+;dos vueltas consecutivas el número cero. 
+
+
+
+
+
+ORG 1000H
+MSJ DB "INGRESE UN NUMERO:"
+FIN DB ?
+RESULTADO DB "CARACTER NO VALIDO"
+FIN2 DB ?
+Tabla db "CERO  "
+      db "UNO   "
+      DB "DOS   "
+      DB "TRES  "
+      DB "CUATRO" 
+      db "CINCO "
+      DB "SEIS  "
+      DB "SIETE "
+      DB "OCHO  "
+      DB "NUEVE "
+
+ORG 1500H
+NUM DB ?
+
+org 3000h
+
+Subrutina: mov al,[bx]
+           cmp al,30h
+           js NoEs
+           mov ah,39h
+           cmp ah,al
+           js NoEs
+           mov al,0ffh
+           jmp Final
+           NoEs: mov al,0
+     Final:ret
+     
+     
+ SUBRUTINA2: PUSH AX
+             PUSH CX
+             MOV CH,30H
+             MOV DX, Offset Tabla
+    REPE:    CMP CH,40H
+             JZ FINAL4
+
+             CMP NUM,CH
+             JZ CAMBIO
+             INC CH
+             ADD DX,6
+             JMP REPE
+             
+CAMBIO: MOV BX, DX
+        MOV AL,6
+        INT 7
+
+ FINAL4:POP CX
+        POP AX
+        ret
+     
+
+ORG 2000H
+MOV cl,0
+
+
+
+REPETIR:   CMP Cl,2
+           JZ FINALISIMO
+
+         MOV BX, OFFSET MSJ
+         MOV AL, OFFSET FIN-OFFSET MSJ
+         INT 7
+         MOV BX, OFFSET NUM
+         INT 6
+
+         CMP NUM,30H
+         JNZ CONTINUAR
+         INC Cl
+
+CONTINUAR:call Subrutina
+
+CMP AL,0
+JNZ FINAL
+MOV BX, OFFSET RESULTADO
+MOV AL, OFFSET FIN2 - Offset RESULTADO  
+INT 7
+
+
+FINAL: MOV BX, OFFSET NUM
+CMP AL, 0FFH
+JNZ REPETIR
+CALL SUBRUTINA2
+
+JMP REPETIR
+
+FINALISIMO:INT 0
+            END
+
+
+
+
+;7) Escribir un programa que efectúe la suma de dos números 
+;(de un dígito cada uno) ingresados por teclado y muestre el
+;resultado en la pantalla de comandos. 
+;Recordar que el código de cada caracter ingresado no coincide con el
+;número que representa y que el resultado puede necesitar ser 
+;expresado con 2 dígitos.
+
+
+org 1000h
+
+Inicio db " Ingrese el numero:"
+Resul db " El resultado es: "
+OP db ?
+OP2 db ?
+
+org 2000h
+MOV BX, Offset Inicio
+mov al, Offset Resul - Offset Inicio
+int 7
+mov bx, Offset OP
+INT 6
+MOV AL,1
+INT 7
+MOV BX, Offset Inicio
+mov al, Offset Resul - Offset Inicio
+int 7
+mov bx, Offset OP2
+INT 6
+MOV AL,1
+INT 7
+
+
+mov bx, Offset Resul
+mov al, Offset OP - Offset Resul
+INT 7
+mov dl, OP
+MOV DH, OP2
+
+SUB DL,30H
+SUB DH,30H
+
+ADD DL,DH
+CMP DL,10
+JS ESMAYOR
+MOV OP2, 31H  ;1
+MOV BX, OFFSET OP2
+MOV AL,1
+INT 7
+SUB DL,10
+ESMAYOR: ADD DL,30H
+MOV OP,DL
+MOV BX, Offset OP
+MOV AL,1
+INT 7
+
+
+hlt
+end
+
+
+;8)Escribir un programa que efectúe la resta de dos números (de un dígito cada uno) 
+;ingresados por teclado y muestre el resultado en la pantalla de comandos. 
+;Antes de visualizarlo el programa debe verificar si el resultado es positivo o negativo y
+;anteponer al valor el signo correspondiente.
+
+
+org 1000h
+
+Inicio db " Ingrese el numero:"
+Resul db " El resultado de la resta es: "
+OP db ?
+OP2 db ?                                   ;Para optimizacion ++, Primero verificar si da signo  y despues hacer una u otra resta, requiere varios Jmp
+
+org 2000h
+MOV BX, Offset Inicio
+mov al, Offset Resul - Offset Inicio
+int 7
+mov bx, Offset OP
+INT 6
+MOV AL,1
+INT 7
+MOV BX, Offset Inicio
+mov al, Offset Resul - Offset Inicio
+int 7
+mov bx, Offset OP2
+INT 6
+MOV AL,1
+INT 7
+
+
+mov bx, Offset Resul
+mov al, Offset OP - Offset Resul
+INT 7
+mov dl, OP
+MOV DH, OP2
+
+SUB DL,30H
+SUB DH,30H
+
+sub DL,DH
+CMP dl,0
+Jns ESMAYOR
+MOV OP2, 45  ;1
+MOV BX, OFFSET OP2
+MOV AL,1
+INT 7
+
+mov dl,dh
+ADD DL,30H
+sub dl,OP
+ESMAYOR: ADD DL,30H
+MOV OP,DL
+MOV BX, Offset OP
+MOV AL,1
+INT 7
+
+
+hlt
+end
+
+
+
+
+;9) Escribir un programa que aguarde el ingreso de una clave de cuatro
+;caracteres por teclado sin visualizarla en pantalla. 
+;En caso de coincidir con una clave predefinida (y guardada en memoria)
+;que muestre el mensaje "Acceso permitido", caso
+;contrario el mensaje "Acceso denegado".
+
+
+org 1000h
+Contrasena db "SEÑA"
+Ingrese db "Ingrese clave de Acceso De Cuatro Digitos: "
+Permiso    db " Acceso Permitido"
+Denegacion db " Acceso Denegado "
+Ingreso db ?
+        db ?
+        db ?
+        db ?
+
+
+
+ORG 3000H
+SUBRUTINA: PUSH AX
+           PUSH BX
+
+
+           mov al, 12h
+VERIFICAR: cmp dx, Offset Ingrese
+           jz SI
+           MOV BX, CX
+           mov ah,[bx]
+           mov bx, DX
+           CMP ah,[BX]
+           JZ BUENO
+           MOV BX, oFFSET Denegacion
+           INT 7
+           JMP FIN
+           BUENO: INC CX
+                  INC DX
+                  JMP VERIFICAR
+
+SI: MOV BX, OFFSET Permiso
+int 7
+
+FIN: POP BX
+     POP AX
+RET
+
+
+
+
+
+org 2000h
+mov bx, Offset Ingrese
+mov al, Offset Permiso - Offset Ingrese
+int 7
+
+mov bx, offset Ingreso
+mov al,1
+int 6
+inc bx
+int 6
+inc bx
+int 6
+inc bx
+int 6
+
+MOV CX, Offset Ingreso
+mov dx, Offset Contrasena
+CALL SUBRUTINA
+hlt 
+end
+
+PIC EQU 20H
+EOI EQU 20H
+N_F10 EQU 10
+
+ORG 40
+IP_F10 DW RUT_F10
+
+ORG 2000H
+CLI
+MOV AL, 0FEH
+OUT PIC+1, AL ; PIC: registro IMR iNTERRUPT MASK REQUEST
+MOV AL, N_F10
+OUT PIC+4, AL ; PIC: registro INT0   Primera int
+MOV DX, 0
+STI
+LAZO: NOP
+JMP LAZO
+ORG 3000H
+RUT_F10: PUSH AX
+INC DX
+MOV AL, EOI
+OUT EOI, AL ; PIC: registro EOI , FIN
+POP AX
+IRET
+END
+
+
+
+
+Explicar detalladamente:
+a) La función de los registros del PIC: ISR, IRR, IMR, INT0-INT7, EOI. Indicar la dirección de cada uno.
+
+EOI. Indica que la interruppcion cuando se manda un 20H , DIR 20H
+IMR, Enmascara los bits no utilizados con 1,              DIR 21H
+IRR, Indica con  los bits en 1 las peticiones entrantes , DIR 22H
+ISR, Indical la interrupcion  en ejecucion              , DIR 23H
+
+
+INT0-INT7, Interrupcones de Hardware                    , DIR 24H-31H
+           Int 0: F10   
+           Int 1: TIMER
+           Int 2: Handshake
+           Int 3: DMA
+
+
+b) Cuáles de estos registros son programables y cómo trabaja la instrucción OUT.
+Los registros programables preasignados son Int 0,1,2,3, La instruccion OUT manda a la direccion seleccionada del dispositivo externo, algo
+
+c) Qué hacen y para qué se usan las instrucciones CLI y STI.
+Se usa CLI: Para interrumpir las interrupciones
+Se usa STI: Para rehabilitarlas
+Se hace esto ya que si hay una interrupcion mientras programas una interrupcion puede explotar todo.
+
+
+
+11)
+;11) Escribir un programa que permita seleccionar una letra del 
+;abecedario al azar. El código de la letra debe generarse en un
+;registro que incremente su valor desde el código de A hasta el de Z
+;continuamente. La letra debe quedar seleccionada al presionarse la 
+;tecla F10 y debe mostrarse de inmediato en la pantalla de comandos.
+
+
+PIC EQU 20H
+EOI EQU 20H
+N_F10 EQU 10
+
+ORG 40
+IP_F10 DW RUT_F10
+
+ORG 1000H
+TITULO DB " La letra generada es: "
+UNALETRA db ?
+
+
+ORG 2000H
+
+CLI
+MOV AL, 0FEH
+OUT PIC+1, AL ; PIC: registro IMR
+MOV AL, N_F10
+OUT PIC+4, AL ; PIC: registro INT0
+MOV DL, 41H     ;41H, "A"
+STI
+
+LAZO: cmp dl, 5ah ; "Z"
+JNZ FIN
+MOV DL,40H     ; "A-1"
+FIN: INC DL
+     JMP LAZO
+
+ORG 3000H
+RUT_F10: PUSH AX
+         PUSH BX
+MOV BX, Offset TITULO
+MOV AL, Offset UNALETRA - OFFSET TITULO
+int 7
+MOV BX, Offset UNALETRA
+MOV [BX],DL
+mov al, 1
+int 7
+MOV AL, EOI
+OUT EOI, AL ; PIC: registro EOI
+
+POP BX
+POP AX
+IRET
+END
+
+
+;12) Interrupción por hardware: TIMER.
+;Implementar a través de un programa un reloj segundero que muestre 
+;en pantalla los segundos transcurridos (00-59 seg) desde
+;el inicio de la ejecución.
+
+
+TIMER EQU 10H
+PIC EQU 20H
+EOI EQU 20H
+N_CLK EQU 10
+ORG 40
+
+IP_CLK DW RUT_CLK
+ORG 1000H
+SEG DB 30H
+SEG2 DB 30H
+FIN DB ?
+
+ORG 3000H
+RUT_CLK: PUSH AX
+INC SEG2
+CMP SEG2, 3AH
+JNZ RESET
+MOV SEG2, 30H
+INC SEG
+CMP SEG, 36H
+JNZ RESET
+MOV SEG, 30H
+RESET: INT 7
+MOV AL, 0
+OUT TIMER, AL
+MOV AL, EOI
+OUT PIC, AL
+POP AX
+IRET
+
+ORG 2000H
+CLI
+MOV AL, 0FDH
+OUT PIC+1, AL ; PIC: registro IMR
+MOV AL, N_CLK
+OUT PIC+5, AL ; PIC: registro INT1
+MOV AL, 1
+OUT TIMER+1, AL ; TIMER: registro COMP
+MOV AL, 0
+OUT TIMER, AL ; TIMER: registro CONT
+MOV BX, OFFSET SEG
+MOV AL, OFFSET FIN-OFFSET SEG
+STI
+
+LAZO: JMP LAZO
+END
+
+
+;Explicar detalladamente:
+;a) Cómo funciona el TIMER y cuándo emite una interrupción a la CPU.
+;b) La función que cumplen sus registros, la dirección de cada uno y
+;cómo se programan.
+
+; El timer tiene 2 registros, en el 10h se inicializa el contador (Que suma 1 por ejecucion)
+                            ; en el 11h se indica hasta que valor queres llegar
+                            ;Emite una interrupcion cuando lo contenido en 10H=11H
+                            
+;Se programan con OUT Timer, 0
+
+
+
+
+;13) Modificar el programa anterior para que también cuente minutos (00:00 - 59:59),
+;pero que actualice la visualización en pantalla cada 10 segundos.
+
+
+TIMER EQU 10H
+PIC EQU 20H
+EOI EQU 20H
+N_CLK EQU 10
+ORG 40
+IP_CLK DW RUT_CLK
+ORG 1000H
+MIN DB 30H
+MIN2 DB 30H
+AUX DB ":"
+SEG DB 30H
+SEG2 DB 30H
+AUX2 DB " "
+FIN DB ?
+
+
+ORG 3000H
+RUT_CLK: INC DH
+PUSH AX
+INC SEG2
+CMP SEG2, 3AH
+JNZ RESET
+MOV SEG2, 30H
+INC SEG
+CMP SEG, 36H
+JNZ RESET
+MOV SEG, 30H
+;Minutos
+INC MIN2
+CMP MIN2, 3AH
+JNZ RESET
+MOV MIN2, 30H
+INC MIN
+CMP MIN, 36H
+JNZ RESET
+MOV MIN, 30H
+
+
+RESET: CMP DH,10
+JNZ CONTINUAR
+INT 7
+MOV DH,0
+CONTINUAR:MOV AL, 0
+OUT TIMER, AL
+MOV AL, EOI
+OUT PIC, AL
+POP AX
+IRET
+
+
+ORG 2000H
+CLI
+MOV AL, 0FDH
+OUT PIC+1, AL ; PIC: registro IMR
+MOV AL, N_CLK
+OUT PIC+5, AL ; PIC: registro INT1
+MOV AL, 1
+OUT TIMER+1, AL ; TIMER: registro COMP
+MOV AL, 0
+OUT TIMER, AL ; TIMER: registro CONT
+MOV BX, OFFSET MIN
+MOV AL, OFFSET FIN-OFFSET MIN
+MOV AH,0
+STI
+LAZO: NOP
+      NOP
+      JMP LAZO
+END
+
+
+
+
+
+
+
+
+
+
+14)
+Implementar un reloj similar al utilizado en los partidos de básquet, que arranque y detenga su marcha al presionar
+sucesivas veces la tecla F10 y que finalice el conteo al alcanzar los 30 segundos.
+
+
+
+TIMER EQU 10H
+PIC EQU 20H
+EOI EQU 20H
+N_CLK EQU 10
+N_FN EQU 11
+NTIMER EQU 12
+
+ORG 40
+IP_IN DW INICIO
+ORG 44
+IP_FIN DW FIN
+org 48
+IP_TIMER DW TIEMPO
+
+org 1000h 
+Tablita db "Inicien"
+Tabla db "TIEMPO"
+
+ORG 1500H
+SEG db ?
+SEG2 db ?
+
+ORG 3000H
+
+TIEMPO:mov bx, Offset SEG
+
+RUT_CLK: PUSH AX
+MOV AL, 2
+INC SEG2
+CMP SEG2, 3AH
+JNZ RESET
+MOV SEG2, 30H
+INC SEG
+CMP SEG, 36H
+JNZ RESET
+MOV SEG, 30H
+
+
+RESET: INT 7
+MOV AL, 0
+OUT TIMER, AL
+MOV AL, EOI
+OUT PIC, AL
+POP AX
+
+cmp SEG,32H   ;"2"
+JNZ FLIN
+cmp SEG2, 39H ;"9"
+JNZ FLIN
+
+cli
+mov al, N_FN    ;Llego a 30, timer apunta a fin
+OUT PIC+5, AL
+sti
+
+
+FLIN: MOV AL, EOI   ; Fin interrupcion
+OUT EOI, AL
+IRET
+
+
+INICIO: MOV BX,Offset Tablita   ; Impretrool
+mov al, 7
+int 7
+
+CLI
+MOV AL, 11111100B ; Activo F_10 Y TIMER
+OUT PIC+1, AL
+
+MOV AL, N_FN   ;F_10 AHORA LLAMA A FIN
+OUT PIC+4, AL
+
+mov al, NTIMER   ;Timer ahora llama a timer
+OUT PIC+5, AL
+
+MOV AL, 1    ;Inicio el timer, Interrumpe cada seg
+OUT TIMER+1,AL
+MOV AL,0
+OUT TIMER,AL
+
+
+mov SEG,30H ; Reinicio contador
+MOV SEG2,30H
+
+STI
+
+MOV AL, EOI   ; Fin interrupcion
+OUT EOI, AL
+IRET
+
+
+
+FIN: MOV BX,Offset Tabla    ; Impretrool
+mov al, 6
+int 7
+
+CLI
+MOV AL, 11111110B ; Activo F_10
+OUT PIC+1, AL
+
+MOV AL, N_CLK  ;F_10 AHORA LLAMA A INICIO
+OUT PIC+4, AL
+
+
+STI
+
+MOV AL, EOI   ; Fin interrupcion
+OUT EOI, AL
+IRET
+
+
+ORG 2000H
+
+CLI
+MOV AL,0FEH ; Activo F_10
+OUT PIC+1, AL
+
+MOV AL, N_CLK     ;F_10 LLama a INICIO
+OUT PIC+4, AL
+
+MOV AL, NTIMER
+OUT PIC+5,AL      ;Al timer le mando TIEMPO
+STI
+
+
+
+LAZO: NOP
+      NOP
+      JMP LAZO
+HLT 
+END
+
+
+
+
+15) Escribir un programa que implemente un conteo regresivo a partir de un valor ingresado desde el teclado. El conteo debe
+comenzar al presionarse la tecla F10. El tiempo transcurrido debe mostrarse en pantalla, actualizándose el valor cada segundo.
+
+
+TIMER EQU 10H
+PIC EQU 20H
+EOI EQU 20H
+N_INI EQU 10
+N_TIMER EQU 11
+N_PAIN EQU 12
+
+ORG 40
+IP_INI DW INICIO
+org 44
+IP_CLOCK DW CLOCK
+ORG 48
+IP_PAIN DW PAIN
+
+
+
+
+org 1000h
+ORG 1000H
+Tabla db "Ingrese un tiempo, max 1h "
+Tabla2 db "Tiempo"
+MIN DB 30H
+MIN2 DB 30H
+AUX DB ":"
+SEG DB 30H
+SEG2 DB 30H
+AUX2 DB " "
+FIN DB 0AH ;Salto de linea
+
+ORG 3000H
+INICIALIZACION: MOV BX, Offset Tabla
+mov al, Offset Tabla2 - Offset Tabla
+int 7
+mov al,1
+MOV BX, OFFSET MIN
+INT 6
+int 7
+INC BX
+INT 6
+int 7
+inc bx
+int 7
+inc bx
+INT 6
+int 7
+INC BX
+int 6
+int 7
+INC BX
+INT 7
+INC BX
+INT 7
+CLI
+RET
+
+INICIO: MOV AL,EOI
+        OUT EOI,AL
+
+        CLI
+        MOV AL, 0FDH ;Activo todo lo de timer
+        OUT PIC+1, AL
+        
+        MOV AL,1H
+        OUT TIMER+1, AL
+        MOV AL,0
+        OUT TIMER, AL
+        MOV AL, N_TIMER   ;Configuro a TIMER_ TIMER
+        OUT PIC+5, AL
+
+        STI
+
+IRET
+
+PAIN: CLI
+      MOV BX,Offset Tabla2
+      MOV AL,Offset MIN - OFFSET Tabla2
+      INT 7
+      mov al, 0FEH ;Activo F-10
+      OUT PIC+1, AL
+      mov bx, Offset FIN
+      MOV AL, 1
+      INT 7
+      CALL INICIALIZACION
+      STI
+mov al, EOI
+OUT EOI,AL
+IRET
+
+CLOCK: MOV BX, OFFSET MIN
+DEC SEG2
+CMP SEG2, 2FH ; El anterior al "0"
+JNZ RESET
+MOV SEG2, 39H ; Lo Pongo en "9"
+DEC SEG
+CMP SEG, 2FH ; El anterior al "0"
+JNZ RESET
+MOV SEG, 35H ; Lo Pongo en "5"
+;Minutos
+DEC MIN2
+CMP MIN2, 2FH ; El anterior al "0"
+JNZ RESET
+MOV MIN2, 39H ; Lo Pongo en "9"
+DEC MIN
+CMP MIN, 2FH ; El anterior al "0"
+JNZ RESET
+MOV MIN, 35H ; Lo Pongo en "5"
+
+
+RESET: MOV AL,AL
+       CMP SEG2, 31H   ; Cuando queda 1 seg, proxima llamada de clock es a fin
+       JNZ FLAN
+       CMP SEG, 30H
+       JNZ FLAN
+       CMP MIN2, 30H
+       JNZ FLAN
+       CMP MIN, 30H
+       JNZ FLAN
+       
+       cli
+       mov al, N_PAIN
+       out PIC+5,AL
+       sti
+  FLAN:MOV AL,6
+       INT 7
+       MOV AL, 0
+       OUT TIMER,AL
+
+       MOV AL,EOI
+       OUT EOI,AL
+       IRET
+
+ORG 2000H
+
+CALL INICIALIZACION
+
+
+MOV AL, 0FEH    ; Configuro Interrupciones F10
+OUT PIC+1, AL
+
+MOV AL, N_INI   ;Configuro a F10_ INI
+OUT PIC+4, AL
+
+
+
+STI
+LAZO: NOP
+      NOP
+      JMP LAZO
+HLT      
+END
+
+
+
+
+
+/////V2, Cuenta desde 1 seg ///////
+
+
+TIMER EQU 10H
+PIC EQU 20H
+EOI EQU 20H
+N_INI EQU 10
+N_TIMER EQU 11
+N_PAIN EQU 12
+
+ORG 40
+IP_INI DW INICIO
+org 44
+IP_CLOCK DW CLOCK
+ORG 48
+IP_PAIN DW PAIN
+
+
+
+
+org 1000h
+ORG 1000H
+Tabla db "Ingrese un tiempo, max 1h, mIN 1 SEg "
+Tabla2 db "Tiempo"
+MIN DB 30H
+MIN2 DB 30H
+AUX DB ":"
+SEG DB 30H
+SEG2 DB 30H
+AUX2 DB " "
+FIN DB 0AH ;Salto de linea
+
+ORG 3000H
+INICIALIZACION: MOV BX, Offset Tabla
+mov al, Offset Tabla2 - Offset Tabla
+int 7
+mov al,1
+MOV BX, OFFSET MIN
+INT 6
+int 7
+INC BX
+INT 6
+int 7
+inc bx
+int 7
+inc bx
+INT 6
+int 7
+INC BX
+int 6
+int 7
+INC BX
+INT 7
+INC BX
+INT 7
+CLI
+RET
+
+INICIO: MOV AL,EOI
+        OUT EOI,AL
+
+        CLI
+        MOV AL, 0FDH ;Activo todo lo de timer
+        OUT PIC+1, AL
+        
+        MOV AL,1H
+        OUT TIMER+1, AL
+        MOV AL,0
+        OUT TIMER, AL
+        MOV AL, N_TIMER   ;Configuro a TIMER_ TIMER
+        OUT PIC+5, AL
+        
+        CMP SEG2, 31H   ; Cuando es 1 seg, proxima llamada de clock es a fin
+        JNZ noes1
+        CMP SEG, 30H
+        JNZ noes1
+        CMP MIN2, 30H
+        JNZ noes1
+        CMP MIN, 30H
+        JNZ noes1
+       
+        MOV AL, N_PAIN  ;Configuro a TIMER_ PAIN, YA QUE ES SOLO 1 SEG
+        OUT PIC+5, AL
+       
+        
+ noes1: STI
+        IRET
+
+
+PAIN: CLI
+      MOV BX,Offset Tabla2
+      MOV AL,Offset MIN - OFFSET Tabla2
+      INT 7
+      mov al, 0FEH ;Activo F-10
+      OUT PIC+1, AL
+      mov bx, Offset FIN
+      MOV AL, 1
+      INT 7
+      CALL INICIALIZACION
+      STI
+mov al, EOI
+OUT EOI,AL
+IRET
+
+CLOCK: MOV BX, OFFSET MIN
+DEC SEG2
+CMP SEG2, 2FH ; El anterior al "0"
+JNZ RESET
+MOV SEG2, 39H ; Lo Pongo en "9"
+DEC SEG
+CMP SEG, 2FH ; El anterior al "0"
+JNZ RESET
+MOV SEG, 35H ; Lo Pongo en "5"
+;Minutos
+DEC MIN2
+CMP MIN2, 2FH ; El anterior al "0"
+JNZ RESET
+MOV MIN2, 39H ; Lo Pongo en "9"
+DEC MIN
+CMP MIN, 2FH ; El anterior al "0"
+JNZ RESET
+MOV MIN, 35H ; Lo Pongo en "5"
+
+
+RESET: MOV AL,AL
+       CMP SEG2, 31H   ; Cuando queda 1 seg, proxima llamada de clock es a fin
+       JNZ FLAN
+       CMP SEG, 30H
+       JNZ FLAN
+       CMP MIN2, 30H
+       JNZ FLAN
+       CMP MIN, 30H
+       JNZ FLAN
+       
+       cli
+       mov al, N_PAIN
+       out PIC+5,AL
+       sti
+  FLAN:MOV AL,6
+       INT 7
+       MOV AL, 0
+       OUT TIMER,AL
+
+       MOV AL,EOI
+       OUT EOI,AL
+       IRET
+
+ORG 2000H
+
+CALL INICIALIZACION
+
+
+MOV AL, 0FEH    ; Configuro Interrupciones F10
+OUT PIC+1, AL
+
+MOV AL, N_INI   ;Configuro a F10_ INI
+OUT PIC+4, AL
+
+
+
+STI
+LAZO: NOP
+      NOP
+      JMP LAZO
+HLT      
+END
+
+
+////V. TIAGO /////
+
+TIMER EQU 10H
+PIC EQU 20H
+EOI EQU 20H
+N_INI EQU 10
+N_TIMER EQU 11
+
+ORG 40
+IP_INI DW INI
+ORG 44
+IP_CLOCK DW CLOCK
+
+ORG 1000H
+Tabla DB "Ingrese un tiempo, hasta 1HS Formato Mm:Ss = "
+
+MIN DB 30H
+MIN2 DB 30H
+AUX DB ":"
+SEG DB 30H
+SEG2 DB 30H
+AUX2 DB " "
+FIN DB ?
+SHOW DB 0H
+
+
+ORG 3000H
+
+INI: CLI
+MOV AL, 11111101B ;ACTIVO SOLO TIMER
+OUT PIC+1 ,AL
+
+MOV AL,1
+OUT TIMER+1, AL
+MOV AL,0
+OUT TIMER, AL
+STI
+
+MOV AL,EOI
+OUT PIC,AL
+MOV BX,OFFSET MIN
+IRET
+
+
+
+
+CLOCK:PUSH AX
+MOV AL,OFFSET FIN-OFFSET MIN
+DEC SEG2
+CMP SEG2,30H
+JNS RESET
+MOV SEG2, 39H
+
+DEC SEG
+CMP SEG,30H
+JNS RESET
+MOV SEG, 35H
+
+DEC MIN2
+CMP MIN2,30H
+JNS RESET
+MOV MIN2,39H
+
+DEC MIN
+CMP MIN,30H
+JNS RESET
+CLI
+MOV AL,11111111B
+OUT PIC+1,AL
+STI
+JMP FINISH
+
+
+
+
+RESET: CMP SHOW,0AH
+      JNZ FINISH
+      MOV SHOW,0H
+      INT 7
+FINISH:INC SHOW
+MOV AL, 0
+OUT TIMER, AL
+MOV AL, EOI
+OUT PIC, AL
+POP AX
+IRET
+
+
+ORG 2000H
+MOV BX, OFFSET Tabla
+MOV AL, OFFSET MIN - OFFSET Tabla
+INT 7
+
+MOV BX, OFFSET MIN
+INT 6;MINUTOS DECENA
+
+INC BX
+INT 6;MINUTOS UNIDADES
+
+INC BX
+MOV AL,1
+INT 7
+
+INC BX;DECENAS
+INT 6
+INC BX;UNIDADES
+int 6
+
+CLI
+MOV AL, 0FEH    ; Configuro Interrupciones F10
+OUT PIC+1, AL
+MOV AL, N_INI   ;Configuro a F10_ INI
+OUT PIC+4, AL
+MOV AL, N_TIMER   ;Configuro a TIMER_ TIMER
+OUT PIC+5, AL
+STI
+
+LAZO:JMP LAZO
+HLT      
+END

@@ -1,0 +1,182 @@
+ {Twitter dispone de una lista simple con los tweets realizados durante los últimos 5 segundos.
+ De cada tweet se conoce: el código y nombre de usuario que lo generó, el contenido del mensaje y si el mismo es o no un retweet.
+ Esta información no tiene ningún orden y se debe tener en cuenta que podrían existir en la lista varios tweets del mismo usuario.
+
+Se pide:
+Realice un módulo que reciba la lista con los tweets y genere una nueva estructura donde para cada usuario se almacene la cantidad de mensajes publicados.
+Esta estructura debe estar ordenada por código de usuario y debe ser eficiente para la búsqueda por dicho criterio.
+
+Una vez generado el árbol:
+Informar la cantidad de tweets de los usuarios con código entre
+         100 y 700.
+Informar el nombre del usuario con mayor cantidad de tweets.
+¿Qué cambiaría del ejercicio implementado si la lista inicial
+         fuera una lista de listas? (Del usuario y sus tweets)}
+
+
+
+Program twitter_REPASO;
+Uses
+     sysutils;
+Type
+     tweet = record
+	      codigoUsuario: integer;
+	      nombreUsuario: string;
+	      mensaje: string;
+	      esRetweet: boolean;
+     end;
+
+     listaTweets = ^nodoLista;
+     nodoLista = record
+               dato: tweet;
+               sig: listaTweets;
+     end;
+// Codigo del Alumno
+ {Nueva Estructura para el almacenaje de codigo de usario con su cantidad de veces tweeteada en 5 segs}
+ arbol=^nodo;
+ nodo=record
+   codigo:integer;
+   tweets:integer;
+   HI:arbol;
+   HD:arbol;
+ end;
+
+//FIN DEL TYPE DEL ALUMNO
+
+{agregarAdelante - Agrega nro adelante de l}
+Procedure agregarAdelante(var l: listaTweets; t: tweet);
+var
+   aux: listaTweets;
+begin
+     new(aux);
+     aux^.dato := t;
+     aux^.sig := l;
+     l:= aux;
+end;
+
+
+
+{crearLista - Genera una lista con tweets aleatorios}
+procedure crearLista(var l: listaTweets);
+var
+   t: tweet;
+   texto: string;
+begin
+     t.codigoUsuario := random(2000);
+     while (t.codigoUsuario <> 0) do Begin
+          texto:= Concat(IntToStr(t.codigoUsuario), '-mensaje-', IntToStr(random (200)));
+          t.nombreUsuario := Concat('Usuario-',IntToStr(t.codigoUsuario));
+          t.mensaje := texto;
+          t.esRetweet := (random(2)=0);
+          agregarAdelante(l, t);
+          t.codigoUsuario := random(2000);
+     end;
+end;
+
+
+{imprimir - Muestra en pantalla el tweet}
+procedure imprimir(t: tweet);
+begin
+     with (t) do begin
+          write('Tweet del usuario @', nombreUsuario, ' con codigo ',codigoUsuario, ': ', mensaje, ' RT:');
+          if(esRetweet)then
+               writeln(' Si')
+          else
+               writeln('No ');
+     end;
+end;
+
+
+{imprimirLista - Muestra en pantalla la lista l}
+procedure imprimirLista(l: listaTweets);
+begin
+     while (l <> nil) do begin
+          imprimir(l^.dato);
+          l:= l^.sig;
+     end;
+end;
+
+
+//SE INICIALIZA EL NUEVO ARBOL CON SUS HIJO Y SE AÑADEN LOS DATOS, SI SE DETECTA UN CODIGO DE TWEET IGUAL A ALGUNO YA AÑADIDO EN EL ARBOL SE SUMARA A LA CANTIDAD DE TWEETS +1
+procedure insertararbol(t:tweet;var a:arbol);
+begin
+  if a = nil then begin
+    new(a);
+    a^.codigo:=t.codigousuario;
+    a^.tweets:=1;
+    a^.HI:=NIL;
+    a^.HD:=NIL;
+  end
+  else if (a^.codigo > t.codigousuario) then insertararbol(t,a^.HI)
+    else if (a^.codigo < t.codigousuario) then insertararbol(t,a^.HD)
+      else
+        a^.tweets:=a^.tweets+1;
+    end;
+
+ //SE RECORRE TODA LA LISTA CREADA POR EL PROFESOR Y SE VA TOMANDO SU RECORD DE DATOS PARA PASAR ESTOS DATOS A NUESTRO NUEVO ARBOL
+procedure arbolenteros(l:listatweets;var a:arbol);
+  begin
+    while l<>nil do begin
+      insertararbol(l^.dato,a);
+      l:=l^.sig;
+    end;
+  end;
+
+
+
+// SE BUSCA ACOTADAMENTE ENTRE LOS VALORES DE CODIGO DE USUARIO 100 Y 700
+procedure BusquedaAcotada(a: Arbol; inf,sup:integer);
+begin
+  if (a <> nil) then
+    if (a^.codigo >= inf) then
+      if (a^.codigo <= sup) then begin
+        writeln('El usuario ',a^.codigo,' tiene= ', a^.tweets,' tweets.');
+        busquedaAcotada(a^.hi, inf, sup);
+        busquedaAcotada (a^.hd, inf, sup);
+      end
+      else
+        busquedaAcotada(a^.hi, inf, sup)
+    else
+      busquedaAcotada(a^.hd, inf, sup);
+end;
+
+//COMO NO ESTA ORDENADO POR CANTIDAD DE TWEETS SE REQUIERE RECORRER TODA EL ARBOL
+Procedure maximo( a: arbol;var m:integer; var c:integer );
+begin
+  if ( a <> nil ) then begin
+    maximo (a^.HI, m,c);
+    maximo (a^.HD, m,c);
+    if a^.tweets>m then begin
+      m:=a^.tweets;
+      c:=a^.codigo;
+    end;
+  end;
+end;
+
+
+
+var
+   l: listaTweets;
+// declaradas por el alumno
+   a:arbol;
+   max,codigomax:integer;
+
+begin
+     max:=0;
+     Randomize;
+     a:=nil;
+     l:= nil;
+     crearLista(l);
+     writeln ('Lista generada: ');
+     imprimirLista(l);
+
+     //Inicio Programa Principal De Alumno
+     arbolenteros(l,a);
+     BusquedaAcotada(a,100,700);
+     maximo(a,max,codigomax) ;
+     writeln('El usuario con mayor cantidad de tweets en 5 segundos es el usuario= ',codigomax,' y tweeteo ',max,' veces');
+     //Fin De Programa De Alumno
+
+     writeln('Fin del programa');
+     readln;
+end.

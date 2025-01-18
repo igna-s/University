@@ -1,0 +1,31 @@
+org 1000h
+Tot dw 3
+Numero dw 1000000000000000b ;0001 0000 0000 0000b resultado 100 0000 0000
+org 3000h
+
+derecha: mov cx,10h
+sub cx,dx
+mov bx,dx
+mov dx,cx
+mov cx,bx
+call multi
+ret
+
+
+
+
+multi:cmp dx,0
+      jz fin
+      add ax,ax
+      adc ax,0
+      dec dx
+      jmp multi
+      fin:  ret
+
+org 2000h
+mov ax,Numero
+mov dx, Tot
+call derecha
+
+hlt
+end

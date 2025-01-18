@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <TopLine Value="89"/>
+        <CursorPos X="66" Y="109"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\..\..\..\Downloads\twitterProbado.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="18">
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="43" Column="14" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="21" Column="15" TopLine="5"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="23" Column="18" TopLine="7"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="51" Column="6" TopLine="35"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="61" Column="13" TopLine="37"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="59" Column="20" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="61" Column="22" TopLine="45"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="79" Column="13" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="53" Column="25" TopLine="46"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="49" Column="48" TopLine="35"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="95" Column="29" TopLine="75"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="89" Column="7" TopLine="70"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="74" Column="23" TopLine="58"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="80" TopLine="64"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="88" Column="8" TopLine="73"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="109" Column="56" TopLine="88"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="82" Column="35" TopLine="66"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="84" Column="24" TopLine="67"/>
+      </Position>
+      <Position>
+        <Filename Value="Problema_Biblioteca.lpr"/>
+        <Caret Line="85" Column="20" TopLine="68"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

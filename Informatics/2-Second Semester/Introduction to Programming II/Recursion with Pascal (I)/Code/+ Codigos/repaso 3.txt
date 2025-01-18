@@ -1,0 +1,232 @@
+program problema_empresa_telecomunicaciones;
+Uses
+     sysutils;
+Type
+     pedido= record
+	      codSeg: integer;
+	      fechaYhora: string;
+	      dni: integer;
+	      codArea: integer;
+          domicilio: string;
+          tel: string;
+     end;
+
+     listaPedidos = ^nodoLista;
+     nodoLista = record
+               dato: pedido;
+               sig: listaPedidos;
+     end;
+//INICIO
+
+  ldni=^listadni;
+  listadni=record
+    dni:longint;
+    sig:ldni;
+  end;
+  datos=record
+    cant:integer;
+    lista:ldni
+
+  end;
+
+  arbol=^nodo;
+  nodo=record
+    codigo:integer;
+    dato:datos;
+    HI:arbol;
+    HD:arbol;
+  end;
+//FIN
+procedure agregarLista(var pri:listaPedidos; p:pedido);
+var
+  nuevo, anterior, actual: listaPedidos;
+begin
+    new (nuevo);
+    nuevo^.dato:= p;
+    nuevo^.sig := nil;
+    if (pri = nil) then
+         pri := nuevo
+    else
+    begin
+         actual := pri;
+         anterior := pri;
+         while (actual<>nil) and (actual^.dato.dni < nuevo^.dato.dni) do begin
+              anterior := actual;
+              actual:= actual^.sig;
+         end;
+         if (anterior = actual) then
+              pri := nuevo
+         else
+              anterior^.sig := nuevo;
+         nuevo^.sig := actual;
+    end;
+end;
+
+
+function cargarFecha(): string;{Genera una FECHA aleatoria}
+var
+  dia, mes, hora, seg: integer;
+  s: string;
+begin
+  dia := random(30)+1;
+  mes := random(12)+1;
+  s := Concat(IntToStr(dia),'/',IntToStr(mes),'/2020 - ');
+  hora := random(24);
+  seg := random(60);
+  if(hora < 10)then
+	s := Concat(s, '0', IntToStr(hora))
+  else
+	s:= Concat(s, IntToStr(hora));
+  if(seg < 10)then
+	s := Concat(s, ':0', IntToStr(seg))
+  else
+	s:= Concat(s,':', IntToStr(seg));
+  cargarFecha:= s;
+end;
+
+procedure crearLista(var l: listaPedidos);
+var
+   cant, cod: integer;
+   p: pedido;
+begin
+     cant:= random(10); {genera hasta 100 elementos}
+     cod:= 1;
+     while (cant <> 0) do Begin
+          p.codSeg:= cod;  {codigo de seguimiento}
+          p.fechaYhora := cargarFecha();
+          p.dni := random(60000000);  {dni}
+          p.codArea := (random(4000)); {codigo de área}
+          p.domicilio:= Concat('Domicilio', IntToStr(cod)); {domicilio}
+          p.tel:= IntToStr(random(999999)+4000000); {telefono}
+          agregarLista(l, p);
+          cant:= cant-1;
+          cod := cod+1;
+     end;
+end;
+
+procedure imprimirPedido(p:pedido);
+begin
+    with(p)do
+         writeln('El pedido ',codSeg, ' del cliente ', dni, ' sera atendido en la fecha ', fechaYhora, ' en el codigo de area ', codArea, ' y domicilio ', domicilio, ' con tel. de contacto ', tel);
+end;
+
+procedure imprimirLista(l:listaPedidos);
+begin
+    while(l<>nil)do
+    begin
+         imprimirPedido(l^.dato);
+         l:=l^.sig;
+    end;
+end;
+procedure insrt_listadni(var l:ldni;dni:longint);
+var
+   a:ldni;
+begin
+  new(a);
+  a^.dni:=dni;
+  a^.sig:=l;
+  l:=a;
+end;
+
+procedure insertararbol(r:pedido;var a:arbol);
+begin
+  if a = nil then begin
+    new(a);
+    a^.dato.cant:=1;
+    a^.dato.lista:=nil;
+    a^.codigo:=r.codarea;
+    insrt_listadni(a^.dato.lista,r.dni);
+    a^.HI:=NIL;
+    a^.HD:=NIL;
+  end
+  else if (a^.codigo > r.codArea) then insertararbol(r,a^.HI)
+    else if (a^.codigo < r.codArea) then insertararbol(r,a^.HD)
+      else begin
+        insrt_listadni(a^.dato.lista,r.dni);
+        a^.dato.cant:=a^.dato.cant+1;
+    end;
+end;
+
+procedure arbolenteros(l:listaPedidos;var a:arbol);
+  begin
+    while l<>nil do begin
+      insertararbol(l^.dato,a);
+      l:=l^.sig;
+    end;
+  end;
+
+Procedure buscarmin( a: arbol;var m:integer;var c:integer );
+begin
+  if ( a <> nil ) then begin
+    buscarmin (a^.HI,m,c);
+    if  a^.dato.cant<m then begin
+    m:=a^.dato.cant;
+    c:=a^.codigo;
+    buscarmin (a^.HD,m,c);
+    end;
+  end;
+end;
+ procedure imprimirdni(l:ldni);
+begin
+    while(l<>nil)do
+    begin
+         writeln('DNI= ',l^.dni);
+         l:=l^.sig;
+    end;
+end;
+
+procedure BusquedaAcotada(a: Arbol; inf,sup:integer);
+begin
+  if (a <> nil) then
+    if (a^.codigo >= inf) then
+      if (a^.codigo <= sup) then begin
+        imprimirdni(a^.dato.lista);
+        busquedaAcotada(a^.hi, inf, sup);
+        busquedaAcotada (a^.hd, inf, sup);
+      end
+      else
+        busquedaAcotada(a^.hi, inf, sup)
+    else
+      busquedaAcotada(a^.hd, inf, sup);
+end;
+
+//HACE UNA BUSQUEDA TIPO DICOTOMICA FIJANDOSE SI EL ELEMENTO A BUSCAR ES MENOR O MAYOR SI LA LISTA LLEGA A SU FIN DEVUELVE NIL
+Function busqueda (a:arbol; x:integer): ldni;
+begin
+  if (a=nil) then  busqueda:=nil
+  else if (x= a^.codigo) then busqueda:=a^.dato.lista
+    else if (x < a^.codigo) then busqueda:=busqueda(a^.HI ,x)
+      else busqueda:=busqueda(a^.HD ,x);
+end;
+
+
+var
+   l_inicial: listaPedidos;
+   a:arbol;
+   min:integer;
+   c,x:integer;
+   puntero:ldni;
+
+begin
+     min:=4001;
+     Randomize;
+     {Se crea la estructura inicial}
+     l_inicial:= nil;
+     a:=nil;
+     crearLista(l_inicial);
+     writeln ('Lista: ');
+     imprimirLista(l_inicial);
+     {Completar el programa}
+     arbolenteros(l_inicial,a);
+     buscarmin(a,min,c);
+     writeln('Los codigos de DNI que estan en el rango solicitado son= ');
+     busquedaacotada(a,1000,2000);
+     writeln('El codigo de area con menor solicitud de servicios fue= ',c, ' con ' ,min, ' pedidos');
+
+     write('inserte el codigo de area que quiera buscar en la lista= '); readln(x);
+         Puntero:=busqueda(A,x);
+         if puntero <>nil then imprimirdni(puntero)
+         else writeln('el elemento no se encontro');
+     writeln('Fin del programa');
+     readln;
+end.    

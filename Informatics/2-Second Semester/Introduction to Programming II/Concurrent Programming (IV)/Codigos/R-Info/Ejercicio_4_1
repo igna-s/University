@@ -1,0 +1,104 @@
+programa ejercicio4uno
+procesos
+  proceso tomar(ES cont:numero; E rob: numero)
+  comenzar
+    si rob =1
+      mientras HayFlorEnLaEsquina
+        tomarFlor
+        cont:=cont + 1
+    sino
+      mientras HayPapelEnLaEsquina
+        tomarPapel
+        cont:=cont + 1
+  fin    
+    
+areas  
+  Area1: AreaC(1,1,1,99)
+  Area2: AreaC(1,100,99,100)
+  Area3: AreaC(100,2,100,100)
+  Area4: AreaC(2,1,100,1)
+  AreaP1:AreaP(49,50,49,50)
+  AreaP2:AreaP(50,49,50,49)
+robots
+  robot tipo1
+  variables
+    rob, cont:numero
+  comenzar
+    si PosAv=49
+      rob:=1
+    sino
+      rob:=2
+    cont:=0    
+    BloquearEsquina(1,1)
+    Pos(1,1)
+    tomar(cont,rob)
+    repetir 99
+      BloquearEsquina(1,PosCa + 1)
+      mover
+      LiberarEsquina(1,PosCa - 1)
+      tomar(cont,rob)
+    derecha
+    
+    BloquearEsquina(PosAv+1,100)
+    mover
+    LiberarEsquina(PosAv - 1,100) 
+    tomar(cont,rob)
+    repetir 98
+      BloquearEsquina(PosAv+1,100)
+      mover
+      tomar(cont,rob)
+      LiberarEsquina(PosAv - 1,100)
+      
+    derecha  
+    
+    BloquearEsquina(PosAv,PosCa - 1)
+    mover
+    LiberarEsquina(PosAv,PosCa + 1)
+    tomar(cont,rob)
+    repetir 98
+      BloquearEsquina(100,PosCa - 1)
+      mover
+      LiberarEsquina(100,PosCa + 1)
+      tomar(cont,rob)
+    derecha
+    
+    BloquearEsquina(PosAv - 1,1)
+    mover
+    tomar(cont,rob)
+    LiberarEsquina(PosAv + 1, 1) 
+    repetir 98
+      BloquearEsquina(PosAv - 1,1)
+      mover
+      tomar(cont,rob)
+      LiberarEsquina(PosAv + 1,100)
+    derecha
+    si rob=1
+      Pos(49,50)
+    sino
+      Pos(50,49)
+    LiberarEsquina(1,1) 
+     
+      
+    
+    
+  fin
+variables
+  R1, R2:tipo1  
+comenzar
+  AsignarArea(R1,Area1)
+  AsignarArea(R1,Area2)
+  AsignarArea(R1,Area3)
+  AsignarArea(R1,Area4)
+  AsignarArea(R1,AreaP1)
+  
+  AsignarArea(R2,Area1)  
+  AsignarArea(R2,Area2)
+  AsignarArea(R2,Area3)
+  AsignarArea(R2,Area4)
+  AsignarArea(R2,AreaP2)
+ 
+  Iniciar(R1,49,50)
+  Iniciar(R2,50,49)
+fin           
+
+

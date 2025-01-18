@@ -1,0 +1,110 @@
+programa Ejercicio4
+procesos
+  proceso LimpiarEsquina(ES elementosTot: numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      elementosTot := elementosTot + 1
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      elementosTot := elementosTot + 1
+  fin
+  proceso maximo(E cantidad:numero; E cualRobot:numero; ES max:numero; ES maxRobot: numero)
+  comenzar
+    si(cantidad > max)
+      max:= cantidad
+      maxRobot := cualRobot
+  fin
+areas
+  AreaR : AreaPC(5,5,50,30)
+  AreaCord : AreaP(1,1,1,1)
+  Area1 : AreaP(7,4,7,4)
+  Area2 : AreaP(9,4,9,4)
+  Area3 : AreaP(11,4,11,4)
+  Area4 : AreaP(13,4,13,4)
+
+
+robots
+  robot tipo1
+  variables
+    calleInicial, avenidaInicial, avenidaTP, calleTP, elementosTot, quienSoy: numero
+    sigo: boolean
+  comenzar
+    RecibirMensaje(quienSoy, RC)
+    calleInicial := PosCa
+    avenidaInicial := PosAv
+    RecibirMensaje(sigo, RC)
+    mientras(sigo)
+      Random(avenidaTP, 5, 50)
+      Random(calleTP, 5, 30)
+      Pos(avenidaTP, calleTP)
+      LimpiarEsquina(elementosTot)
+      Pos(avenidaInicial, calleInicial)
+      RecibirMensaje(sigo, RC)
+    
+    EnviarMensaje(quienSoy, RC)
+    EnviarMensaje(elementosTot, RC)
+
+  fin
+
+  robot coordinador
+  variables 
+    eleccion, cantidad, max, maxRobot, cualRobot: numero
+  comenzar
+    EnviarMensaje(1, r1)
+    EnviarMensaje(2, r2)
+    EnviarMensaje(3, r3)
+    EnviarMensaje(4, r4)
+    repetir(20)
+      Random(eleccion, 1, 4)
+      si(eleccion = 1)
+        EnviarMensaje(V, r1)
+      sino 
+        si(eleccion = 2)
+          EnviarMensaje(V, r2)
+        sino
+          si(eleccion = 3)
+            EnviarMensaje(V, r3)
+          sino 
+            EnviarMensaje(V, r4)
+    EnviarMensaje(F, r1)
+    EnviarMensaje(F, r2)
+    EnviarMensaje(F, r3)
+    EnviarMensaje(F, r4)
+    repetir(4)
+      RecibirMensaje(cualRobot, *)
+      si(cualRobot = 1)
+        RecibirMensaje(cantidad, r1)
+      sino
+        si(cualRobot = 2)
+          RecibirMensaje(cantidad, r2)
+        sino
+          si(cualRobot = 3)
+            RecibirMensaje(cantidad, r3)
+          sino
+            RecibirMensaje(cantidad, r4)
+      maximo(cantidad, cualRobot, max, maxRobot)
+    Informar(maxRobot)
+  fin
+
+
+variables
+  r1, r2, r3, r4 : tipo1
+  RC : coordinador
+comenzar
+  AsignarArea(r1, AreaR)
+  AsignarArea(r2, AreaR)
+  AsignarArea(r3, AreaR)
+  AsignarArea(r4, AreaR)
+  AsignarArea(RC, AreaCord)
+  AsignarArea(r1, Area1)
+  AsignarArea(r2, Area2)
+  AsignarArea(r3, Area3)
+  AsignarArea(r4, Area4)
+  
+  Iniciar(r1, 7, 4)
+  Iniciar(r2, 9, 4)
+  Iniciar(r3, 11, 4)
+  Iniciar(r4, 13, 4)
+  Iniciar(RC, 1, 1)
+fin

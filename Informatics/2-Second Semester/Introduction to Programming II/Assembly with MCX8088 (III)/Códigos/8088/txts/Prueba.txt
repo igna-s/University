@@ -1,0 +1,11 @@
+org 1000h
+; variables 
+h dw 0FFFFh;
+c dw 0FFFFh;
+org 2000h
+; código
+ mov ax,c;
+ mov bx,h
+ add bx,ax;
+hlt
+end

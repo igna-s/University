@@ -1,0 +1,23 @@
+#BlueJ class context
+comment0.target=Square
+comment0.text=\r\n\ \ \ \ \ \ \ \u25A0\r\n
+comment1.params=nuevoL1\ nuevoCR\ nuevoCL\ unPunto
+comment1.target=Square(double,\ java.lang.String,\ java.lang.String,\ Punto)
+comment1.text=A\u00F1adido\:\ tema\ constructores\ (1er\ constructor)
+comment2.params=nuevoL1
+comment2.target=Square(double)
+comment2.text=A\u00F1adido\:\ tema\ constructores\ (2do\ constructor)
+comment3.params=
+comment3.target=Square()
+comment3.text=A\u00F1adido\:\ tema\ constructores\ (3er\ constructor)
+comment4.params=
+comment4.target=double\ getLado1()
+comment5.params=nuevoLado
+comment5.target=void\ setLado1(double)
+comment6.params=
+comment6.target=double\ calcularArea()
+comment7.params=
+comment7.target=double\ calcularPerimetro()
+comment8.params=
+comment8.target=void\ dibujar()
+numComments=9

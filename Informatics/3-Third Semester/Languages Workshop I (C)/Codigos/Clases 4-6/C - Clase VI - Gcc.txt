@@ -1,0 +1,717 @@
+
+1. Analice, compile y ejecute el siguiente código:
+#include <stdio.h>
+#include <stdlib.h>
+int main (int argc, char * argv[]) {
+printf("\nargc = %d",argc);
+printf("\nargv[0] => %s",argv[0]);
+return 0;
+}
+¿Qué imprime? ¿Por qué?
+
+Imprime la direccion del ejecutable, porque es argv[0] y el tamaño de argc
+C:\Users\ElZapatero\Desktop\Codebloks\Clase 6\bin\Debug\Clase 6.exe
+
+
+2. Escriba un programa que calcule e imprima el promedio de 4 números que se pasan como argumentos a
+la función main. En caso de no pasar la cantidad necesaria de parámetros, informar al usuario.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char* argv[]) {
+    if (argc < 5) {
+        printf("Error, parametros insuficientes");
+        return 1;
+    }
+
+int tot=0;
+
+    for (int i=0;i<4;i++)
+        tot+=atoi(argv[i+1]);
+
+    printf("Pormedio %f", (float )tot/4);
+    return 0;
+}
+
+
+3. a. Investigue las funciones de conversión de texto a número y escriba un programa “calculadora.c” que
+reciba dos números enteros y un operador como argumentos a la función main e imprima en pantalla el
+resultado de la operación. El operador debe ser: “+”, “-”, “/”, “.”. Si el operador recibido no es uno de los
+mencionados anteriormente, entonces el programa debe imprimir un mensaje de error.
+b. Utilice una terminal para compilar el programa a través de la línea de comandos.
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char* argv[]) {
+    if (argc < 4) {
+        printf("Error, parametros insuficientes");
+        return 1;
+    }
+
+    int x = atoi(argv[1]);
+    int y = atoi(argv[2]);
+    char c = argv[3][0];
+
+    switch (c) {
+        case '+':
+            printf("%d\n", x + y);
+            break;
+        case '-':
+            printf("%d\n", x - y);
+            break;
+        case '/':
+            printf("%f\n", (float)x / y);
+            break;
+        case '*':
+            printf("%d\n", x * y);
+            break;
+        default:
+            printf("Error\n");
+            break;
+    }
+
+    return 0;
+}
+
+
+4)
+
+//Preprocesador
+//. Analice y ejecute el siguiente código:
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define SQUAREOF(x) x*x
+int main() {
+ int xin=3;
+ printf("\nxin=%i",xin);
+ printf("\nSQUAREOF(xin)=%i", SQUAREOF(xin));
+ printf("\nSQUAREOF(xin+4)=%i", SQUAREOF(xin+4));
+ printf("\nSQUAREOF(xin+xin)=%i", SQUAREOF(xin+xin));
+}
+
+//a. ¿Qué es lo que hace? Hace raices cuadradas
+//b. La macro SQUAREOF debería calcular el cuadrado de un número. ¿Los resultados son los esperados? No
+//¿Cuál es el problema? Faltan Parentesis
+//c. Modifique la macro para que el cálculo sea correcto.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define SQUAREOF(x) ((x)*(x))
+int main() {
+ int xin=3;
+ printf("\nxin=%i",xin);
+ printf("\nSQUAREOF(xin)=%i", SQUAREOF(xin));
+ printf("\nSQUAREOF(xin+4)=%i", SQUAREOF(xin+4));
+ printf("\nSQUAREOF(xin+xin)=%i", SQUAREOF(xin+xin));
+}
+
+
+5)
+
+Analice y ejecute el siguiente código:
+#include <stdio.h>
+#include <stdlib.h>
+#define size 25
+
+void imprimir(int * v, int size){
+ int i;
+ for (i=0; i<size; i++){
+ printf("v[%d]= %d", i, v[i]);
+ }
+}
+int main(){
+ int v[size];
+ imprimir(v, size);
+ return 0;
+}
+
+a) ¿El código compila? Lea detenidamente el primer error que se detecta. ¿Cómo se explica?
+b) Identifique las etapas de precompilación y compilación. ¿Qué es lo que está ocurriendo en cada
+una?
+c) ¿Cómo podría solucionarse este problema?
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define DEBUG 1
+
+#define TAMANIO 100000
+
+/**8. Realice un programa que genere un vector de 1000 enteros al azar y utilice una funci n para localizar un
+elemento. Se pide:
+a) Implementar la funci n de b squeda que, dado un entero, retorne la posici n donde se encuentra.
+En caso de no existir el n mero retorne -1.
+b) Modificar a) para agregar informaci n de depuraci n que permita imprimir en consola la cantidad
+de veces que se debi  acceder al arreglo para encontrar (o no) el elemento en cada llamado a la
+funci n. Utilice las directivas del procesador para activar/desactivar la depuraci n e imprimir/no
+imprimir la informaci n en la consola.
+c) Verifique el tama o del programa compilando con la depuraci n y sin la depuraci n. Explique
+porque difieren.*/
+
+//Porque se le agregan 3 lineas que el precompiladoir vuela a la mierda:;
+
+
+
+
+int Verificar (int * v, int dato );
+
+int main()
+{
+    int i;
+    int v[TAMANIO];
+    srand(time(NULL));
+
+    for (i=0;i<TAMANIO;i++)
+           v[i]=1 + rand();
+
+    i=Verificar(v,3);
+
+    return 0;
+}
+
+int Verificar (int * v, int dato ){
+    char NoEncontre = 'a';
+    int tot=0;
+
+    while ((NoEncontre!='b')&&(tot < TAMANIO)){
+       if (v[tot]==dato) {NoEncontre = 'b';}
+       else tot++;
+
+    }
+    tot = tot==TAMANIO ? -1 : tot;
+
+    #if DEBUG
+    if (NoEncontre=='b')
+    printf("Hay %d Ingresos para acceder a v[]= %d",tot,v[tot]);
+    else printf("No se pudo acceder a v[%d]",dato);
+    #endif
+
+
+    return tot;
+}
+
+
+
+Bibliotecas
+
+
+
+/*9. Implemente la biblioteca imath.h, la cual contiene funciones matem ticas para enteros. La misma debe
+contener las siguientes funciones:
+a. int potencia(int x, int y)   Eleva x a la y- sima potencia.
+b. int cuadrado(int x)   Eleva x al cuadrado.
+c. int cubo(int x)   Eleva x al cubo.
+d. int absoluto(int i)   Retorna el valor absoluto entero de i.
+e. int factorial (int i)   Retorna el factorial de i.
+f. int sumatoria (int i)   Retorna la sumatoria de 0 hasta i.
+g. int multiplo (int x, int y)   Retorna 1 si y es multiplo de x, 0 en otro
+caso.
+h. int divisor (int x, int y)   Retorna 1 si y es divisor de x, 0 en otro
+caso.
+i. int par (int i)   Retorna 1 si i es par, 0 en otro caso.
+j. int impar (int i)   Retorna 1 si i es impar, 0 en otro caso.*/
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+
+int potencia(int x, int y){
+    int tot=0,i;
+    if (y==0) return 1;
+    for (i=0;i<y;i++){
+        tot+=x;}
+    return tot;
+}
+
+int cuadrado(int x){ return (x) * (x);}
+
+int cubo(int x){return x * x * x;}
+
+int absoluto(int i) {
+    if (i<0) return i*(-1);
+    return i;
+    }
+
+/* Calcula el producto n*(n-1)*(n-2)*...*2*1 */
+int factorial (int x){
+    int tot=1,i;
+    for (i=2;i<=x;i++){
+        tot*=i;}
+    return tot;
+}
+
+int sumatoria (int x){
+int tot=0,i;
+    for (i=0;i<=x;i++){
+        tot+=i;}
+    return tot;
+}
+
+int divisor (int x, int y){
+   if (x<y)return 0;
+   return (!(x % y));
+
+
+
+}
+int multiplo (int x, int y){
+   if (y<x)return 0;
+   return (!(y % x));
+}
+
+
+int par (int i) {return (!(i%2));}
+
+int impar (int i){return (i%2);}
+
+
+
+
+
+
+
+
+/*
+Una vez implementadas todas las funciones de biblioteca, escriba un programa que lea n meros enteros e
+imprima el cuadrado y el cubo de aquellos n meros que son pares y el factorial de aquellos que son
+impares. La lectura finaliza con el ingreso del 0.*/
+
+int main()
+{
+   potencia("potencia %d\n",potencia(4,2));
+   printf("cuadrado %d\n",cuadrado(4));
+   printf("cubo %d\n",cubo(4));
+   printf("factorial %d\n",factorial(4));
+   printf("sumatoria %d\n",sumatoria(4));
+   printf("multiplo %d\n",multiplo(2,4));
+   printf("divisor %d\n",divisor(4,2));
+   printf("par %d\n",par(2));
+   printf("impar %d\n",impar(1));
+
+ int x;
+ scanf("%d",&x);
+      while (x){
+        if (par(x)){
+            printf("cuadrado %d\n",cuadrado(x));
+            printf("cubo %d\n",cubo(x));
+        }
+        else printf("factorial %d\n",factorial(x));
+        scanf("%d",&x);
+      }
+    return 0;
+}
+
+
+
+HEADERRRRRRRR
+
+#ifndef IMATH_H_INCLUDED
+#define IMATH_H_INCLUDED
+
+
+
+int potencia(int x, int y);
+int cuadrado(int x);
+int cubo(int x);
+int absoluto(int i);
+int absoluto(int i);
+int factorial (int i);
+int sumatoria (int i);
+int multiplo (int x, int y);
+int divisor (int x, int y);
+int divisor (int x, int y);
+int par (int i);
+int impar (int i);
+
+#endif // IMATH_H_INCLUDED
+
+
+---------------------------------------------------------------------------
+
+
+
+/*10. a. Implemente la biblioteca istack.h, la cual debe contener tipos y operaciones necesarias para
+manipular una estructura de datos pila que almacene n meros enteros. Una pila es una estructura de
+datos homog nea y din mica. El acceso a la misma se dice que es de tipo LIFO (Last In First Out), lo que
+quiere decir que los elementos se recuperan en el orden inverso en que fueron insertados. Implemente al
+menos las siguientes funciones:
+a. Stack* s_create ()   Retorna una nueva pila. Se debe invocar antes de
+manipular cualquiera de ellas.
+b. int s_push(Stack* s, int n)   Apila n en s. Retorna el elemento apilado.
+c. int s_pop (Stack* s)   Desapila un elemento de s.
+d. int s_top (Stack s)   Retorna el pr ximo elemento que ser  desapilado.
+e. int s_empty(Stack s)   Retorna 1 si s est  vac a, 0 en caso contrario.
+f. int s_length(Stack s)   Retorna la cantidad de elementos apilados en s.*/
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "istack.h"
+
+Stack * s_create (){
+   Stack *pila= malloc (sizeof(Stack));
+   pila->tope=0;
+   pila->tamanio=0;
+   return pila;
+}
+
+
+int s_push(Stack* s, int n){
+    Nodo *aux=malloc(sizeof(Nodo));
+    aux->dato=n;
+    aux->sig=s;
+    s->tamanio++;
+    s->tope=aux;
+
+    return s->tope->dato;
+}
+
+
+int s_pop (Stack* s){
+
+    if (s->tamanio){
+
+    int x= s->tope->dato;
+    Nodo *aux=s->tope;
+    s->tope=aux->sig;
+    free(aux);
+    s->tamanio--;
+
+    return x;
+    }
+    else{
+        printf("ERROR");
+        return 0;
+    }
+
+}
+
+int s_top (Stack s) {
+     if (!s.tamanio){
+        printf("ERROR");
+        return 0;
+     }
+     else return s.tope->dato;
+     }
+
+int s_empty(Stack s){return !(s.tamanio);}
+int s_length(Stack s){return s.tamanio;}
+
+
+
+
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "istack.h"
+
+int main() {
+    Stack* PILA = s_create();
+
+    // Apilar elementos
+    s_push(PILA, 5);
+    s_push(PILA, 10);
+    s_push(PILA, 15);
+
+    // Imprimir el elemento superior
+    printf("Elemento superior: %d\n", s_top(*PILA));
+
+    // Desapilar un elemento
+    int poppedValue = s_pop(PILA);
+    printf("Elemento desapilado: %d\n", poppedValue);
+
+    // Verificar si la pila est  vac a
+    if (s_empty(*PILA)) {
+        printf("La pila est  vac a.\n");
+    } else {
+        printf("La pila no est  vac a.\n");
+    }
+
+    // Obtener la cantidad de elementos en la pila
+    int length = s_length(*PILA);
+    printf("Cantidad de elementos en la pila: %d\n", length);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+HEADEEEEEERRRRR
+
+
+
+#ifndef ISTACK_H_INCLUDED
+#define ISTACK_H_INCLUDED
+
+typedef struct {
+  int dato;
+  struct Nodo *sig;
+}Nodo;
+
+typedef struct{
+   Nodo *tope;
+   int tamanio;
+}Stack;
+
+
+
+
+Stack* s_create ();
+int s_push(Stack* s, int n); //  Apila n en s. Retorna el elemento apilado.
+int s_pop (Stack* s); //  Desapila un elemento de s.
+int s_top (Stack s);//   Retorna el pr ximo elemento que ser  desapilado.
+int s_empty(Stack s);//   Retorna 1 si s est  vac a, 0 en caso contrario.
+int s_length(Stack s);//   Retorna la cantidad de elementos apilados en s.*/
+int s_empty(Stack s);
+
+#endif // ISTACK_H_INCLUDED
+
+
+--------------------------------------------
+
+
+
+/*
+11. Implemente una biblioteca diccionario.h que permita manejar un diccionario de palabras. Determine
+las estructuras de datos necesarias para implementar la biblioteca. Las operaciones que debe
+implementar son las siguientes:
+a) Crear un diccionario: inicializa la estructura del diccionario.
+b) Agregar palabra: agrega una nueva palabra al diccionario siempre y cuando no exista. Retorna si
+la agreg  o no.
+c) Existe palabra: determina si una palabra est  en el diccionario o no.
+d) Eliminar palabra: elimina una palabra del diccionario. Retorna si la palabra fue eliminada o no.
+e) Cargar desde un archivo: carga un diccionario desde un archivo de texto.
+f) Guardar a un archivo: guarda un diccionario en un archivo de texto.
+g) Destruir el diccionario: libera los recursos del diccionario.
+Una vez implementadas todas las funciones de biblioteca, escriba un programa que permita probarlas.*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char** palabras;
+    int tamanio;
+} Diccionario;
+
+Diccionario Crear() {
+    Diccionario d;
+    d.tamanio = 0;
+    d.palabras = NULL;
+    return d;
+}
+
+int Agregar(Diccionario* d, char* palabra) {
+    if (Existe(d, palabra)) {
+        return 0; // La palabra ya existe en el diccionario
+    }
+
+    int j, i = 0;
+    while (i < d->tamanio && strcmp(d->palabras[i], palabra) < 0) {
+        i++;
+    }
+
+    d->tamanio++;
+    d->palabras = realloc(d->palabras, d->tamanio * sizeof(char*));
+
+    for ( j = d->tamanio - 1; j > i; j--) {
+        d->palabras[j] = d->palabras[j - 1];
+    }
+
+    d->palabras[i] = malloc((strlen(palabra) + 1) * sizeof(char));
+    strcpy(d->palabras[i], palabra);
+
+    return 1; // Palabra agregada correctamente
+}
+
+int Existe(Diccionario* d, char* palabra) {
+    int ini = 0;
+    int fin = d->tamanio - 1;
+    while (ini <= fin) {
+        int medio = ini + (fin - ini) / 2;
+        int comparacion = strcmp(d->palabras[medio], palabra);
+
+        if (comparacion == 0) {
+            return 1; // La palabra existe en el diccionario
+        } else if (comparacion < 0) {
+            ini = medio + 1;
+        } else {
+            fin = medio - 1;
+        }
+    }
+
+    return 0; // La palabra no existe en el diccionario
+}
+
+int Eliminar(Diccionario* d, char* palabra) {
+    int i,ini = 0;
+    int fin = d->tamanio - 1;
+    while (ini <= fin) {
+        int medio = ini + (fin - ini) / 2;
+        int comparacion = strcmp(d->palabras[medio], palabra);
+
+        if (comparacion == 0) {
+            free(d->palabras[medio]);
+            for (i = medio; i < d->tamanio - 1; i++) {
+                d->palabras[i] = d->palabras[i + 1];
+            }
+            d->tamanio--;
+            d->palabras = realloc(d->palabras, d->tamanio * sizeof(char*));
+            return 1; // Palabra eliminada correctamente
+        } else if (comparacion < 0) {
+            ini = medio + 1;
+        } else {
+            fin = medio - 1;
+        }
+    }
+
+    return 0; // La palabra no existe en el diccionario
+}
+
+void Cargar(Diccionario* d, const char* nombreArchivo) {
+    FILE* archivo = fopen(nombreArchivo, "r");
+    if (archivo == NULL) {
+        printf("Error al abrir el archivo.\n");
+        return;
+    }
+
+    char palabra[100];
+    while (fscanf(archivo, "%s", palabra) != EOF) {
+        Agregar(d, palabra);
+    }
+
+    fclose(archivo);
+}
+
+void Guardar(Diccionario* d, const char* nombreArchivo) {
+    FILE* archivo = fopen(nombreArchivo, "w");
+    int i;
+    if (archivo == NULL) {
+        printf("Error al abrir el archivo.\n");
+        return;
+    }
+
+    for ( i = 0; i < d->tamanio; i++) {
+        fprintf(archivo, "%s\n", d->palabras[i]);
+    }
+
+    fclose(archivo);
+}
+
+void Destruir(Diccionario* d) {
+    int i;
+    for (i = 0; i < d->tamanio; i++) {
+        free(d->palabras[i]);
+    }
+    free(d->palabras);
+    d->tamanio = 0;
+    d->palabras = NULL;
+}
+
+
+
+
+
+
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <stdio.h>
+#include "diccionario.h"
+
+int main() {
+    Diccionario dic = Crear();
+
+    // Agregar palabras
+    Agregar(&dic, "hola");
+    Agregar(&dic, "mundo");
+    Agregar(&dic, "programacion");
+    Agregar(&dic, "diccionario");
+
+    // Verificar si una palabra existe
+    printf("Existe 'mundo': %d\n", Existe(&dic, "mundo"));
+    printf("Existe 'informatica': %d\n", Existe(&dic, "informatica"));
+
+    // Eliminar una palabra
+    Eliminar(&dic, "programacion");
+
+    // Cargar desde un archivo
+    Cargar(&dic, "archivo.txt");
+
+    // Guardar a un archivo
+    Guardar(&dic, "diccionario.txt");
+
+    // Destruir el diccionario
+    Destruir(&dic);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+#ifndef DICCIONARIO_H_INCLUDED
+#define DICCIONARIO_H_INCLUDED
+
+typedef struct{
+char** palabras;
+int tamanio;
+}Diccionario;
+
+Diccionario Crear();
+int Agregar(Diccionario *d,char * x);
+int Existe (Diccionario *d,char * x);
+int Eliminar (Diccionario *d,char * x);
+void Cargar(Diccionario* d, const char* nombreArchivo);
+void Destruir(Diccionario *d);
+void Guardar(Diccionario* d, const char* nombreArchivo);
+
+#endif // DICCIONARIO_H_INCLUDED
+
+
+
+
+
+
+
+
+
+
+
+
+
+

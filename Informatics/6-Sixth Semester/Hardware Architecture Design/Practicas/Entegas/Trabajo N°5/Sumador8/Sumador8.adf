@@ -1,0 +1,30 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=4
+Current Config=compile
+[Configurations]
+compile=sumador8
+[Library]
+Sumador8=.\Sumador8\Sumador8.lib
+[$LibMap$]
+Sumador8=.
+Active_lib=
+[Settings]
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+REFRESH_FLOW=1
+FLOWTOOLS=NONE
+FAMILY=
+[HierarchyViewer]
+HierarchyInformation=test_adder8|driver|0
+ShowHide=ShowTopLevel
+Selected=
+[Files]
+/fulladder.vhd=-1
+/Adder8.vhd=-1
+/Test.vhd=-1
+[Files.Data]
+.\src\fulladder.vhd=VHDL Source Code
+.\src\Adder8.vhd=VHDL Source Code
+.\src\Test.vhd=VHDL Source Code

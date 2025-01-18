@@ -1,0 +1,434 @@
+1)
+#include <stdio.h>
+#include <stdlib.h>
+#define CONSTA 5
+#include <time.h>
+
+/*Escriba 3 funciones que reciban un arreglo unidimensional de float y que:
+a. retorne el promedio de sus valores.
+b. retorne el mínimo de sus valores.
+c. retorne la posición del máximo de sus valores.*/
+
+void TodoEnUno(float v[],float *, float*, int* , int);
+
+int main()
+{
+    float v[CONSTA];
+    float prom,min;
+    int posmax;
+    srand(time(NULL));
+
+
+    for (int x=0;x<CONSTA;x++){
+        v[x]=rand()%10;
+        printf(" Numero %3.2lf \n",v[x]);
+    }
+
+     TodoEnUno(v,&prom,&min,&posmax, CONSTA);
+     printf("Promedio= %3.2lf \n",prom);
+     printf("Minimo= %3.2lf \n",min );
+     printf("Posicion maximo= %d \n",posmax);
+
+
+    return 0;
+
+}
+void TodoEnUno (float v[],float * prom, float* min, int* posmax, int dim ){
+    float tot=0, minimo =99999, maximo=-1;
+
+
+    for (int x=0;x<dim;x++){
+        tot+=v[x];
+        if (v[x]<minimo) minimo=v[x];
+        if  (v[x]>maximo){
+            maximo= v[x];
+            *posmax=x;
+        }
+
+     *prom=(tot/dim);
+     *min= minimo;
+    }
+}
+
+
+
+2) Hecho en Hoja
+
+
+3)
+include <stdio.h>
+int main()
+{
+int x[5]={1,2,3,4,5};
+ int * p = x;
+ printf("La direccion memoria de p es %p \n", &p);
+ printf("La direccion la que apunta p es %p \n", p);
+ printf("El valor al que apunta p es %d \n", *p);
+ p++;
+ printf("La direccion memoria de p ahora es %p \n", &p);
+ printf("La direccion la que apunta p ahora es %p \n", p);
+ printf("El valor al que apunta p ahora es %d \n", *p);
+ return 0;
+
+
+¿Puede explicar qué significado tienen los valores impresos?
+Si, la primer impresion imprime la direccion del puntero p
+    la segunda imprime la direccion a la que apunta p
+    la tercera imprime lo contenido en p
+
+¿Qué ocurre cuando se incrementa en uno el puntero “p”?
+     cambia el segundo valor, apuntando ahora a la siguiente direccion del vector 
+      (Cuidado, puede no ser el vector y hacer explotar todo)
+
+
+4)
+int main(){
+ int vector[10]={10,20,30,40,50,60,70,80,90,100};
+ int i;
+ int *p= vector;
+ for (i=0; i<10; i++){
+ *p += 3;
+ printf("vector[%d] = %d \n", i, *p);
+ p++;
+ }
+ return 0;
+}
+
+
+a) ¿Qué imprime el programa? 
+Los valores del vector, sumados en 3
+
+b) ¿Por qué razón se ve modificada la variable vector? 
+Porque antes de imprimir se accede a lo contenido en p (El valor) y se le suma 3
+¿Es correcto realizar esto?
+Si es lo requerido, si....No es lo recomendable, para evitar confuciones
+c) ¿Qué ocurre si en la línea 7 cambia *p por vector[i]?
+Imprime lo mismo
+d) Cambie la línea 8 por p+=1. ¿Qué sucede?
+Nada
+e) Cambie la línea 8 por p+=2. ¿Qué sucede?
+Solo imprime [13,33,53,73 y 93], el resto queda tal cual
+
+Suponiendo que este el *p en la linea 7 en ves de vector[i], 
+imprime [13,33,53,73 y 93] y despues accede a posiciones mayores del vector
+
+
+5) Escriba una función que reciba un arreglo unidimensional e invierta el orden de sus valores. Por
+ejemplo:
+1 2 3 4 ______ 4 3 2 1
+Nota: utilice la función swap definida en la Práctica 1.
+
+
+#define CON 9
+
+#include <stdio.h>
+
+void Intercambio(int* ,int);
+int main()
+{
+   int v[CON]={0,1,2,3,4,5,6,7,8};
+   Intercambio(v,CON);
+
+   for (int i=0;i<CON;i++){
+       printf("El valor es: %d, ", v[i]);
+   }
+    return 0;
+}
+void Intercambio(int * p,int H){
+
+int fin=H-1,ini=0;
+int aux;
+
+     for(int i=0;i<H/2;i++){
+        aux= *(p+ini);
+        *(p+ini)=*(p+fin);
+        *(p+fin)=aux;
+        fin--;
+        ini++;
+
+     }
+
+   }
+
+
+
+
+
+Cadena de caracteres;
+
+
+1)
+
+
+/*Escriba un programa que lea palabras desde teclado hasta leer la palabra "ZZZ".
+Informe la cantidad de palabras de longitud 5. */
+#define CON 88
+#include <stdio.h>
+#include <string.h>
+
+int main (){
+  char v[CON];
+  int tot =0;
+
+  printf("Ingrese una frase\n");
+  scanf("%s",v);
+
+
+  while(strcmp( v, "ZZZ")){
+
+    if (strlen(v)>5) tot++;
+
+    printf("Ingrese una frase\n");
+    scanf("%s",v);
+
+  }
+  printf("Total= %d\n",tot);
+return 0;
+}
+
+
+2)
+
+
+/*Escriba un programa que lea palabras desde teclado hasta leer la palabra "XXX". Se requiere
+informar la cantidad de palabras ingresadas que terminan con la letra ‘o’.*/
+int main (){
+  char v[CON];
+  int tot =0, aux;
+
+  printf("Ingrese una frase\n");
+  scanf("%s",v);
+
+
+  while(strcmp( v, "XXX")){
+
+    aux = strlen(v)-1;
+
+    if (v[aux]== 'o') tot++;
+
+    printf("Ingrese una frase\n");
+    scanf("%s",v);
+
+  }
+  printf("Total= %d\n",tot);
+return 0;
+}
+
+
+3)
+#define CON 88
+#include <stdio.h>
+#include <string.h>
+
+/*Escriba una función que reciba un puntero a una cadena de caracteres y dos caracteres individuales,
+y que reemplace en la cadena todas las ocurrencias del primer carácter con el segundo. Además, la
+función debe retornar la cadena. ¿Retornar la cadena tiene alguna utilidad o no tiene sentido Es igual, se moodifica memoria)*/
+
+char* Intercambo(char*,char,char);
+int main (){
+
+
+char v[CON]="HISEHSEXOHI";
+char a= 'H';
+char b= 'I';
+
+Intercambo(v,a,b);
+for (int i=0;i<strlen(v);i++){printf("%c",v[i]);}
+return 0;
+}
+
+
+char* Intercambo(char* v,char a,char b){
+int i;
+
+for (i=0;i<strlen(v);i++){
+    if  ((v[i]==a)&&(v[i+1]==b)){
+
+            v[i]=b;
+    }
+
+}
+return v;
+
+}
+
+
+4)
+#define CON 88
+#include <stdio.h>
+#include <string.h>
+
+/*Escriba una función que reciba un puntero a una cadena de caracteres y dos caracteres individuales,
+y que reemplace en la cadena todas las ocurrencias del primer carácter con el segundo. Además, la
+función debe retornar la cadena. ¿Retornar la cadena tiene alguna utilidad o no tiene sentido Es igual, se moodifica memoria)*/
+
+int strling(char*);
+int main (){
+
+
+char v[CON]="";
+
+printf("El total es %d\n",strling(v));
+
+for (int i=0;i<strlen(v);i++){printf("%c",v[i]);}
+return 0;
+}
+
+
+int strling(char* v){
+
+int tot=0;
+
+while (v[tot]!='\0') tot++;
+
+return tot;
+
+}
+
+5)
+
+#define CON 88
+#include <stdio.h>
+#include <string.h>
+
+/*La función strcpy recibe dos punteros a cadenas de caracteres y copia la cadena apuntada por el
+segundo (incluyendo el carácter nulo) en la cadena apuntada por el primero. Además, la función
+retorna el primer puntero. Implemente su propia versión de la función strcpy.
+Nota: asuma que la primera cadena de caracteres tiene espacio suficiente para almacenar a la
+segunda.*/
+
+char* strcopie(char*,const char*);
+int main (){
+
+
+char v[CON]="ASFDFFNG";
+char v2[CON];
+
+strcopie(v2,v);
+
+for (int i=0;i<strlen(v);i++){printf("%c",v[i]);}
+return 0;
+}
+
+
+char* strcopie(char* v,const char*v2){
+char* aux=v;
+
+int tot=0;
+while (v2[tot]!='\0'){
+        v[tot]=v2[tot];
+        tot++;
+}
+v[tot+1]='\0';
+
+return aux;
+
+}
+
+
+6)
+
+#define CON 88
+#include <stdio.h>
+#include <string.h>
+
+/*Escriba un programa que lea una palabra desde teclado y luego informe la cantidad de veces que
+aparece cada letra de la palabra leída en ella misma.
+Nota: asuma que la palabra está formada sólo por letras minúsculas.*/
+
+void Minusculas(const char*);
+int main (){
+
+
+char v[CON]="sfxbnnkhnvnf";
+
+Minusculas(v);
+
+return 0;
+}
+
+
+void Minusculas(const char* v) {
+
+int aux[26];
+int x;
+int i=0;
+
+for (i=0;i<26;i++){aux[i]=0;}
+
+for (i=0; i<strlen(v);i++){
+        x= (int)(v[i]-'a');
+        aux[x]=aux[x]+1;
+
+}
+for (i=0;i<26;i++){
+   printf("El caracter %c aparece %d veces\n",i+'a',aux[i]);
+
+}
+}
+
+7)
+
+#define CON 88
+#include <stdio.h>
+#include <string.h>
+
+/*Escriba una función que reciba un puntero a una secuencia de caracteres y que retorne 1 en caso de
+que la palabra contenida sea palíndroma o 0 en caso contrario.
+a. Utilizando índices numéricos.
+b. Utilizando punteros.
+Nota: una palabra palíndroma es aquella que se lee igual hacia izquierda a derecha que de derecha a
+izquierda. Por ejemplo: arenera, radar, reconocer, rotor, salas, seres, sometemos.*/
+
+int Minusculas2(const char*);
+int Minusculas(const char*);
+int main (){
+
+
+char v[CON]="arener0a";
+
+printf("El resultado es %d\n",Minusculas(v));
+printf("El resultado es %d\n",Minusculas2(v));
+
+return 0;
+}
+
+
+int Minusculas(const char* v) {
+
+int i=0,boolean =1;
+int ini=0;
+int fin=strlen(v)-1;
+int condicion=strlen(v)/2;
+
+while ((i<condicion)&&(boolean)){
+    if (v[ini]!=v[fin]){
+        boolean=0;
+       }
+    i++;
+    ini++;
+    fin--;
+}
+
+return boolean;
+}
+
+
+int Minusculas2(const char* p) {
+
+int i=0,boolean =1;
+int ini=0;
+int fin=strlen(p)-1;
+int condicion=strlen(p)/2;
+
+while ((i<condicion)&&(boolean)){
+    if (*(p+ini)!=*(p+fin)){
+        boolean=0;
+       }
+    i++;
+    ini++;
+    fin--;
+}
+
+return boolean;
+}

@@ -1,0 +1,892 @@
+1) El siguiente código lee la información de un archivo de texto y la imprime en la pantalla. Analice,
+compile y ejecute el programa. Utilice el archivo “prueba.txt” provisto por la cátedra.
+
+#include <stdio.h>
+#include <stdlib.h>
+#define LONG 300
+int main(){
+ FILE *f;
+ char linea[LONG];
+ // Abrir el archivo
+ f = fopen("prueba.txt", "r");
+ if (f == NULL){
+ printf ("\nError al abrir archivo fuente\n");
+ return 1;
+ }
+ while (!feof(f)){
+ // leer una linea del archivo
+ fgets(linea,LONG,f);
+ // imprimir la linea en la pantalla
+ puts(linea);
+ }
+ fclose(f);
+ return 0;
+}
+
+¿El código funciona correctamente? No, Imprime Linea 3 2 veces
+Si no es así, corríjalo para que lo haga.
+Nota: Preste atención al formato del archivo. La función fgets() procesa hasta encontrar un salto de
+línea (el cual es retenido). Si luego del último renglón no hubiese un salto de línea, el archivo no
+tendría un formato válido para procesar.
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#define LONG 300
+int main(){
+ FILE *f;
+ char linea[LONG];
+ // Abrir el archivo
+ f = fopen("prueba.txt", "r");
+ if (f == NULL){
+ printf ("\nError al abrir archivo fuente\n");
+ return 1;
+ }
+ fgets(linea,LONG,f);   ///Linea añadida
+ while (!feof(f)){
+ // leer una linea del archivo
+ puts(linea);
+ fgets(linea,LONG,f);
+ // imprimir la linea en la pantalla
+
+ }
+ fclose(f);
+ return 0;
+}
+
+
+
+2)
+///Escriba un programa que procese un archivo de texto e informe la cantidad de caracteres
+///minúsculas, mayúsculas y dígitos que posee.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(){
+ FILE *ptr;
+ char c;
+ int may=0,min=0,num=0;
+
+ ptr= fopen("prueba.txt","r");
+ if (!ptr) return 1;
+
+ c=getc(ptr);
+ while (!feof(ptr)){
+
+    if ((c <='z')&&(c>='a')) min++;
+    if ((c <='Z')&&(c>='A')) may++;
+    if ((c <='9')&&(c>='0')) num++;
+
+    printf("%c",c);
+
+    c=getc(ptr);
+ }
+ printf("\nHay %d mayusculas, %d minusculas y %d numeros",may,min,num);
+ fclose(ptr);
+ return 0;
+}
+
+
+///3) Se desea leer y procesar información de precipitaciones del mes de enero. Para ello se dispone de un
+///archivo de texto (llamado precipitaciones.txt) con el siguiente formato:
+///0-2-0-0-7-22-11-0- . . . -0-
+
+///Por cada de los 31 días se tiene un número entero indicando los milímetros llovidos, seguido de un
+///guión medio (-) como delimitador. Escriba un programa que lea la información del archivo y
+///derermine el día con mayor precipitación. Para evaluar el programa, genere un archivo con el
+///formato establecido utilizando un editor de texto plano (por ejemplo: Bloc de notas o Notepad++).
+///Nota: puede utilizar la función fscanf para procesar cada valor de precipitación.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(){
+ FILE *ptr;
+ int max=-1,aux,maxday,i=1;
+
+ ptr= fopen("precipitaciones.txt","r");
+ if (!ptr) return 1;
+
+ fscanf(ptr,"%d-",&aux);
+
+ while (!feof(ptr)){
+  if (aux>max){
+        max=aux; 
+        maxday=i;
+  }
+  printf("%d-",aux);
+  fscanf(ptr,"%d-",&aux);           
+  i++;                              
+ }
+
+ printf(" El dia con mas precipitaciones fue %d, y llovio %d mm",maxday,max);
+ fclose(ptr);
+ return 0;
+}
+
+Para imprimir correcto, se imprime antes de entrar al while sin barra, y adentro se imprime solo si eof no es 0
+
+
+///4)Se desea leer y procesar información de un listado de apuestas. Para ello se dispone de un archivo
+///de texto (llamado apuestas.txt) con el siguiente formato:
+///código_de_apuesta|monto_apostado; … ; código_de_apuesta|monto_apostado;
+///Donde cada apuesta se compone de un número entero (código de apuesta) y un número flotante
+///(monto apostado). Escriba un programa que procese la información del archivo e informe el monto
+///total apostado.
+
+///Ejemplo: 1|100.0;65|50.5;23|34.5; debe informar: “El monto total apostado es $185”.
+///Nota: Intente resolver el problema leyendo cada tupla (código, monto) al mismo tiempo.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(){
+ FILE *ptr;
+ int aux;
+ float tot=0,in;
+
+ ptr= fopen("apuestas.txt","r");
+ if (!ptr) return 1;
+
+ fscanf(ptr,"%d|%f;",&aux,&in);
+
+ while (!feof(ptr)){
+
+  tot+=in;
+  printf("%d|%f;",aux,in);
+  fscanf(ptr,"%d|%f;",&aux,&in);
+ }
+
+ printf("\n Se aposto u$s %f",tot);
+ fclose(ptr);
+ return 0;
+}
+
+
+///5)Escriba un programa que permita a un usuario consultar si un conjunto de palabras existe o no en
+///un diccionario. El usuario ingresa de a una palabra y la consulta finaliza cuando ingresa la palabra
+///“ZZZ”. Para cada palabra ingresada se debe informar si la misma pertenece o no al diccionario.
+
+///El diccionario consiste en un archivo de texto y las palabras se encuentran ordenadas en forma
+///ascendente (una por línea). Se desea generar una estructura de datos dinámica (memoria RAM) en
+///la cual se almacenen las palabras de todo el diccionario. Luego, verifique la pertenencia de las
+///palabras ingresadas por el usuario utilizando dicha estructura en lugar del archivo.
+
+///Se asumen palabras de 10 caracteres con /0
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define P 20
+
+int main(){
+ FILE *ptr;
+ ptr=fopen("palabras.txt","r");
+ char **lista;
+ int j,i=0;
+ char palabra[P];
+
+ if (!ptr)return 1;
+
+  lista=malloc(0);
+  fscanf(ptr, "%s", palabra);
+  while ((!feof(ptr))){
+        i++;
+        lista = realloc(lista, i * sizeof(char*));
+        lista[i - 1] = malloc(P * sizeof(char));
+        strcpy(lista[i - 1], palabra);
+        fscanf(ptr, "%s", palabra);
+    }
+
+
+     printf("Ingrese una palabra (o ZZZ para salir): ");
+    scanf("%s", palabra);
+
+    while (strcmp(palabra, "ZZZ") != 0) {
+        int encontrado = 0;
+
+        // Buscar la palabra en el diccionario
+        for (int j = 0; j < i; j++) {
+            if (strcmp(palabra, lista[j]) == 0) {
+                encontrado = 1;
+                break;
+            }
+        }
+
+        if (encontrado) {
+            printf("La palabra '%s' pertenece al diccionario.\n", palabra);
+        } else {
+            printf("La palabra '%s' no pertenece al diccionario.\n", palabra);
+        }
+
+        printf("Ingrese una palabra (o ZZZ para salir): ");
+        scanf("%s", palabra);
+    }
+
+
+
+ for (j=0;j<i;j++) printf("%s\n",lista[j]);
+
+
+ for (int j = 0; j < i; j++)
+        free(lista[j]);
+
+ free(lista);
+ fclose(ptr);
+ return 0;
+}
+
+6)
+
+///Un archivo csv (Comma Separated Values) contiene información separada por comas. Cada renglón
+///(fila) contiene un registro de información. Cada columna contiene un campo particular de
+///información. La primera fila es especial ya que contiene los nombres de los campos.
+///Se desea obtener información a partir del archivo llamado vinos.csv (el cual se encuentra en la
+///Sección “Ing. Gral. y Contenidos” del curso de la cátedra en WebUNLP). El programa debe generar
+///un archivo de texto con un resumen que indique el valor máximo, mínimo y promedio para cada
+///uno de los campos del archivo. Este archivo debe llamarse reporte_vinos.txt y debe guardarse en la
+///misma ruta que el archivo vinos.csv.
+///El formato del archivo debe ser similar al del siguiente ejemplo: hOLA
+
+#include <stdio.h>
+#include <stdlib.h>
+#define EndLine 8
+
+int main(){
+
+int i,cant=0;
+float max[8];
+float min[8];
+float tot[8];
+float aux[8];
+char string[90];
+
+FILE *ptr;                                                           ///Abro archivios
+FILE *gtr;
+ptr=fopen("vinos.csv","r");
+gtr=fopen("reporte_vinos.txt","w");
+
+if (ptr == NULL)return 1;
+
+for (i=0;i<EndLine;i++){                                          ///Inicializacion explicita XD
+    max[i]=-1;
+    min[i]=99999;
+    tot[i]=0;
+}
+
+fprintf(gtr,"%s","Atributo  ");
+
+for (i=0;i<EndLine;i++){
+    fscanf(ptr,"%[^;];",string);           // [^;] = Lee hasta que haya un ; .... despues ; = lee el ;
+    fprintf(gtr,"%s\t",string);              // \t = Espacio
+}
+
+    fscanf(ptr,"%s;",string);
+    fprintf(gtr,"%s;\n",string);
+
+
+while (! feof(ptr))
+        {
+            cant++;
+            for(i=0; i<EndLine; i++)
+            {
+             fscanf(ptr,"%f;",(aux+i));
+
+             if (aux[i]>max[i]) max[i]=aux[i];
+             if (aux[i]<min[i]) min[i]=aux[i];
+             tot[i]+=aux[i];
+            }
+         fscanf(ptr,"%s;",string);  //Bazura
+        }
+
+       fprintf(gtr,"%s","Promedio   ");
+       for(i=0; i<EndLine; i++)
+         fprintf(gtr,"%.2f   ",tot[i]/cant);
+
+       fprintf(gtr,"%s","\nMinimo   ");
+       for(i=0; i<EndLine; i++)
+         fprintf(gtr,"%.2f   ",min[i]);
+
+       fprintf(gtr,"%s","\nMaximo    ");
+       for(i=0; i<EndLine; i++)
+         fprintf(gtr,"%.2f   ",max[i]);
+
+printf("Terminado Correctamente");
+fclose(ptr);
+fclose(gtr);
+return 0;
+}
+
+
+
+////Mas lineal/////
+
+#include <stdio.h>
+#include <stdlib.h>
+#define EndLine 8
+
+int main() {
+    int i, cant = 0;
+    float max[8];
+    float min[8];
+    float tot[8];
+    float aux[8];
+    char string[90];
+
+    FILE *ptr;                                                           // Abro archivos
+    FILE *gtr;
+    ptr = fopen("vinos.csv", "r");
+    gtr = fopen("reporte_vinos.txt", "w");
+
+    if (ptr == NULL) return 1;
+
+    for (i = 0; i < EndLine; i++) {                                      // Inicialización explícita
+        max[i] = -1;
+        min[i] = 99999;
+        tot[i] = 0;
+    }
+
+    fprintf(gtr, "%-20s", "Atributo");                                    // Ajustar el ancho de impresión
+
+    for (i = 0; i < EndLine; i++) {
+        fscanf(ptr, "%[^;];", string);
+        fprintf(gtr, "%-20s", string);                                    // Ajustar el ancho de impresión
+    }
+
+    fscanf(ptr, "%s;", string);
+    fprintf(gtr, "%-20s\n", string);
+
+    while (!feof(ptr)) {
+        cant++;
+        for (i = 0; i < EndLine; i++) {
+            fscanf(ptr, "%f;", (aux + i));
+
+            if (aux[i] > max[i]) max[i] = aux[i];
+            if (aux[i] < min[i]) min[i] = aux[i];
+            tot[i] += aux[i];
+        }
+        fscanf(ptr, "%s;", string);                                        // Basura
+    }
+
+    fprintf(gtr, "\n");
+
+    fprintf(gtr, "%-20s", "Promedio");
+    for (i = 0; i < EndLine; i++)
+        fprintf(gtr, "%-20.2f\t", tot[i] / cant);
+
+    fprintf(gtr, "\n");
+
+    fprintf(gtr, "%-20s", "Minimo");
+    for (i = 0; i < EndLine; i++)
+        fprintf(gtr, "%-20.2f\t", min[i]);
+
+    fprintf(gtr, "\n");
+
+    fprintf(gtr, "%-20s", "Maximo");
+    for (i = 0; i < EndLine; i++)
+        fprintf(gtr, "%-20.2f\t", max[i]);
+
+    printf("Terminado Correctamente");
+    fclose(ptr);
+    fclose(gtr);
+    return 0;
+}
+
+
+7)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
+///7) Escriba un programa que copie el contenido de un archivo de texto en otro nuevo.
+///a) Utilizando las funciones fgetc y fputc.
+///b) Utilizando las funciones fgets y fputs.
+///c) Utilizando las funciones fread y fwrite
+
+
+int main(){
+
+FILE *a;
+FILE *b;
+char car;
+
+a=fopen("main.c","r");
+b=fopen("Ejer7a.txt","w");
+
+if (!a) return 1;
+
+car=fgetc(a);
+   while (!feof(a)){
+      fputc(car,b);
+      car=fgetc(a);
+}
+
+printf("Proceso Terminado!!!");
+fclose(a);
+fclose(b);
+return 0;
+}
+
+
+
+
+int main(){
+
+FILE *a;
+FILE *b;
+char string[300];
+
+a=fopen("main.c","r");
+b=fopen("Ejer7b.txt","w");
+
+if (!a) return 1;
+
+fgets(string,400,a);
+while (!feof(a)){
+   fputs(string,b);
+   fgets(string,400,a);
+}
+
+printf("Proceso Terminado");
+fclose(a);
+fclose(b);
+return 0;
+}
+
+
+int main(){
+
+FILE *a;
+FILE *b;
+char string[300];
+
+a=fopen("main.c","r");
+b=fopen("Ejer7c.txt","w");
+
+if (!a) return 1;
+
+ fread(string,sizeof(char),1,a);
+ while (!feof(a)){
+   fwrite(string,sizeof(char),1,b);
+   fread(string,sizeof(char),1,a);
+}
+printf("Proceso Terminado");
+fclose(a);
+fclose(b);
+return 0;
+}
+
+
+
+8)#include <stdio.h>
+#include <stdlib.h>
+
+///8) Escriba un programa que lea desde teclado números enteros de una cifra (del 0 al 9) y que cree dos
+///archivos, los cuales almacenen los números leídos. El primer archivo debe llamarse “numeros.txt” y
+///contener en formato texto todos los números leídos en forma consecutiva. El segundo archivo debe
+///llamarse “numeros.dat” y contener todos los números leídos en formato binario.
+
+///▪ Una vez ejecutado el programa, utilice un editor de texto (como por ejemplo: el Bloc de notas
+///en MS Windows, o Gedit en GNU/Linux) para abrir el archivo de texto y corroborar que la
+///información almacenada sea la correcta. Usando el mismo editor, intente abrir el archivo
+///binario. ¿Es posible visualizar los números? ¿Por qué cree que no es posible?
+//Se guardo bien. No, ya que el formato de guardado no es Ascii (Habria que usar otro editor)
+
+///▪ Compare los tamaños que ocupan cada archivo. ¿Cuál es más grande? ¿En qué ocasiones
+///cree usted que sería mejor utilizar cada tipo de archivos?
+//5 vs 20. Es mas grande el .bin .... Es mejor el .bin solo cuando los numeros a guardar son mayores a 4 caracteres (Enteros)
+
+
+int main(){
+
+    int x;
+    FILE *texto;
+    FILE *binario;
+
+    texto=fopen("entTexto.txt","w");
+    binario=fopen("enBinario.bin","w");
+
+    printf("Ingrese Numeros");
+    scanf("%d",&x);
+    while (x!=777){
+
+        if ((x<=9)&&(x>=0) ){
+           fprintf(texto,"%d",x);
+           fwrite(&x,sizeof(int),1,binario);
+        }
+        scanf("%d",&x);
+    }
+
+    fclose(texto);
+    fclose(binario);
+    return 0;
+}
+
+
+9)#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+///9) Escriba un programa que lea información de 20 jugadores de tenis. De cada jugador se lee nombre y
+///apellido, edad, cantidad de títulos, ranking actual y fortuna acumulada. Defina una estructura de
+///datos adecuada para la información y almacene la misma en un archivo binario. Finalizada la
+///lectura, procese los datos almacenados en el archivo e informe:
+
+///a) Nombre y apellido del jugador con mejor ranking.
+///b) Nombre y apellido del jugador que más títulos ha ganado.
+
+typedef struct {
+    char nombre[20];
+    char apellido[20];
+    int edad;
+    int titulos;
+    int ranking;
+    float money;
+}player;
+
+
+int main(){
+FILE *bin;
+
+bin= fopen("Ej9","wb+");
+
+    int i;
+    player p;
+    int maxr=9999,maxt=-1;
+    char maxrs[40],maxts[40];
+
+    for (i=0;i<3;i++){
+      printf("Ingrese Datos, enter al finalizar c/u ssd dd f\n");
+      scanf("%s",p.apellido);
+      scanf("%s",p.nombre);
+      scanf("%d",&p.edad);
+      printf("Titulos\n");
+      scanf("%d",&p.titulos);
+      printf("Ranking\n");
+      scanf("%d",&p.ranking);
+      scanf("%f",&p.money);
+      fwrite(&p,sizeof(player),1,bin);
+    }
+    fseek(bin,0,SEEK_SET);
+
+    for(i=0;i<3;i++){
+
+        fread(&p,sizeof(player),1,bin);
+        if (p.ranking<maxr){
+            maxr=p.ranking;
+            strcpy(maxrs,p.nombre);
+            strcat(maxrs," ");
+            strcat(maxrs,p.apellido);
+        }
+        if (p.titulos>maxt){
+            maxt=p.titulos;
+            strcpy(maxts,p.nombre);
+            strcat(maxts," ");
+            strcat(maxts,p.apellido);
+        }
+    }
+    printf("Campeon Maximo %s con %d trofeos\n",maxts,maxt);
+    printf("Ranking Maximo %s con POS %d \n",maxrs,maxr);
+    fclose(bin);
+    return 0;
+}
+
+
+10)#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+///10) Utilizando el archivo binario generado en el ejercicio anterior:
+
+///a) escriba una función que permita actualizar el ranking de un jugador. Dicha función recibe como
+///parámetros nombre, apellido y nuevo ranking del jugador y retorna 1 si pudo realizar la
+///modificación y 0 en caso contrario.
+
+///b) escriba un programa que lea desde teclado el nombre y apellido de jugadores y sus nuevos
+///rankings hasta ingresar "ZZZ" y actualice el ranking de cada jugador o muestre un mensaje de
+///error en caso de no existir el jugador. Por último, imprima el contenido del archivo modificado,
+///para verificar que la actualización se haya aplicado correctamente.
+
+typedef struct {
+    char nombre[20];
+    char apellido[20];
+    int edad;
+    int titulos;
+    int ranking;
+    float money;
+}player;
+
+void Imprimir (FILE *bin);
+void Cambiar(char *nombre,char *apellido,int rank, FILE *arch);
+int main(){
+
+   FILE *bin;
+   char string[20];
+   char string2[20];
+   int x;
+
+   bin= fopen("Ej9","rb+");
+
+   Imprimir(bin);
+
+   printf("Ingrese Nombre, Apellido, y su nuevo ranking. Fin=Nombre = 'ZZZ'");
+   scanf("%s",string);
+    while (strcmp(string,"ZZZ")!=0){
+        scanf("%s",string2);
+        scanf("%d",&x);
+        Cambiar(string,string2,x,bin);
+        printf("Ingrese Nombre, Apellido, y su nuevo ranking. Fin='ZZZ'");
+        scanf("%s",string);
+    }
+
+    Imprimir(bin);
+    fclose(bin);
+    return 0;
+}
+
+
+
+void Cambiar(char *nombre,char *apellido,int rank, FILE *bin){
+
+player p;
+int encontre=0;
+
+fseek(bin,0,SEEK_SET);
+fread(&p,sizeof(player),1,bin);
+
+while((!feof(bin))&&(!encontre)){
+
+   if ((strcmp(p.nombre,nombre)==0)&&(strcmp(p.apellido,apellido)==0)){
+       p.ranking=rank;
+       encontre=1;
+       fseek(bin,-(sizeof(player)),SEEK_CUR);
+       fwrite(&p,sizeof(player),1,bin);
+   }
+   fread(&p,sizeof(player),1,bin);
+}
+if (!(encontre)) printf("No existe\n");
+}
+
+void Imprimir (FILE *bin){
+
+    player p;
+    fseek(bin,0,SEEK_SET);
+    fread(&p,sizeof(player),1,bin);
+    while (!feof(bin)){
+       printf("%s %s edad %d titulos %d rank %d $$$$ %f\n",p.nombre,p.apellido,p.edad,p.titulos,p.ranking,p.money);
+       fread(&p,sizeof(player),1,bin);
+
+    }
+}
+
+
+11) 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+Escriba un programa que abra el archivo binario del ejercicio anterior y que imprima en pantalla el
+tamaño en bytes de dicho archivo. ¿Por qué cree Ud. que tiene ese tamaño?
+//Porque tiene 5 structs
+
+typedef struct {
+    char nombre[20];
+    char apellido[20];
+    int edad;
+    int titulos;
+    int ranking;
+    float money;
+}player;
+
+void Imprimir (FILE *bin);
+int main(){
+
+   FILE *bin;
+   char string[20];
+   char string2[20];
+   int x;
+
+   bin= fopen("Ej9","rb+");
+
+   Imprimir(bin);
+
+   fseek(bin,0,SEEK_END);
+   printf("Tamaño= %d bytes",ftell(bin));
+
+fclose(bin);
+return 0;
+}
+
+void Imprimir (FILE *bin){
+
+    player p;
+    fseek(bin,0,SEEK_SET);
+    fread(&p,sizeof(player),1,bin);
+    while (!feof(bin)){
+       printf("%s %s edad %d titulos %d rank %d $$$$ %f\n",p.nombre,p.apellido,p.edad,p.titulos,p.ranking,p.money);
+       fread(&p,sizeof(player),1,bin);
+
+    }
+}
+
+
+
+12)
+ a) Realice un programa que permita generar un índice para acceder por DNI de manera eficiente a
+la información del archivo de texto “personas.csv”. Este archivo contiene los datos de una persona
+(identificador, dni, nombre, apellido, correo, ciudad, país y trabajo que desarrolla) en formato CSV.
+El índice debe generarse en memoria y estar ordenado por DNI para finalmente almacenarlo en el
+archivo binario “personas.idx”. Este archivo binario deberá tener por cada línea del archivo
+“personas.csv” una entrada que contenga el DNI de la persona junto con la posición absoluta dentro
+del archivo a los datos asociados a dicho DNI. Diseñe una estructura de datos adecuada para el
+índice y tenga en cuenta al momento de generarlo que la primera línea del archivo CSV es de
+encabezado
+
+
+b) Realice un programa que muestre en pantalla toda la información de una persona a través de un
+DNI ingresado por teclado. Si la persona no existe deberá informar el error.
+Tenga en cuenta para la implementación:
+• Utilizar una estructura de datos adecuada que permita tener el índice completamente en
+memoria.
+• Implemente para la búsqueda una función que realice una búsqueda dicotómica.
+• Implemente el siguiente prototipo para la función de búsqueda:
+int buscar(FILE* personas, Indice indice, int dni, persona * persona)
+donde:
+• personas es el descriptor del archivo “personas.csv”
+• indice es la estructura de datos con la información del archivo “personas.idx”.
+• dni es el nro de dni de la persona a buscar
+• persona es una estructura con los datos con la información asociada al dni de la
+persona.
+• El valor de retorno es 0 sino encuentra a la persona y 1 en caso contrario.
+
+
+
+c) Reimplemente b) para utilizar en la función de búsqueda el descriptor del archivo índice. Además
+modifique el valor de retorno para reflejar la cantidad de veces que se accedió al disco durante la
+búsqueda en caso de que lo encuentre. El prototipo de la función de búsqueda quedaría:
+int buscar(FILE* personas, FILE* indice, int dni, persona * persona)
+
+
+
+
+///VISUAL///
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define EndLine 7
+
+typedef struct {
+int dni;
+int posicion;
+}data;
+
+int main(){
+
+char string[50];
+int i,j,x=0,aux;
+data d;
+FILE * file;
+FILE * ptr;
+
+file = fopen("personas.csv","r");
+ptr = fopen("personas.idx","wb");
+
+if (!file)return 1;
+
+for (i = 0; i < EndLine; i++) {
+        fscanf(file, "%[^;];", string);    // Me desago de las primeras lineas
+    }
+    fscanf(file, "%s\n", string);
+
+
+ while ((!feof(file))&&(x<6)){
+   printf("%d\n",ftell(file));
+   x++;
+   for (i=0;i<2;i++){
+      fscanf(file, "%d;", &aux);
+      printf("%d;",aux);
+   }
+   for (i=0;i<4;i++){
+      fscanf(file, "%[^;];", string);
+      printf("%s",string);
+   }
+   fscanf(file, "%[^\n]\n", string);
+      printf("%s\n",string);
+
+ }
+
+return 0;
+}
+
+
+
+include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define EndLine 7
+#include "Header.h"
+
+
+int main(){
+
+char string[50];
+int i,pos,x=0,aux;
+data d;
+FILE * file;
+FILE * ptr;
+
+data * Lista;
+Lista= malloc(0);
+
+
+file = fopen("personas.csv","r");
+ptr = fopen("personas.idx","wb");
+
+if (!file)return 1;
+
+for (i = 0; i < EndLine; i++) {
+        fscanf(file, "%[^;];", string);    // Me desago de las primeras lineas
+    }
+    fscanf(file, "%s\n", string);
+
+
+ while ((!feof(file))&&(x<6)){          ///Proceso
+   pos=ftell(file);
+
+   if (!Lista) return 2;
+
+   for (i=0;i<2;i++){
+      fscanf(file, "%d;", &aux);
+      printf("%d;",aux);
+   }
+   for (i=0;i<4;i++){
+      fscanf(file, "%[^;];", string);
+      printf("%s",string);
+   }
+   fscanf(file, "%[^\n]\n", string);
+      printf("%s\n",string);
+
+   x++;
+   Lista= realloc(Lista,x*sizeof(data));
+   d.dni=aux;
+   d.posicion=pos;
+   Lista[x-1]=d;
+
+ }
+fclose(file);
+fclose(ptr);
+free(Lista);
+
+
+
+return 0;}
+
+
+
+
+TERMINAR!!!!!!
+

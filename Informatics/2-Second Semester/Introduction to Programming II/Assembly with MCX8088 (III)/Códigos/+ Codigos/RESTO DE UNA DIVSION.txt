@@ -1,0 +1,20 @@
+ORG 1000H ; variables 
+
+N Dw 5
+DIVI Dw 10
+
+ORG 3000H
+  RESTO: SUB CX,DX
+  JNS RESTO
+  ADD CX, DX
+  MOV AX,CX
+  RET
+  
+ORG 2000H ; código
+  MOV CX,N
+  MOV AX,CX
+  MOV DX,DIVI
+  SUB CX,DX
+  JNS RESTO
+HLT
+END

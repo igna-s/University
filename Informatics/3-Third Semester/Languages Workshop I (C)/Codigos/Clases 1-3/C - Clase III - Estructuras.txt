@@ -1,0 +1,1368 @@
+Solucion chat gpt
+
+/*
+1. Resuelva:
+a. Defina una estructura rectangulo que contenga los siguientes campos: base (float) y altura
+(float).
+b. Escriba una función que reciba una estructura rectangulo y la inicialice a partir de valores
+ingresados por teclado.
+c. Escriba una función que dada una estructura rectangulo, calcule el área.
+d. Escriba un programa que defina un arreglo de 10 rectángulos (struct rectangulo) y lo
+inicialice utilizando la función definida en el inciso anterior. Luego, informe el número de
+rectángulo que tiene menor área.*/
+
+#include <stdio.h>
+
+struct Rectangulo {
+    float base;
+    float altura;
+};
+
+void inicializarRectangulo(struct Rectangulo *r) {
+    printf("Ingrese la base del rectangulo: ");
+    scanf("%f", &r->base);
+    printf("Ingrese la altura del rectangulo: ");
+    scanf("%f", &r->altura);
+}
+
+float calcularArea(struct Rectangulo r) {
+    return r.base * r.altura;
+}
+
+int main() {
+    struct Rectangulo rectangulos[10];
+    int menorAreaIndex = 0;
+
+    // Inicializar los 10 rectángulos
+    for (int i = 0; i < 10; i++) {
+        printf("Ingrese los valores del rectangulo %d:\n", i+1);
+        inicializarRectangulo(&rectangulos[i]);
+    }
+
+    // Encontrar el rectángulo con menor área
+    float menorArea = calcularArea(rectangulos[0]);
+    for (int i = 1; i < 10; i++) {
+        float area = calcularArea(rectangulos[i]);
+        if (area < menorArea) {
+            menorArea = area;
+            menorAreaIndex = i;
+        }
+    }
+
+    printf("El rectangulo con menor area es el numero %d\n", menorAreaIndex+1);
+
+    return 0;
+}
+
+
+
+1) La mia
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
+
+/*
+1. Resuelva:
+a. Defina una estructura rectangulo que contenga los siguientes campos: base (float) y altura
+(float).
+b. Escriba una función que reciba una estructura rectangulo y la inicialice a partir de valores
+ingresados por teclado.
+c. Escriba una función que dada una estructura rectangulo, calcule el área.
+d. Escriba un programa que defina un arreglo de 10 rectángulos (struct rectangulo) y lo
+inicialice utilizando la función definida en el inciso anterior. Luego, informe el número de
+rectángulo que tiene menor área.
+
+*/
+
+    struct TipoRectangulo{
+        float base;
+        float altura;};
+
+float area(struct TipoRectangulo t );
+void inicializar(struct TipoRectangulo *t );
+int main()
+{
+
+struct TipoRectangulo rectangulo[5];
+
+for (int i=0;i<5;i++){
+  inicializar(&rectangulo[i]);
+}
+float max=-1;
+for (int i=0;i<5;i++){
+  if (area(rectangulo[i])>max)
+         max=area(rectangulo[i]);
+}
+
+printf("%f",max);
+    return 0;
+}
+
+void inicializar(struct TipoRectangulo *t ){
+
+printf("Ingrese Base\n");
+    scanf("%f",&t->base );
+printf("Ingrese altura\n");
+    scanf("%f",&t->altura );
+
+}
+
+float area(struct TipoRectangulo t ){
+
+return (t.base)*(t.altura);
+
+}
+
+
+
+2. Dados los siguientes bloques de código:
+struct persona {
+ char nombre[50];
+ long int DNI;
+} unaPersona;
+typedef struct persona persona_t;
+
+typedef struct persona {
+ char nombre[50];
+ long int DNI;
+} persona_t;
+
+¿En qué se diferencian ambos bloques? ¿Qué define cada uno?
+Son lo mismo, pero declarado de distinta forma el tipo persona_t uno lo hace directo mientras que el otro crea primero la estructura y despues le cambia el nombre (ademas, el 1 crea una variable unaPersona);
+
+
+
+3)
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+
+/*
+3. Resuelva:
+
+a. Defina una estructura direccion que contenga los siguientes campos: calle (arreglo de 50
+caracteres), ciudad (arreglo de 30 caracteres), codigo_postal (int) y pais (arreglo de 40
+caracteres).
+
+b. Defina una estructura alu que contenga los siguientes campos: apellido (arreglo de 50
+caracteres), nombre (arreglo de 50 caracteres), legajo (arreglo de 8 caracteres), promedio
+(float) y domicilio (struct direccion).
+
+1. Renombre el tipo struct alu a alumno mediante la palabra clave typedef.
+2. Escriba una función que reciba un alumno y lo inicialice a partir de valores ingresados por
+teclado.
+3. Escriba un programa que defina un arreglo de 30 elementos alumno y lo inicialice utilizando
+la función definida en el inciso anterior. Luego, informe el nombre y apellido del alumno que
+tiene mejor promedio.
+
+c. Defina la estructura pun3D, la cual representa una posición en el espacio. La misma debe
+contener los campos x (float), y (float) y z (float). Luego:
+1. Renombre la estructura pun3D a punto3D utilizando la palabra clave typedef.
+2. Imprima en pantalla el tamaño del tipo struct pun3D. ¿Cuánto ocupa? ¿Por qué?
+3. Imprima en pantalla el tamaño del tipo punto3D. ¿Cuánto ocupa? ¿Es igual al de struct
+pun3D? ¿Por qué?
+
+d. Defina un arreglo de 4 elementos de tipo punto3D e imprima en pantalla el espacio ocupado
+por el mismo. ¿Cuánto ocupa? ¿Por qué?
+
+*/
+
+
+struct direccion{
+   char calle[50];
+   char ciudad[30];
+   char pais[50];
+   int codigo;
+};
+
+struct alu{
+   char apellido[50];
+   char nombre[50];
+   char legajo[50];
+   float promedio;
+   struct direccion d;
+
+};
+
+struct pun3D{
+ float x;
+ float y;
+ float z;
+};
+
+ typedef struct alu alumno;
+ typedef struct pun3D punto3D;
+
+void imprimir (alumno a);
+void inicializar(alumno *a);
+int main(){
+alumno f;
+alumno a[2];
+
+for (int i=0;i<2;i++)
+inicializar(&a[i]);
+for (int i=0;i<2;i++){
+imprimir(a[i]);
+}
+float max=-1;
+for (int i=0;i<2;i++){
+    if (max<a[i].promedio)
+        max=a[i].promedio;
+
+}
+
+printf("Promedio maximo %f\n",max);
+
+
+
+///////
+
+punto3D p[4];
+printf("Tamaño struct %lld\n",sizeof(struct pun3D));    ///12 bytes cuando ocupado
+printf("Tamaño typedef %lld\n",sizeof(punto3D));          ///12 bytes cuando ocupado, ES IGUAL YA QUE ES LO MISMO
+printf("Tamaño vector %lld\n",sizeof(p));                        ///48 = 12*4 
+
+
+return 0;
+}
+void inicializar(alumno *a){
+printf("Ingrese apellido\n");
+scanf("%s",a->apellido);
+printf("Ingrese nombre\n");
+scanf("%s",a->nombre);
+printf("Ingrese legajo\n");
+scanf("%s",a->legajo);
+printf("Ingrese promedio float\n");
+scanf("%f",&a->promedio);
+printf("Ingrese calle\n");
+scanf("%s",a->d.calle);
+printf("Ingrese ciudad\n");
+scanf("%s",a-> d.ciudad);
+printf("Ingrese pais\n");
+scanf("%s",a->d.pais);
+printf("Ingrese codigo int\n");
+scanf("%d",&(a->d.codigo));
+
+}
+void imprimir (alumno a){
+
+printf("ALUMNO =\n");
+printf("%s ",a.apellido);
+printf(" %s ",a.nombre);
+printf(" %s ",a.legajo);
+printf(" %f ",a.promedio);
+printf(" %s ",a.d.calle);
+printf(" %s ",a.d.ciudad);
+printf(" %s ",a.d.pais);
+printf(" %d ",a.d.codigo);
+printf("\n ");
+
+
+}
+
+
+/*4. Implemente una estructura y las funciones para implementar un mazo de 50 cartas españolas.
+Implemente las siguientes funciones y realice un programa para probarlas:
+a. Barajar el mazo de cartas.
+b. Sacar una carta: dado un mazo, sacar la carta del mazo y devolverla.
+c. Imprimir una carta (número/figura con su palo).
+Nota: utilice constantes (define o const) para definir los palos de las cartas, modelice las cartas y el
+mazo.
+*/
+
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define PALO1 "BASTO"
+#define PALO2 "COPA"
+#define PALO3 "ORO"
+#define PALO4 "ESPADA"
+#define PALO5 "COMODIN"
+
+typedef struct{
+char palo[10];
+int numero;
+
+} carta;
+
+void agregar (carta *m, int* Max, carta c );
+carta  sacar (carta *, int* );
+void crear (carta *);
+void imprimir (carta m);
+void barajar(carta *);
+int main(){
+
+carta m[50];
+carta c;
+int cantiCartas=50;
+
+crear(m);
+barajar(m);
+c=sacar (m,&cantiCartas);
+printf("SACADO\n");
+imprimir( c);
+agregar(m,&cantiCartas,c);
+printf("AGREGADO\n");
+for (int i=48;i<50;i++)
+imprimir( m[i]);
+
+return 0;
+}
+
+
+void crear(carta *m){
+    int i;
+
+    for (i=0;i<12;i++){
+        strcpy(m[i].palo, PALO1);
+        m[i].numero=i+1;
+    }
+    for (i=0;i<12;i++){
+        strcpy(m[i+12].palo, PALO2);
+        m[i+12].numero=i+1;
+    }
+    for (i=0;i<12;i++){
+        strcpy(m[i+24].palo, PALO3);
+        m[i+24].numero=i+1;
+    }
+    for (i=0;i<12;i++){
+        strcpy(m[i+36].palo, PALO4);
+        m[i+36].numero=i+1;
+    }
+    for (i=0;i<2;i++){
+        strcpy(m[i+48].palo, PALO5);
+        m[i+48].numero=i+1;
+    }
+}
+void imprimir(carta m){
+    if (strcmp(m.palo,PALO5) == 0){
+        printf("Carta Comodin\n");
+    } else {
+        printf("Carta %s Nº %d\n", m.palo, m.numero);
+    }
+}
+
+void barajar(carta *m){
+srand(time(NULL));
+int numero;
+carta aux;
+for (int i=0;i<50; i++){
+
+    numero=rand()%50;
+    aux= m[numero];
+    m[numero]=m[i];
+    m[i]=aux;
+}
+}
+carta sacar (carta *m, int* Max ){
+
+carta aux;
+if (*Max!=0){
+
+    aux= m[(*Max)-1];
+    (*Max)--;
+return aux;
+}
+else {
+        aux.numero=99;
+        strcpy(aux.palo,"NULL");
+        return aux;
+        }
+
+}
+void agregar (carta *m, int* Max , carta c){
+  if (c.numero!=99){
+    m[*Max+1]=c;
+    (*Max)++;
+    }
+}
+
+
+///Uniones
+
+5)
+
+/*5. Muchas veces al trabajar en modo gráfico con ventanas se necesitan las dimensiones (posición x,
+posición y, ancho y alto) de diferentes formas para pasarlas como parámetros a distintas funciones.
+Defina una unión que comparta estas 3 formas de acceso para la definición de un rectángulo de una
+ventana: todas separadas (x, y, ancho, alto), como dos puntos ([[x, y], [ancho, alto]) o
+todas juntas como un rectángulo ([x, y, ancho, alto])*/
+#include <stdio.h>
+
+
+typedef struct{
+float x;
+float y;
+}valor;
+
+typedef struct{
+valor p1;
+valor p2;
+}punto;
+
+
+typedef struct{
+float x;
+float y;
+float ancho;
+float alto;
+
+}separadas;
+
+typedef struct{
+float s[4];
+}rectangulo;
+
+
+typedef struct{
+int utilizado;
+union{
+punto p;
+rectangulo r;
+separadas s;
+}acceso;
+}Total;
+
+
+int main() {
+
+    Total t;
+    t.utilizado=0;
+    t.acceso.s.alto=8;
+    t.acceso.s.ancho=8;
+    t.acceso.s.x=8;
+    t.acceso.s.y=8;
+
+
+    printf("Rectangulo 1: x=%f, y=%f, ancho=%f, alto=%f\n", t.acceso.s.x=8, t.acceso.s.y=8,t.acceso.s.ancho=8, t.acceso.s.alto=8);
+
+    // Acceso a las dimensiones como dos puntos
+    valor p={7,7};
+    valor p2={7,7};
+
+    t.acceso.p.p1=p;
+    t.acceso.p.p2=p2;
+    printf("Rectangulo 2: x=%f, y=%f, ancho=%f, alto=%f\n",t.acceso.p.p1.x,t.acceso.p.p1.y,t.acceso.p.p2.x,t.acceso.p.p2.y);
+
+    // Acceso a las dimensiones juntas como un rectangulo
+    t.acceso.r.s[0]=7;
+    t.acceso.r.s[1]=7;
+    t.acceso.r.s[2]=9;
+    t.acceso.r.s[3]=9;
+    printf("Rectangulo 3: x=%f, y=%f, ancho=%f, alto=%f\n", t.acceso.r.s[0],t.acceso.r.s[1],t.acceso.r.s[2],t.acceso.r.s[3]);
+
+    return 0;}
+
+
+5) Corregido
+
+#include <stdio.h>
+
+
+typedef union{
+struct TipoRectangulo{
+        float x;
+        float y;
+        float ancho;
+        float alto;
+    }Rectangulo;
+float Punto[2][2];
+float TodoSuelto[4];
+} Punto3d;
+
+int main() {
+
+Punto3d p;
+p.Rectangulo.alto=5;
+p.Rectangulo.ancho=5;
+p.Rectangulo.x=5;
+p.Rectangulo.y=5;
+printf("x= %f y= %f alto= %f ancho= %f\n", p.Rectangulo.alto,p.Rectangulo.ancho,p.Rectangulo.x,p.Rectangulo.y);
+p.Punto[1][1]=7;
+p.Punto[0][1]=7;
+p.Punto[1][0]=74;
+p.Punto[0][0]=9;
+printf("x= %f y= %f alto= %f ancho= %f\n", p.Punto[1][1],p.Punto[0][1],p.Punto[1][0],p.Punto[0][0]);
+for (int i=0;i<4;i++)
+p.TodoSuelto[i]=rand()%50;
+for (int i=0;i<4;i++)
+printf("%f ", p.TodoSuelto[i]);
+
+return 0;}
+
+
+6)
+
+/. Implemente un tipo de datos Fecha para almacenar día, mes y año teniendo en cuenta las siguientes
+observaciones:
+a. Utilice un formato que sea “cómodo” para trabajar con fechas
+b. Como las comparaciones entre fechas son algo engorrosas, utilice una unión para realizar
+un “hack” que utilice un campo adicional que se superponga con la fecha y permita
+compararlas directamente (estudiar orden y tamaño de cada campo de la fecha).
+c. Implemente un programa que compare distintas fechas para demostrar que esta
+estrategia funciona (puede aprovechar la declaración de las variables para asignar las
+fechas).
+d. ¿Cree que esta implementación funcionaría para todos los compiladores de C sin importar
+la arquitectura del procesador? (Pista: Little endian vs. Big endian)*/   ///Individualmente si, a la hora de la interoperativilidad (Algo anotado con Big y hackeado con Little uno y otro dato no), no)
+
+#include <stdio.h>
+
+
+typedef union{
+struct TipoFecha {
+     short dia;
+     short mes;
+     int ano;
+}Acceso;
+double hack;
+}Fecha;
+
+int main() {
+
+Fecha dato[2];
+struct TipoFecha Acceso={11,11,1111};
+struct TipoFecha p={11,11,1111};
+
+dato[0].Acceso=Acceso;
+dato[1].Acceso=p;
+
+printf("El resultado es %d ",(dato[0].hack==dato[1].hack));
+return 0;}
+
+
+
+/*6. 7. Desarrolle un programa que permita leer por teclado e imprimir por pantalla la información
+correspondiente a un estudiante: Apellido, Nombres, Legajo e Identificación. Tenga en cuenta que la
+identificación es el DNI (Numérico) para estudiantes argentinos y pasaporte (Alfanumérico) para
+estudiantes extranjeros*/   ///Individualmente si, a la hora de la interoperativilidad (Algo anotado con Big y hackeado con Little uno y otro dato no), no)
+
+#include <stdio.h>
+
+typedef struct TipoAlumno{
+ char nombre[20];
+ char apellido[20];
+ char legajo[20];
+ union {
+    char passport[20];
+    int dni;
+ }Identificacion;
+}Alumno;
+
+int main(){
+Alumno a;
+int x=0;
+
+printf("Ingrese nombre/s \n");
+scanf("%s",a.nombre);
+printf("Ingrese apellido/s \n");
+scanf("%s",a.apellido);
+printf("Ingrese legajo/s \n");
+scanf("%s",a.legajo);
+
+while ((x!=1)&&(x!=2)){
+printf("Seleccione nacionalidad: [1]=Argentino, [2]=Extrangero");
+scanf("%d",&x);
+}
+switch(x){
+case 1:{printf("Ingrese DNI");scanf("%d",&a.Identificacion.dni);}; break;
+
+case 2:{printf("Ingrese PASAPORTE");scanf("%s",a.Identificacion.passport);}; break;
+}
+
+printf("Nombre/s %s\n",a.nombre);
+printf("Apellido/s %s \n",a.apellido);
+printf("Legajo %s \n",a.legajo);
+
+if (x==1)printf("Dni %d \n",a.Identificacion.dni);
+else printf("Pasaporte %s \n",a.Identificacion.passport);
+return 0;
+}
+
+
+/////Enumerativos//////
+
+8)
+/*Analice las siguientes declaraciones de enumerativos e indique los valores que adopta cada miembro y
+si las declaraciones son correctas (compilan) o no:*/
+typedef enum { IZQUIERDA, CENTRO_H, DERECHA } AlineacionHorizontal;    //0,1,2
+typedef enum { ARRIBA=1, CENTRO_V, ABAJO } AlineacionVertical;         //1,2,3
+typedef enum { DOS=2, CERO=0, UNO, MENOS_UNO=-1, OTRO } Numeros;       //2,0,1,-1,0
+typedef enum { LET_A = 'A', LET_B, LET_Z = 'Z' } Letras;               //No se puede con valores de comillas dobles (cORREGIDOS)
+typedef enum { LETRA_A = 'A', LETRA_B, LETRA_Z = 'Z' } Letras2;        //(Resul en numeros ascci) A,B,Z
+
+
+/*9. Resuelva:
+a. Defina un enumerativo que permita representar los días de la semana (domingo a sábado).
+b. Realice dos implementaciones diferentes de una función que imprima el texto asociado a un día
+de la semana del enumerativo.
+Nota: si bien una función para la impresión no es necesaria, favorece la reutilización,
+encapsulamiento, validación del rango del dato y minimiza la posibilidad de errores futuros
+*/
+#include <stdio.h>
+typedef enum {Domingo=7,Lunes=1,Martes,Miercoles,Jueves,VIernes,Sabado} dia;
+
+
+void imprimir2(int x);
+void imprimir(int x);
+int main(){
+int x= Martes;
+imprimir(x);
+imprimir2(x);
+
+return 0;
+}
+
+void imprimir(int x){
+const char *v[8]={"","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"};
+printf("%s\n",v[x]);
+}
+void imprimir2(int x){
+    switch(x){
+
+    case 1:printf("%s","Lunes");break;
+    case 2:printf("%s","Martes");break;
+    case 3:printf("%s","Miercoles");break;
+    case 4:printf("%s","Jueves");break;
+    case 5:printf("%s","Viernes");break;
+    case 6:printf("%s","Sabado");break;
+    case 7:printf("%s","Domingo");break;
+    default:printf("%s","Agosto");break;
+
+    }
+
+}
+10)
+
+/*Un teléfono móvil tiene varios bits de configuración que permite controlar el encendido y apagado de
+dispositivos con el objetivo, generalmente, de ahorrar energía. Cada bit se asocia a un módulo
+diferente donde un 1 significa encendido y un 0 apagado. Comenzando desde el bit más significativo,
+la descripción de estos bits es la siguiente: Bluetooth, Wifi, GPS, Datos, Cámara Frontal, Cámara
+Trasera, Linterna y Vibrar.
+Bluetooth   Wifi   GPS    Datos    Frontal    Trasera    Linterna  Vibrar
+Bit         7 Bit  6 Bit  5 Bit    4 Bit 3    Bit 2      Bit 1     Bit 0
+Resuelva:
+a. Utilice un tipo enumerativo para representar los distintos módulos que tiene el teléfono,
+asignándole a cada integrante un valor que sea potencia de 2. Esta estrategia permite combinar
+varios valores en una misma variable, y de esta forma modelar que un módulo está activo cuando
+el valor asociado está presente.
+b. Defina 2 constantes donde la primera contiene a todos los módulos y otra donde no contenga
+ninguno.
+c. Dada una variable del tipo definido en a), describa expresiones que permitan:
+a. Marcar un módulo como activo
+b. Marcar un módulo como inactivo
+c. Invertir el estado actual de un módulo
+d. Determinar si un módulo esta activo
+d. Implemente un programa donde aplique todos los puntos anteriores.*/
+
+
+#include <stdio.h>
+
+#define ENCENDIDO 255
+#define APAGADO 0
+typedef enum {Bluetooth=128 ,Wifi=64, GPS =32,   Datos=16,   Frontal =8,  Trasera=4,   Linterna =2,  Vibrar=0}Pines;
+//Inicializar LGUN DIA :d
+
+void activar(int *x, int v);
+void desactivar (int *x, int v);
+void invertir (int *x);
+void verificar (int x, int v);
+void imprimir(int modulos);
+
+
+
+int main(){
+
+int modulos =33;
+printf("\nEnciendo");
+imprimir(modulos);
+printf("\nActivo");
+activar(&modulos, Wifi);
+imprimir(modulos);
+printf("\nDesactivo");
+desactivar(&modulos, Wifi);
+imprimir(modulos);
+printf("\nInvierto");
+invertir(&modulos);
+imprimir(modulos);
+verificar(modulos, Wifi);
+printf("\nImprimo");
+imprimir(modulos);
+
+return 0;
+}
+void activar(int *x, int v){
+ int aux=*x;
+
+ aux=(aux|v);
+  *x=aux;
+ printf("\n");
+}
+
+void desactivar (int *x, int v){
+int aux=*x;
+
+ aux=(aux^v);
+  *x=aux;
+
+  printf("\n");
+}
+
+void invertir (int *x){
+
+int i, aux=*x, despla=1;
+
+for (i=0;i<8;i++){
+
+        aux=aux^despla;
+        despla=despla <<1;
+}
+
+  *x=aux;
+
+printf("\n");
+
+}
+
+void verificar (int x, int v){
+
+if (x&v)
+printf("El modulo se encuentra con status 1\n");
+else
+printf("El modulo se encuentra con status 0\n");
+
+}
+
+
+
+void imprimir(int modulos){
+
+int i, aux=1;
+
+printf("Impresion\n");
+for (i=0;i<8;i++){
+        if (modulos&aux)
+        printf("1");
+        else printf("0");
+
+        aux=aux <<1;
+}
+
+printf("\n");
+}
+
+
+11)
+/*
+11. Se requiere la implementación de un tipo de datos para almacenar el horario de manera compacta
+utilizando 16 bits. Debido a que el tamaño de los datos es más importante que la precisión, puede
+admitirse pérdida de precisión en los segundos. Desarrolle un programa que implemente este tipo de
+datos y funciones para leer la hora por teclado e imprimirla por pantalla.
+*/
+
+typedef struct Tipohora{
+unsigned int hor:5;
+unsigned int min:6;
+unsigned int seg:5;
+
+
+
+}Eshora;
+
+#include <stdio.h>
+
+
+int main(){
+
+ Eshora x={12,55,88};
+ int aux;
+ printf("Ingrese la hora, separaando variables con enter");
+ scanf("%2d",&aux);
+ x.hor=aux;
+ scanf("%2d",&aux);
+  x.min=aux;
+ scanf("%2d",&aux);
+  x.seg=aux;
+
+ printf("La hora es %2d:%2d:%2d", x.hor,x.min,x.seg );
+
+
+    return 0;}
+
+
+
+
+12)
+/*
+12.El formato de color RGB es el más extendido para uso en imágenes como en displays. Este formato
+utiliza 3 componentes (Red, Green, Blue) de 8 bits para codificar un píxel de color, requiriendo 3 bytes
+o 24 bits de memoria. Hace muchos años cuando surgieron los primeros teléfonos a color se utilizó un
+formato RGB reducido a 2 bytes o 16 bits (Red:5 bits, Green:6 bits, Blue: 5 bits) para reducir el espacio
+de almacenamiento y mejorar las velocidades de transferencia. Actualmente en el ámbito de los
+microcontroladores estos displays siguen siendo utilizados. Teniendo en cuenta lo anterior
+implemente un programa que:
+a. Defina el tipo RGB24 y RGB16 de forma eficiente.
+b. Implemente 2 funciones de conversión de un formato a otro y viceversa.
+*/
+
+typedef struct TipoRGB24{
+unsigned int Red:5;
+unsigned int Green:6;
+unsigned int Blue:5;
+
+}RGB24;
+
+
+
+typedef struct TipoRGB16{
+unsigned int Red:8;
+unsigned int Green:8;
+unsigned int Blue:8;
+
+}RGB16;
+
+#include <stdio.h>
+
+RGB24 conversion24(RGB16 x);
+RGB16 conversion16(RGB24 y);
+int main(){
+
+ RGB16 aux,x={12,55,16};
+ RGB24 aux2,y={5,10,12};
+
+ aux2=conversion24(x);
+ aux=conversion16(y);
+
+
+ printf("Inversion a 16 %2d,%2d,%2d\n",aux.Red,aux.Green,aux.Blue);
+ printf("Inversion a 24 %2d,%2d,%2d\n",aux2.Red,aux2.Green,aux2.Blue);
+
+    return 0;
+    }
+
+RGB24 conversion24(RGB16 x){
+
+RGB24 aux={x.Red,x.Green,x.Blue};
+return aux;
+
+}
+
+RGB16 conversion16(RGB24 x){
+
+RGB16 aux={x.Red,x.Green,x.Blue};
+return aux;
+
+}
+
+13)
+
+
+/*13)Reimplemente todos los ítems del ejercicio 10 utilizando campos de bits para definir el estado de cada
+módulo del dispositivo.
+
+Invierto valores, por vago*/
+
+
+typedef enum {Bluetooth ,Wifi, GPS ,   Datos,   Frontal ,  Trasera,   Linterna ,  Vibrar};
+#include <stdio.h>
+
+typedef struct TipoCadena{
+unsigned int Bluetooth:1;
+unsigned int Wifi:1;
+unsigned int GPS:1;
+unsigned int Datos:1;
+unsigned int Frontal:1;
+unsigned int Trasera:1;
+unsigned int Linterna:1;
+unsigned int Vibrar:1;
+
+}Cadena;
+
+typedef union {
+ Cadena x;
+ char Hack;
+}Data;
+
+
+
+
+void activar(Cadena *x, int v);
+void desactivar (Cadena *x, int v);
+void invertir (Cadena *x);
+void verificar (Cadena x, int v);
+void imprimir(Cadena modulos);
+
+
+
+int main(){
+
+printf("Prueba HACK");
+Data var;
+var.Hack=0;
+imprimir2(var.Hack);
+activar(&var.x, Wifi);
+imprimir2(var.Hack);
+
+printf("Prueba NO-HACK");
+Cadena modulos={1,1,1,1,1,1,1,1};
+printf("\nEnciendo");
+imprimir(modulos);
+printf("\nActivo");
+activar(&modulos, Wifi);
+imprimir(modulos);
+printf("\nDesactivo");
+desactivar(&modulos, Wifi);
+imprimir(modulos);
+printf("\nInvierto");
+invertir(&modulos);
+imprimir(modulos);
+verificar(modulos, Wifi);
+printf("\nImprimo");
+imprimir(modulos);
+
+return 0;
+}
+void activar(Cadena *x, int v){
+Cadena aux=*x;
+switch(v){
+     case 0: aux.Vibrar=1; break;
+     case 1: aux.Linterna=1; break;
+     case 2: aux.Trasera=1; break;
+     case 3: aux.Frontal=1; break;
+     case 4: aux.Datos=1; break;
+     case 5: aux.GPS=1; break;
+     case 6: aux.Wifi=1; break;
+     case 7: aux.Bluetooth=1; break;
+
+ }
+
+ *x=aux;
+}
+
+void desactivar (Cadena *x, int v){
+Cadena aux=*x;
+switch(v){
+     case 0: aux.Vibrar=0; break;
+     case 1: aux.Linterna=0; break;
+     case 2: aux.Trasera=0; break;
+     case 3: aux.Frontal=0; break;
+     case 4: aux.Datos=0; break;
+     case 5: aux.GPS=0; break;
+     case 6: aux.Wifi=0; break;
+     case 7: aux.Bluetooth=0; break;
+ }
+
+ *x=aux;
+}
+
+void invertir (Cadena *x){
+Cadena aux=*x;
+
+     aux.Vibrar=(!aux.Vibrar);
+     aux.Linterna=(!aux.Linterna);
+     aux.Trasera=(!aux.Trasera);
+     aux.Frontal=(!aux.Frontal);
+     aux.Datos=(!aux.Datos);
+     aux.GPS=(!aux.GPS);
+     aux.Wifi=(!aux.Wifi);
+     aux.Bluetooth=(!aux.Bluetooth);
+
+
+ *x=aux;
+}
+
+
+void verificar (Cadena x, int v){
+
+Cadena aux=x;
+int a;
+switch(v){
+     case 0: a=aux.Vibrar; break;
+     case 1: a=aux.Linterna; break;
+     case 2: a=aux.Trasera; break;
+     case 3: a=aux.Frontal; break;
+     case 4: a=aux.Datos; break;
+     case 5: a=aux.GPS; break;
+     case 6: a=aux.Wifi; break;
+     case 7: a=aux.Bluetooth; break;
+ }
+
+
+
+if (a)
+printf("El modulo se encuentra con status 1\n");
+else
+printf("El modulo se encuentra con status 0\n");
+
+}
+
+
+
+void imprimir(Cadena modulos){
+
+Cadena aux=modulos;
+printf("Valor %1d%1d%1d%1d%1d%1d%1d%1d",aux.Vibrar,aux.Linterna,aux.Trasera,aux.Frontal,aux.Datos,aux.GPS,aux.Wifi,aux.Bluetooth);
+
+printf("\n");
+}
+
+void imprimir2(char modulos){
+
+int i, aux=1;
+
+printf("Impresion\n");
+for (i=0;i<8;i++){
+        if (modulos&aux)
+        printf("1");
+        else printf("0");
+
+        aux=aux <<1;
+}
+
+printf("\n");
+}
+
+/*
+14. Reimplemente el ejercicio 4 de las barajas españolas utilizando los conceptos vistos en la práctica 
+para mejorar tanto el modelado del problema como la eficiencia.
+
+Recordemos:
+4. Implemente una estructura y las funciones para implementar un mazo de 50 cartas españolas.
+Implemente las siguientes funciones y realice un programa para probarlas:
+a. Barajar el mazo de cartas.
+b. Sacar una carta: dado un mazo, sacar la carta del mazo y devolverla.
+c. Imprimir una carta (número/figura con su palo).
+Nota: utilice constantes (define o const) para definir los palos de las cartas, modelice las cartas y el
+mazo.
+*/
+
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define PALO1 "BASTO"
+#define PALO2 "COPA"
+#define PALO3 "ORO"
+#define PALO4 "ESPADA"
+#define PALO5 "COMODIN"
+
+typedef struct{
+char palo[10];
+unsigned numero:4;
+
+} carta;
+
+void agregar (carta *m, int* Max, carta c );
+carta  sacar (carta *, int* );
+void crear (carta *);
+void imprimir (carta m);
+void barajar(carta *);
+int main(){
+
+carta m[50];
+carta c;
+int cantiCartas=50;
+
+crear(m);
+barajar(m);
+c=sacar (m,&cantiCartas);
+printf("SACADO\n");
+imprimir( c);
+agregar(m,&cantiCartas,c);
+printf("AGREGADO\n");
+for (int i=48;i<50;i++)
+imprimir( m[i]);
+
+return 0;
+}
+
+
+void crear(carta *m){
+    int i;
+
+    for (i=0;i<12;i++){
+        strcpy(m[i].palo, PALO1);
+        m[i].numero=i+1;
+    }
+    for (i=0;i<12;i++){
+        strcpy(m[i+12].palo, PALO2);
+        m[i+12].numero=i+1;
+    }
+    for (i=0;i<12;i++){
+        strcpy(m[i+24].palo, PALO3);
+        m[i+24].numero=i+1;
+    }
+    for (i=0;i<12;i++){
+        strcpy(m[i+36].palo, PALO4);
+        m[i+36].numero=i+1;
+    }
+    for (i=0;i<2;i++){
+        strcpy(m[i+48].palo, PALO5);
+        m[i+48].numero=i+1;
+    }
+}
+void imprimir(carta m){
+    if (strcmp(m.palo,PALO5) == 0){
+        printf("Carta Comodin\n");
+    } else {
+        printf("Carta %s Nº %d\n", m.palo, m.numero);
+    }
+}
+
+void barajar(carta *m){
+srand(time(NULL));
+int numero;
+carta aux;
+for (int i=0;i<50; i++){
+
+    numero=rand()%50;
+    aux= m[numero];
+    m[numero]=m[i];
+    m[i]=aux;
+}
+}
+carta sacar (carta *m, int* Max ){
+
+carta aux;
+if (*Max!=0){
+
+    aux= m[(*Max)-1];
+    (*Max)--;
+return aux;
+}
+else {
+        aux.numero=99;
+        strcpy(aux.palo,"NULL");
+        return aux;
+        }
+
+}
+void agregar (carta *m, int* Max , carta c){
+  if (c.numero!=99){
+    m[*Max+1]=c;
+    (*Max)++;
+    }
+}
+
+
+
+15)
+
+
+/*
+15. Desarrolle un programa que utilice un tipo de datos que modele las figuras geométricas
+bidimensionales: circulo, elipse, triángulo, cuadrado y rectángulo con sus propiedades (radio, lado/s,
+base, etc.). Implemente una única función que permita calcular la superficie de cualquier figura.
+El programa debe leer por teclado los datos de una figura e imprimir su superficie.
+//nO OPTIMIZO PORQUE DESCONOSCO VALOR MAX
+
+*/
+
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#define PI 3.14159265358979323
+
+typedef struct{
+
+unsigned cualEs:3;
+
+union {
+
+struct {float base; float altura;}Rectangulo;
+struct {float lado;}Cuadrado;
+struct {float ladoA,ladoB,ladoC;}Triangulo;
+struct {float elipseA,elipseB;}Elipse;
+struct {float radio;}Redondito;
+
+
+};
+
+}Figuras;
+
+
+
+float calcular(Figuras f);
+int main(){
+
+
+Figuras f;
+
+printf("Ingrese una figura [1]Rectangulo,[2]Cuadrado,[3]Triangulo,[4]Elipse,[5]Circulo\n");
+unsigned aux;
+scanf("%u",&aux);
+f.cualEs=aux;
+switch (f.cualEs){
+
+case 1: {printf("Ingrese Base\n");
+         scanf("%f",&(f.Rectangulo.base));
+         printf("Ingrese Altura\n");
+         scanf("%f",&(f.Rectangulo.altura));
+        }; break;
+
+case 2:{ printf("Ingrese Lado\n");
+         scanf("%f",&(f.Cuadrado.lado));
+        }; break;
+
+
+
+
+default:printf("No implementado");break;
+
+}
+printf("%f",calcular(f));
+return 0;
+}
+
+float calcular(Figuras f){
+
+float res=0;
+
+switch(f.cualEs){
+
+case 1:{res=f.Rectangulo.altura*f.Rectangulo.base;}; break;
+
+case 2:{res=f.Cuadrado.lado*f.Cuadrado.lado;}; break;
+
+case 3:{
+float a=f.Triangulo.ladoA;
+float b=f.Triangulo.ladoB;
+float c=f.Triangulo.ladoC;
+
+float s= (a+b+c)/2;
+res=sqrt(s*(s-a)*(s-b)*(s-c));
+}; break;
+
+case 4:{res= PI*f.Redondito.radio*f.Redondito.radio;}; break;
+
+case 5:{res= PI*f.Elipse.elipseA*f.Elipse.elipseB;}; break;
+
+default: res=-1;
+
+}
+
+
+return res;}
+
+
+16)
+
+/*16. El siguiente programa maneja un dispositivo que recibe comandos a través del teclado y genera tonos
+musicales (sin implementar). Cada comando indica si el dispositivo debe permanecer encendido y la
+frecuencia del tono a reproducir. Encuentre los errores de compilación que presenta el programa:*/
+
+/////ORIGINAL//////
+
+#include <stdio.h>
+// Frecuencia de tonos musicales
+typedef enum tono {BASE=440, DO=262, RE=294, MI=330, FA=349, SOL=392, LA=440,
+SI=494} tono_t;
+// Estructura de comando
+typedef struct comando {
+ unsigned encendido : 1,
+ unsigned frecuencia : 15
+} comando_t;
+// Encendido y apagado del dispositivo
+#define NO 0
+#define SI 1
+/* Prototipos */
+comando recibir_comando();
+void generar_sonido(comando_t);
+int main(){
+ comando_t c;
+ printf("Encendiendo el dispositivo...\r\n");
+ c = recibir_comando();
+ while(c.encendido == SI){
+ // Es un valor de frecuencia válido
+ if(c.frecuencia == DO || c.frecuencia == RE || c.frecuencia == MI ||
+ c.frecuencia == FA || c.frecuencia == SOL || c.frecuencia == LA ||
+ c.frecuencia == SI)
+ generar_sonido(c); // Generar tono correspondiente
+ else
+ printf("ERROR: Valor de frecuencia incorrecto.\r\n");
+ c = recibir_comando();
+ }
+ printf("Apagando el dispositivo...\r\n");
+ return 0;
+}
+// Leer comando desde la entrada estándar con el formato "encendido.frecuencia"
+comando recibir_comando(){
+ comando_t c;
+ printf("Ingrese comando: ");
+ scanf("%d.%d", &c.encendido, &(c.frecuencia)); // Leer comando
+ return c;
+}
+// Generar tono recibido por parámetro (sin implementar)
+void generar_sonido(comando_t c){
+ printf("Tono: %d Hz\r\n", c->frecuencia);
+ // Generar sonido ...
+ return;
+
+
+
+
+
+//////CORREGIDO//////
+#include <stdio.h>
+// Frecuencia de tonos musicales
+typedef enum tono {BASE=440, DO=262, RE=294, MI=330, FA=349, SOL=392, LA=440,
+SI=494} tono_t;
+
+// Estructura de comando
+typedef struct comando {
+ unsigned encendido : 1;
+ unsigned frecuencia : 15;
+} comando_t;
+
+// Encendido y apagado del dispositivo
+#define NO 0
+#define SI 1
+
+/* Prototipos */
+comando_t recibir_comando();
+void generar_sonido(comando_t);
+
+int main(){
+ comando_t c;
+ printf("Encendiendo el dispositivo...\r\n");
+ c = recibir_comando();
+ while(c.encendido == SI){
+
+ // Es un valor de frecuencia válido
+ if(c.frecuencia == DO || c.frecuencia == RE || c.frecuencia == MI ||
+ c.frecuencia == FA || c.frecuencia == SOL || c.frecuencia == LA ||
+ c.frecuencia == SI)
+ generar_sonido(c); // Generar tono correspondiente
+
+ else
+ printf("ERROR: Valor de frecuencia incorrecto.\r\n");
+ c = recibir_comando();
+ }
+
+ printf("Apagando el dispositivo...\r\n");
+ return 0;
+}
+// Leer comando desde la entrada estándar con el formato "encendido.frecuencia"
+comando_t recibir_comando(){
+ comando_t c;
+ unsigned aux,aux2;
+ printf("Ingrese comando: ");
+ scanf("%d.%d", &(aux), &(aux2)); // Leer comando
+
+ c.encendido=aux;
+ c.frecuencia=aux2;
+ return c;
+}
+// Generar tono recibido por parámetro (sin implementar)
+void generar_sonido(comando_t c){
+ printf("Tono: %d Hz\r\n", c.frecuencia);
+ // Generar sonido ...
+ return;
+}
+

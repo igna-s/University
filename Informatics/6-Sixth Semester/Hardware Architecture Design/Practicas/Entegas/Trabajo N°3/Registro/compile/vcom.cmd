@@ -1,0 +1,1 @@
+-w -d "C:/Users/User/Desktop/6 Semestre/Villanogarcia/Trabajo N°3/Registro/compile" -s "C:/Users/User/Desktop/6 Semestre/Villanogarcia/Trabajo N°3/library.cfg" -j "C:/Users/User/Desktop/6 Semestre/Villanogarcia/Trabajo N°3/Registro/projlib.cfg" -work Registro -O3 -e 100 -work Registro -2002 "C:/Users/User/Desktop/6 Semestre/Villanogarcia/Trabajo N°3/Registro/src/TEST.vhd" 

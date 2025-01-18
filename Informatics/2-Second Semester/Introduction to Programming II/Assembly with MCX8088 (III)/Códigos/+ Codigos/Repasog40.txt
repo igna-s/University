@@ -1,0 +1,109 @@
+ORG 1000H
+V1 DB "TIAGOTIAGO"
+VOCALES DB "AEIOUaeiou"
+SUMA DB 0
+
+ORG 3000H
+
+  SWAP:PUSH AX
+       PUSH BX
+       PUSH CX
+       
+       MOV CH,[BX]
+       
+       PUSH BX
+       MOV BX,AX
+       MOV CL,[BX]
+       MOV [BX],CH
+       POP BX
+       MOV [BX],CL
+       
+       POP CX
+       POP BX
+       POP AX
+      
+       RET
+       
+  ES_VOCAL:PUSH AX
+           PUSH BX
+        
+           PUSHF
+           
+           MOV BX,SP
+           ADD BX,8
+           
+           MOV AL,[BX]
+           
+           MOV DL,00H
+           
+           MOV BX, OFFSET VOCALES
+           MOV AH,OFFSET SUMA-OFFSET VOCALES
+           REPETIR: CMP AL,[BX]
+                    JZ VOCAL
+                    INC BX
+                    DEC AH
+                    JNZ REPETIR
+                    JMP FINAL
+                    
+          VOCAL:MOV DL,0FFH          
+          FINAL:POPF
+
+                POP BX
+                POP AX
+                RET          
+  
+  
+ORG 2000H
+
+  MOV AX, OFFSET V1
+  MOV BX, OFFSET VOCALES-1
+  MOV DH, SUMA
+  
+  WHILE:PUSH AX
+        PUSH BX
+     
+        MOV BX,AX
+        MOV AL,[BX]
+        
+        PUSH AX
+        CALL ES_VOCAL
+        POP AX
+        
+        POP BX
+        POP AX
+        CMP DL,0FFH
+
+        JNZ SIGUE
+        INC DH
+        SIGUE:PUSH AX
+              MOV AL,[BX]
+              PUSH AX
+              CALL ES_VOCAL
+              POP AX
+              POP AX
+              CMP DL,0FFH
+              JNZ SIGUE2
+              INC DH
+        
+              SIGUE2:CALL SWAP
+                     INC AX
+                     DEC BX
+                     CMP AX,BX
+                     JNS CIERRE
+                     JMP WHILE
+   
+  CIERRE:CMP AX,BX
+         JNZ FIN 
+         PUSH AX
+         MOV AL,[BX]
+         PUSH AX
+         CALL ES_VOCAL
+         POP AX
+         POP AX
+         CMP DL,0FFH
+         JNZ FIN
+         INC DH
+         
+        FIN:MOV SUMA,DH
+            HLT
+END

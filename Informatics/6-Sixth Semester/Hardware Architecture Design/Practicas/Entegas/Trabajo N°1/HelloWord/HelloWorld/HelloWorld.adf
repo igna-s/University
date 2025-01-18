@@ -1,0 +1,26 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=4
+Current Config=compile
+[Configurations]
+compile=HelloWorld
+[Library]
+HelloWorld=.\HelloWorld\HelloWorld.lib
+[$LibMap$]
+HelloWorld=.
+Active_lib=
+[Settings]
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+REFRESH_FLOW=1
+FLOWTOOLS=NONE
+FAMILY=
+[Files.Data]
+.\src\simple.vhd=VHDL Source Code
+[Files]
+/simple.vhd=-1
+[HierarchyViewer]
+HierarchyInformation=simple|prueba|0
+ShowHide=ShowTopLevel
+Selected=

@@ -1,0 +1,11 @@
+[Version]
+Version=15.0
+[Designs]
+fulladder=.\FullAdder\FullAdder.adf
+[Browser]
+sort=order
+mode=none
+[Order]
+order=1
+[Expand]
+fulladder=1

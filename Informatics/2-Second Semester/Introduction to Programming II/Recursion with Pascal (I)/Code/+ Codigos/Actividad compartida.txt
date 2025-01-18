@@ -1,0 +1,148 @@
+{Enunciado 1
+Una empresa de micros de larga distancia gestiona sus ventas. Necesita almacenar la siguiente información para sus destinos de viaje: nombre del destino, distancia en kilómetros y la cantidad de pasajes vendidos para dicho destino.
+
+a.	Se nos pide diseñar una estructura eficiente de manera tal que por cada destino se almacene su distancia y la cantidad de pasajes vendidos para el mismo.
+        La estructura generada debe ser la más eficiente en cuanto a la búsqueda de un destino.
+
+b.	Creen un programa que muestre un menú de opciones para:
+-	Inicializar las estructuras de datos a utilizar en su funcionamiento.
+-	Cargar un destino a la estructura utilizada.
+-	Imprimir la información contenida en la estructura de datos utilizada.
+-	Buscar un destino dentro de la estructura de datos utilizada y mostrar toda su información.
+-	Buscar e informar el destino más cercano.
+-	Sumar una cantidad X de pasajes a un destino.
+
+Nota: Declarar todas las estructuras necesarias para el funcionamiento. Modularizar el código en base a las funcionalidades pedidas
+}
+Program Mimicron;
+Type
+
+  sub = 1..7;
+  // Data
+
+  datoA = Record
+    nombre:string;
+    km:INTEGER;
+    cant:integer;
+  end;
+
+
+  // Arbol de enteros
+  arbol= ^nodoA;
+  nodoA = Record
+    dato: datoA;
+    HI: arbol;
+    HD: arbol;
+  End;
+Procedure leer (var x: datoA);
+Begin
+writeln('ingrese el nombre del destino = ');
+readln(x.nombre);
+writeln('ingrese la cantidad de KM del viaje = ');
+readln(x.km);
+x.cant:=0;
+end;
+
+procedure Cargar(x:datoA; var a:arbol);
+var
+   nodo:arbol;
+begin
+   leer(x);
+  if a = nil then begin
+    new(nodo);
+    nodo^.dato:=x;
+    nodo^.HI:=NIL;
+    nodo^.HD:=NIL;
+    a:=nodo
+  end
+  else if a^.dato.nombre > x.nombre then Cargar(x,a^.HI)
+    else if a^.dato.nombre < x.nombre then Cargar(x,a^.HD);
+  writeln('Hecho');
+end;
+
+
+
+
+Procedure inicializar (VAR a:arbol);
+begin
+a:=nil;
+
+writeln('Hecho');
+end;
+Procedure imprimir( a: arbol );
+begin
+  if ( a <> nil ) then begin
+   imprimir (a^.HI);
+    write ('Destino: ',a^.dato.nombre, '   ');
+    write ('KM: ',a^.dato.km, '   ');
+    write ('Usuarios: ',a^.dato.cant, '   ');
+    writeln('');
+    imprimir (a^.HD);
+  end;
+
+end;
+//HACE UNA BUSQUEDA TIPO DICOTOMICA FIJANDOSE SI EL ELEMENTO A BUSCAR ES MENOR O MAYOR SI LA LISTA LLEGA A SU FIN DEVUELVE NIL
+Function busqueda (a:arbol; x:string): arbol;
+begin
+  if (a=nil) then  busqueda:=nil
+  else if (x= a^.dato.nombre) then busqueda:=a
+    else if (x < a^.dato.nombre) then busqueda:=busqueda(a^.HI ,x)
+      else busqueda:=busqueda(a^.HD ,x);
+end;
+procedure buscar (a:arbol);
+var
+   x:string[25];
+   aux: arbol;
+begin
+  writeln('ingrese el nombre del destino a buscar = ');
+  readln(x);
+  if a<>nil then begin aux:=busqueda(a,x);
+     if aux<>nil then imprimir(aux)
+     else  writeln('No existe')
+  end
+  else writeln('La lista esta vacia') ;
+end;
+
+Procedure Min( a: arbol; var x: integer );
+begin
+  if ( a <> nil ) then begin
+    Min (a^.HI,X);
+       if (a^.DATO.KM < X) then
+        X:= a^.DATO.KM;
+    Min (a^.HD,X);
+       if (a^.DATO.KM < X) then
+        X:= a^.DATO.KM;
+  end;
+end;
+
+
+VAR
+     mini:integer;
+     x:datoA;
+     a: arbol;
+     num: sub;
+begin
+  mini:=99999;
+
+  writeln('Bienvenide al sistema de gestion comercial');
+  writeln('Para  Inicializar las estructuras de datos a utilizar en su funcionamiento [1]');
+  writeln('Para cargar un destino a la estructura utilizada, [2]');
+  writeln('Imprimir la información contenida en la estructura de datos utilizada. [3]');
+  writeln('Buscar un destino dentro de la estructura de datos utilizada y mostrar toda su informacion. [4]');
+  writeln('Buscar e informar el destino mas cercano.[5]' );
+  writeln('Sumar una cantidad X de pasajes a un destino.[6]');
+  writeln ('Para salir, [7]');
+  readln(num);
+ WHILE num<>7 do begin
+  case num of
+   1:Inicializar(a);
+   2:Cargar (x,a);
+   3:Imprimir(a);
+   4:buscar(a);
+   5:Min (a,mini)
+  { 6: }
+  end;
+  WRITELN ('Elija otra opcion...');
+  readln(num)
+  end;
+ end.

@@ -1,0 +1,1268 @@
+Estructuras de datos dinámicas
+1. Responda:
+a. ¿En qué se diferencia la función malloc de la función calloc? ¿y de la función realloc?
+Se diferencia en que Malloc reserva memoria y solo requiere de una variable, mientras que Calloc reserva memoria que inicializa en 0, y requiere el tamaño y la cantidad de elementos paa funcionar
+Se diferencia con realock en que la segunda aumenta o disminuye el tamaño del bloque de memoria especificada. 
+b. ¿Puede utilizarse la función realloc en lugar de la función malloc? ¿Se requiere alguna condición? 
+Si, Pero debe mandarsele un puntero nulo y el tamaño especificado
+¿Qué sucede si realloc se invoca con el valor 0 como parámetro? 
+Es lo mismo que mandarle un puntero nulo (ademas del tamaño especificado)
+Si el 0 es en el tamaño especificado, devuelve un puntero Null (Seria un free)
+c. ¿Qué utilidad tiene el operador sizeof a la hora de reservar memoria dinámicamente?
+En que si tenes una clase persona, no es necesario saber de antemano cuanto espacio ocipa c/u
+
+2)
+#include <stdio.h>
+#include <stdlib.h>
+void f (int * p);
+int main(){
+    
+ int * ptr = NULL;
+ f(ptr);
+ 
+ if (ptr == NULL)
+ printf("ptr es NULL\n");
+ else
+ printf("ptr no es NULL\n");
+ return 0;
+}
+void f (int * p) {
+ p = (int *) malloc(10*sizeof(int));
+}
+//Devuelve null, ya que no se modifico la direccion de f, corregido queda:
+
+#include <stdio.h>
+#include <stdlib.h>
+int * Funcion ();
+int main(){
+
+ int * ptr = NULL;
+ ptr=Funcion();
+
+ if (ptr == NULL)
+ printf("ptr es NULL\n");
+ else
+ printf("ptr no es NULL\n");
+ return 0;
+}
+int *  Funcion () {
+ return (int *) malloc(10*sizeof(int));
+}
+
+
+3)
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/*3)Escriba un programa que lea un número entero n desde teclado y luego reserve memoria en forma
+dinámica para un arreglo de n enteros. Inicialícelo con valores aleatorios y a continuación calcule e
+imprima el máximo número almacenado. Por último, libere la memoria reservada dinámicamente.
+Nota: Modularice la reserva de memoria, la inicialización y el cálculo del máximo.*/
+
+int* Reservar(int x);
+void Inicializar (int x, int * ptr);
+void Maximo (int x, int * ptr);
+
+int main(){
+    int x;
+    int * ptr;
+    srand(time(NULL));
+
+  printf("Ingrese un valor ");
+  scanf("%d",&x);
+  printf("\n");
+
+if (x>0){
+  ptr=Reservar(x);
+  Inicializar(x, ptr);
+  Maximo (x, ptr);
+  free(ptr);
+}
+ return 0;
+}
+int* Reservar(int x){ return (int*) malloc(x*sizeof(int));}
+
+void Inicializar (int x, int * ptr){
+     int i;
+     for (i=0;i<x;i++){
+        ptr[i]=rand()%100;  //0 AL 99
+}
+}
+
+void Maximo (int x, int * ptr){
+   int i, max=-1;
+     for (i=0;i<x;i++){
+        if (ptr[i]>max) max= ptr[i];
+}
+     printf("El valor maximo fue %d \n",max);
+}
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/*4)Escriba un programa que lea un número entero n desde teclado y luego reserve memoria en forma
+dinámica para un arreglo de n float. Inicialícelo con valores ingresados por teclado y a continuación
+calcule e imprima el promedio de todos ellos. Por último, libere la memoria reservada dinámicamente.
+Nota: Modularice la reserva de memoria, la inicialización y el cálculo del promedio.*/
+
+
+float* Reservar(int x);
+void Inicializar (int x, float * ptr);
+void Promedio (int x, float * ptr);
+
+int main(){
+    int x;
+    float * ptr;
+    srand(time(NULL));
+
+  printf("Ingrese un valor ");
+  scanf("%d",&x);
+  printf("\n");
+
+if (x>0){
+  ptr=Reservar(x);
+  Inicializar(x, ptr);
+  Promedio (x, ptr);
+  free(ptr);
+}
+ return 0;
+}
+float* Reservar(int x){ return (float *) malloc(x*sizeof(float));}
+
+void Inicializar (int x, float * ptr){
+     int i;
+     float y;
+     for (i=0;i<x;i++){
+            printf("\nIngrese un numero ");
+            //scanf("%f",&y);
+            //ptr[i]=y;
+            scanf("%f",ptr);
+            ptr++;
+}
+}
+
+void Promedio (int x, float * ptr){
+   int i;
+   float max=0;
+     for (i=0;i<x;i++){
+        max+=ptr[i];
+}
+     printf("El valor promedio fue %f \n",max/x);
+}
+
+5)
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/*Escriba un programa que reserve en forma dinámica un arreglo de 100 caracteres. A continuación, lea
+10 oraciones utilizando la función gets e informe para cada una de ellas la cantidad de letras
+minúsculas y de letras mayúsculas que la componen. Utilice el arreglo creado como variable temporal
+para procesar cada oración. Por último, libere la memoria reservada dinámicamente.*/
+void Procesar (char* ptr);
+char* Reservar();
+
+int main(){
+    char* ptr;
+    ptr=Reservar();
+    Procesar(ptr);
+    free(ptr);
+    return 0;
+}
+
+char* Reservar(){return (char*) malloc(101);}
+
+void Procesar (char* ptr){
+  char * aux;
+  int i,x, Mayus, Minus;
+    for (i=0; i<10;i++){
+        printf("\n Ingrese String ");
+        gets(ptr);
+        aux=ptr;
+        x=0;
+        Mayus=0;
+        Minus=0;
+        while ((aux[x]!='\0')&&(x!=101)){
+            if ((aux[x]>='a')&&(aux[x]<='z')) Minus++;   ///O BIEN (*aux) con aux++ al final
+            if ((aux[x]>='A')&&(aux[x]<='Z')) Mayus++;
+            x++;
+        }
+        printf("La palabra %s posee %d mayusculas y %d minusculas",ptr,Mayus,Minus );
+    }
+}
+///O BIEN...
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/*Escriba un programa que reserve en forma dinámica un arreglo de 100 caracteres. A continuación, lea
+10 oraciones utilizando la función gets e informe para cada una de ellas la cantidad de letras
+minúsculas y de letras mayúsculas que la componen. Utilice el arreglo creado como variable temporal
+para procesar cada oración. Por último, libere la memoria reservada dinámicamente.*/
+void Procesar (char* ptr);
+char* Reservar();
+
+int main(){
+    char* ptr;
+    ptr=Reservar();
+    Procesar(ptr);
+    free(ptr);
+    return 0;
+}
+
+char* Reservar(){return (char*) malloc(101);}
+
+void Procesar (char* ptr){
+  char * aux;
+  int i,x, Mayus, Minus;
+    for (i=0; i<10;i++){
+        printf("\n Ingrese String ");
+        gets(ptr);
+        aux=ptr;
+        x=0;
+        Mayus=0;
+        Minus=0;
+        while (((*aux)!='\0')&&(x!=101)){
+            if (((*aux)>='a')&&((*aux)<='z')) Minus++;   ///O BIEN aux[x]
+            if (((*aux)>='A')&&((*aux)<='Z')) Mayus++;
+            x++;
+            aux++;
+        }
+        printf("La palabra %s posee %d mayusculas y %d minusculas",ptr,Mayus,Minus );
+    }
+}
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/*6. Defina la estructura de una lista enlazada de enteros. Implemente las siguientes funciones:
+a. Inicializar la lista.
+b. Eliminar todos los elementos de la lista.
+c. Agregar un elemento al principio de la lista.
+d. Agregar un elemento al final de la lista.
+e. Calcular la cantidad de elementos de la lista.
+f. Imprimir todos los elementos separados por coma.
+.*/
+
+
+struct Tiponodo{
+    int dato;
+    struct Tiponodo * ptr; };
+
+typedef struct Tiponodo Nodo;
+
+Nodo * Inicializar();
+void Eliminar(Nodo ** lista);
+void AgregarInicio(Nodo ** lista, int x);
+void AgregarFinal(Nodo ** lista, int x);
+int Calcular(Nodo* lista);
+void ToString(Nodo* lista);
+
+int main(){
+  Nodo* lista= Inicializar();
+
+  AgregarFinal(&lista, 4);
+    AgregarInicio(&lista, 5);
+    AgregarInicio(&lista, 6);
+    AgregarInicio(&lista, 7);
+    AgregarInicio(&lista, 8);
+  AgregarFinal(&lista, 3);
+  AgregarFinal(&lista, 2);
+    AgregarInicio(&lista, 9);
+    AgregarInicio(&lista, 10);
+    ToString(lista);
+    printf("\n Calculo inicial %d", Calcular(lista));
+    Eliminar(&lista);
+    printf("\n Calculo vacio %d", Calcular(lista));
+    ToString(lista);
+
+
+return 0;
+}
+
+Nodo * Inicializar(){return NULL;}
+
+void Eliminar(Nodo ** lista){
+    Nodo * aux;
+    Nodo *l;
+    l=*lista;
+    while (l!=NULL){
+        aux=l;
+        l=l->ptr;
+        free(aux);
+    }
+    *lista=NULL;
+}
+
+void AgregarInicio(Nodo ** lista, int x){
+    Nodo *aux=malloc(sizeof(Nodo));
+
+    aux->dato=x;
+    aux->ptr=(*lista);
+    (*lista)=aux;
+
+}
+void AgregarFinal(Nodo ** lista, int x){
+    if ((*lista)==NULL) {AgregarInicio(lista, x);}
+    else {
+        Nodo *aux=(*lista);
+        Nodo **l;
+        Nodo *var=malloc(sizeof(Nodo));
+
+        while (aux->ptr!=NULL){
+        aux=aux->ptr;
+       }
+        l=&aux;
+        var->dato=x;
+        var->ptr=NULL;
+        (*l)->ptr=var;
+
+    }
+}
+int Calcular(Nodo* lista){
+  int elemento=0;
+
+  while (lista!=NULL){
+    lista=lista->ptr;
+    elemento++;
+  }
+return elemento;
+}
+
+void ToString(Nodo* lista){
+     printf("\nIngreso ");
+if (lista!=NULL){
+     while (lista->ptr!=NULL){
+        printf("%d ->", lista->dato);
+        lista=lista->ptr;}
+
+printf(" %d", lista->dato);
+}
+}
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/* 7. Utilizando la estructura y funciones del ejercicio anterior escriba un programa que lea números
+enteros positivos desde teclado hasta ingresar el número 0. Los números leídos deben ser almacenados
+en orden ingresado por teclado. Generar una nueva lista con el orden invertido. Imprimir los
+elementos de cada lista junto con la cantidad de elementos de cada una. Por último, libere la memoria
+reservada dinámicamente. */
+
+
+struct Tiponodo{
+    int dato;
+    struct Tiponodo * ptr; };
+
+typedef struct Tiponodo Nodo;
+
+Nodo * Inicializar();
+void Eliminar(Nodo ** lista);
+void AgregarInicio(Nodo ** lista, int x);
+void AgregarFinal(Nodo ** lista, int x);
+int Calcular(Nodo* lista);
+void ToString(Nodo* lista);
+
+int main(){
+  Nodo* lista= Inicializar();
+  Nodo* atsil= Inicializar();
+  Nodo* aux;
+  int x;
+
+  printf("\nIngrese un numero, 0=Fin ");
+  scanf("%d",&x);
+  while (x!=0){
+    AgregarFinal(&lista,x);
+    printf("\nIngrese un numero, 0=Fin ");
+    scanf("%d",&x);
+  }
+
+  aux=lista;
+  while (aux!=NULL){
+    AgregarInicio(&atsil,aux->dato);
+    aux=aux->ptr;
+  }
+  printf("\nLista");
+  ToString(lista);
+  printf("\nElementos %d",Calcular(lista));
+  Eliminar(&lista);
+  printf("\nLista!");
+  ToString(atsil);
+  printf("\nElementos %d",Calcular(atsil));
+  Eliminar(&atsil);
+
+
+return 0;
+}
+
+Nodo * Inicializar(){return NULL;}
+
+void Eliminar(Nodo ** lista){
+    Nodo * aux;
+    Nodo *l;
+    l=*lista;
+    while (l!=NULL){
+        aux=l;
+        l=l->ptr;
+        free(aux);
+    }
+    *lista=NULL;
+}
+
+void AgregarInicio(Nodo ** lista, int x){
+    Nodo *aux=malloc(sizeof(Nodo));
+
+    aux->dato=x;
+    aux->ptr=(*lista);
+    (*lista)=aux;
+
+}
+void AgregarFinal(Nodo ** lista, int x){
+    if ((*lista)==NULL) {AgregarInicio(lista, x);}
+    else {
+        Nodo *aux=(*lista);
+        Nodo **l;
+        Nodo *var=malloc(sizeof(Nodo));
+
+        while (aux->ptr!=NULL){
+        aux=aux->ptr;
+       }
+        l=&aux;
+        var->dato=x;
+        var->ptr=NULL;
+        (*l)->ptr=var;
+
+    }
+}
+int Calcular(Nodo* lista){
+  int elemento=0;
+
+  while (lista!=NULL){
+    lista=lista->ptr;
+    elemento++;
+  }
+return elemento;
+}
+
+void ToString(Nodo* lista){
+     printf("\nIngreso ");
+if (lista!=NULL){
+     while (lista->ptr!=NULL){
+        printf("%d ->", lista->dato);
+        lista=lista->ptr;}
+
+printf(" %d", lista->dato);
+}
+}
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/* 8) Utilizando la estructura y funciones de los ejercicios anteriores escriba un programa que lea números
+enteros desde teclado hasta ingresar el número 0. Luego, vuelva a leer otro número entero desde
+teclado y elimine de la lista a todos aquellos que sean múltiplos del mismo. */
+
+
+struct Tiponodo{
+    int dato;
+    struct Tiponodo * ptr; };
+
+typedef struct Tiponodo Nodo;
+
+Nodo * Inicializar();
+void Eliminar(Nodo ** lista);
+void AgregarInicio(Nodo ** lista, int x);
+void AgregarFinal(Nodo ** lista, int x);
+int Calcular(Nodo* lista);
+void ToString(Nodo* lista);
+void EliminarEspecial(Nodo ** lista, int x);
+
+int main(){
+  Nodo* lista= Inicializar();
+  int x;
+
+  printf("\nIngrese un numero, 0=Fin ");
+  scanf("%d",&x);
+  while (x!=0){
+    AgregarInicio(&lista,x);
+    printf("\nIngrese un numero, 0=Fin ");
+    scanf("%d",&x);
+  }
+ToString(lista);
+   while (!x){
+      printf("\nIngrese un numero !0 para eliminacion");
+      scanf("%d",&x);
+ }
+EliminarEspecial(&lista,x);
+//eliminarListaMultiplo(&lista,x); Restucha
+ToString(lista);
+Eliminar(&lista);
+
+return 0;
+}
+
+Nodo * Inicializar(){return NULL;}
+
+void Eliminar(Nodo ** lista){
+    Nodo * aux;
+    Nodo *l;
+    l=*lista;
+    while (l!=NULL){
+        aux=l;
+        l=l->ptr;
+        free(aux);
+    }
+    *lista=NULL;
+}
+
+void AgregarInicio(Nodo ** lista, int x){
+    Nodo *aux=malloc(sizeof(Nodo));
+
+    aux->dato=x;
+    aux->ptr=(*lista);
+    (*lista)=aux;
+
+}
+void AgregarFinal(Nodo ** lista, int x){
+    if ((*lista)==NULL) {AgregarInicio(lista, x);}
+    else {
+        Nodo *aux=(*lista);
+        Nodo **l;
+        Nodo *var=malloc(sizeof(Nodo));
+
+        while (aux->ptr!=NULL){
+        aux=aux->ptr;
+       }
+        l=&aux;
+        var->dato=x;
+        var->ptr=NULL;
+        (*l)->ptr=var;
+
+    }
+}
+int Calcular(Nodo* lista){
+  int elemento=0;
+
+  while (lista!=NULL){
+    lista=lista->ptr;
+    elemento++;
+  }
+return elemento;
+}
+
+void ToString(Nodo* lista){
+     printf("\nIngreso ");
+if (lista!=NULL){
+     while (lista->ptr!=NULL){
+        printf("%d ->", lista->dato);
+        lista=lista->ptr;}
+
+printf(" %d", lista->dato);
+}
+}
+void EliminarEspecial(Nodo ** lista, int x){
+Nodo* act= (*lista);
+Nodo* ant=act;
+Nodo* elim;
+
+
+   while (act!=NULL){
+        if (act->dato%x==0){
+
+             if (ant==act) {
+                elim=act;
+                act=act->ptr;
+                ant=ant->ptr;
+                *(lista)=act;
+
+             }
+
+             else{
+                   if (act->ptr==NULL){     ///Fin
+                    elim=act;
+                    ant->ptr=act->ptr;   //O bien null
+                    act=act->ptr;        //O bien null
+
+                   }
+
+                   else{                  ///medio
+                       elim=act;
+                       ant->ptr=act->ptr;
+                       act=act->ptr;
+                       }
+             }
+            free(elim);
+        }
+        else{
+           ant=act;
+           act=act->ptr;
+        }
+   }
+}
+///Restucha
+
+void eliminarListaMultiplo(Nodo** cabeza,int multiplo){
+    Nodo* aux=*cabeza;
+    Nodo* anterior=*cabeza;
+    while(aux->ptr!=NULL){
+        if ((aux->dato)%multiplo==0){
+            if(aux!=NULL && aux!=*cabeza){
+                anterior->ptr=aux->ptr;
+                free(aux);
+                aux=anterior;
+            }
+            else if(aux==(*cabeza)){
+                *cabeza=(*cabeza)->ptr;
+            }
+            else anterior->ptr=NULL;
+        }
+        anterior=aux;
+        aux = aux->ptr;
+    }
+
+}
+
+
+
+9)Indique para cada arreglo definido:
+a. ¿Qué tipo de arreglo se está utilizando (estático/dinámico/de longitud variable)?
+b. ¿En qué momento se determina cuánta memoria se va a reservar (compilación/ejecución)?
+c. ¿Cuál es el límite de tamaño de cada tipo de arreglo?
+d. ¿Se puede cambiar el tamaño en ejecución?
+e. ¿Se puede liberar la memoria reservada?
+f. ¿El nombre del arreglo puede apuntar a otra dirección?
+g. ¿Todos los códigos compilan de acuerdo a ANSI C90?
+
+
+
+Código 1:
+#include <stdio.h>              //a) Arreglo estatico, b) Compilacion (Define) , c) TamañoMax=50 , d) No , e)No , f) No , g) Si
+#include <stdlib.h>
+#define N 50
+int main() {
+ int arreglo1[N];
+ return 0;
+}
+
+Código 2:
+#include <stdio.h>             //a) Arreglo estatico de long ini variable, b) Ejecucion (Teclado) , c) TamañoMax=50 , d) No , e)No , f) No , g) Si
+#include <stdlib.h>
+int main() {
+ int n;
+ scanf("%d",&n);
+ /* el usuario ingresa 50 */
+ int arreglo3[n];
+ return 0;
+}
+
+Código 3: 
+#include <stdio.h>             //a) Arreglo dinamico, b)  Compilacion (Define) , c) TamañoMax=50 , d) Si, con Realloc() 
+#include <stdlib.h>            //e)Si , f) Si (Riezgo de explosion) , g) Si
+#define N 50
+int main() {
+ int * arreglo2 = (int *) malloc (N*sizeof(int));
+ return 0;
+}
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/*10. Escriba un programa que lea un número entero n y luego reserve memoria en forma dinámica para
+un arreglo de n elementos double. Inicialice las posiciones del arreglo a partir de valores ingresados
+por teclado y a continuación imprima el promedio de todos ellos.
+a. Empleando notación de arreglos.
+b. Empleando notación de punteros.
+Por último, libere la memoria reservada.
+Nota: modularice la reserva de memoria, la inicialización, el cálculo del promedio y la liberación de
+memoria.*/
+
+
+double * Reservar(int *n);
+void Inicializar(double * ptr, int n);
+double Calcular(double * ptr, int n);
+double * Liberar();
+
+int main() {
+ int n;
+ double *ptr;
+
+ ptr=Reservar(&n);
+ Inicializar(ptr,n);
+ printf("El promedio es %f\n",Calcular(ptr,n));
+ ptr=Liberar(ptr);
+ return 0;
+}
+
+double * Reservar(int *n){
+ printf("\nIngrese un numerinio ");
+ scanf("%d",n);
+ return (double *) malloc((*n)*sizeof(double));
+}
+
+void Inicializar(double * ptr, int n){
+ int i;
+ double x;
+
+ for(i=0;i<n;i++){
+ printf("\nIngrese numerinio inicializadaor ");
+ scanf("%lf",&x);
+ *(ptr+i)=x;  ///O BIEN ptr[i]
+ }
+}
+
+double * Liberar(double * ptr){
+free(ptr);
+return NULL;
+}
+
+
+double Calcular(double * ptr, int n){
+ double tot=0;
+ int i;
+
+ for(i=0;i<n;i++){
+ tot+=*(ptr+i) ;     ///O BIEN ptr[i]
+ }
+ return tot/n;
+}
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/*11)Escriba un programa que lea desde teclado dos valores enteros n y m, y luego reserve memoria en
+forma dinámica para una matriz de enteros de n filas por m columnas. Inicialice la matriz creada con
+valores ingresados por teclado. Una vez inicializada, imprima las posiciones de todos aquellos valores
+múltiplos de 3. Por último, libere la memoria reservada.
+Nota: modularice la reserva de memoria, la inicialización, la impresión de las posiciones con valores
+múltiplo de 3 y la liberación de memoria*/
+
+
+int ** Reservar(int *n,int *m);
+void Inicializar(int ** ptr, int n,int m);
+void Calcular(int ** ptr, int n,int m);
+int ** Liberar(int ** ptr, int n);
+void Imprimir(int ** ptr, int n,int m);
+
+int main() {
+ int n,m;
+ int **ptr;
+
+ ptr=Reservar(&n,&m);
+ Inicializar(ptr,n,m);
+ Calcular(ptr,n,m);
+ Imprimir(ptr, n,m);
+ ptr=Liberar(ptr,n);
+ Imprimir(ptr, n,m);
+ return 0;
+}
+
+int ** Reservar(int *f,int *c){
+printf("Ingrese filas: ");
+    scanf("%d", f);
+    printf("Ingrese columnas: ");
+    scanf("%d", c);
+
+    int **ptr = (int **)malloc((*f) * sizeof(int *));
+    for (int i = 0; i < *f; i++) {
+        ptr[i] = (int *)malloc((*c) * sizeof(int));
+    }
+ return ptr;
+}
+
+void Inicializar(int ** ptr, int f, int c){
+    printf("\nInicializacion\n");
+    int i,j,x;
+    for (i=0;i<f;i++){
+            for (j=0;j<c;j++){
+                  printf("Ingrese valor ");
+                  scanf("%d",&x);
+                  printf("\n");
+                  ptr[i][j]=x;
+
+            }
+    }
+}
+
+int ** Liberar(int** ptr,int n){
+int i;
+
+for(i=0;i<n;i++){
+    free(ptr[i]);
+}
+free(ptr);
+return NULL;
+}
+
+
+void Calcular(int ** ptr, int n,int m){
+
+ int i,j,boolean=0;
+ printf("\nLos multiplos de 3 estan en la posicion\n ");
+
+ for(i=0;i<n;i++){
+        for (j=0;j<m;j++){
+                 if(ptr[i][j]%3==0){printf("Fila %d, Columna %d\n",i,j);
+                                    if (!boolean) boolean=1;     }                ///O BIEN *(ptr + m*i + j)
+ }
+ }
+ if (boolean==0) printf("-1");
+}
+
+void Imprimir(int ** ptr, int n,int m){
+
+if (ptr!=NULL){
+    int i,j;
+    printf("\nMatriz\n");
+
+    for(i=0;i<n;i++){
+           for (j=0;j<m;j++){
+                  printf("%d", ptr[i][j]);      ///O BIEN *(ptr + m*i + j)         ///Revisar
+ }
+ printf("\n");
+ }
+}
+}
+-------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+//int x=2, y=3;
+//int * m= (int*) malloc(x*y*sizeof(int));
+
+/*12)
+a. ¿Qué estructura/s se puede/n modelar con la variable m?
+;Cualquiera que entre en un espacio del cuadrado de x*y (Matriz, Vector, Matriz con forma de triangulo, etc)
+b. ¿Se puede utilizar a m como si fuera una matriz, simulando el acceso por filas y columnas? En ese
+caso, ¿cómo se podría acceder a sus elementos?
+Si, con *(M+x*i+j)
+c. Escriba un programa que trabaje con una matriz de enteros utilizando las declaraciones
+anteriores sin importar el orden de acceso a cada dimensión (fila y columna o columna y fila).
+Cargue a m con valores leídos desde teclado y luego imprima sus valores en pantalla para
+verificar que se cargó correctamente. Por último, libere la memoria reservada.*/
+
+int main(){                                              ///    x   x
+int x=2, y=3;                                            /// y  1   2
+int * m= (int*) malloc(x*y*sizeof(int));                 /// y  3   4
+                                                         /// y  5   6
+int i,j,aux;
+for (i=0;i<y;i++){
+    for (j=0;j<x;j++){
+        printf("Ingrese valor ");
+        scanf("%d",&aux);
+        *(m+x*i+j)= aux;
+        printf("\n");
+    }
+}
+
+printf("Imprimo\n");
+
+for (i=0;i<y;i++){
+    for (j=0;j<x;j++){
+        printf("%d",*(m+x*i+j));
+    }
+      printf("\n");
+}
+
+free(m);
+return 0;
+}
+
+
+13)
+#include <stdio.h>
+#include <stdlib.h>
+//int x=2, y=3;
+//int * m= (int*) malloc(x*y*sizeof(int));
+
+/ Rehaga el ejercicio anterior utilizando un arreglo unidimensional en lugar de uno bidimensional
+c. Escriba un programa que trabaje con una matriz de enteros utilizando las declaraciones
+anteriores sin importar el orden de acceso a cada dimensión (fila y columna o columna y fila).
+Cargue a m con valores leídos desde teclado y luego imprima sus valores en pantalla para
+verificar que se cargó correctamente. Por último, libere la memoria reservada.*/
+
+int main(){                                              ///    x   x
+int x=2, y=3;                                            /// y  1   2
+int * m= (int*) malloc(x*y*sizeof(int));                 /// y  3   4
+                                                         /// y  5   6
+int aux,i,j=x*y;
+
+for (i=0;i<j;i++){
+        printf("Ingrese valor ");
+        scanf("%d",&aux);
+        *(m+i)=aux;
+        printf("\n");
+}
+
+for (i=0;i<j;i++){
+
+     if ((i%x==0)&&((m+i)!=m)) printf("\n");
+     printf("%d",*(m+i));
+
+
+}
+free(m);
+return 0;
+}
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/*14. En álgebra lineal, una matriz triangular es un tipo especial de matriz cuadrada cuyos elementos por
+encima o por debajo de su diagonal principal son cero. Una matriz cuadrada de orden n se dice que es
+triangular inferior si es de la forma:
+Escriba un programa que lea desde teclado un valor entero n y reserve memoria para una matriz
+triangular inferior de orden n de enteros. Como se desea ahorrar espacio de almacenamiento, no se
+deben almacenar los elementos cuyo valor es 0, es decir, sólo se reservará memoria para los valores
+del triángulo inferior de la matriz. Luego, inicialice la estructura con valores aleatorios entre 0 y 20
+e imprímala en pantalla. Por último, libere la memoria reservada.
+Nota: modularice la reserva de memoria, la inicialización, la impresión y la liberación de memoria*/
+
+
+void Inicializar(int **matriz, int x);
+int ** Reservar(int *x);
+void Imprimir(int ** matriz, int x);
+void Liberar(int ** matriz, int x);
+int main() {
+
+    int x;
+    int** matriz;
+    matriz=Reservar(&x);
+    Inicializar(matriz,x);
+    Imprimir(matriz, x);
+    Liberar(matriz, x);
+    return 0;
+}
+
+int ** Reservar(int *y){
+   int i,cont;
+   int ** matriz;
+   printf("Ingrese tamanio ");
+   scanf("%d",y);
+
+   matriz=(int **) malloc((*y)*sizeof(int *));
+
+   for (i=0,cont=1;i<(*y);i++){
+       matriz[i]=(int*) malloc(cont*sizeof(int));
+       cont++;
+}
+return matriz;
+}
+
+void Inicializar(int ** matriz,int x){
+  srand(time(NULL));
+     int cont, i,j;
+     cont=1;
+     for (i=0;i<x;i++){
+        for (j=0;j<cont;j++){
+                matriz[i][j]=rand()%21;
+        }
+        cont++;
+     }
+}
+
+void Imprimir(int ** matriz, int x){
+      int i,j,cont=1,aux=x;
+
+      printf("\nImprimo\n");
+      for (i=0;i<x;i++){
+            for (j=0;j<cont;j++){
+               printf("%3d",matriz[i][j]);
+            }
+            aux--;
+            cont++;
+            ///Imprimo 0 y salto de linea
+            for (j=0;j<aux;j++){
+               printf("  0");
+            }
+            printf("\n");
+      }
+}
+
+
+void Liberar(int ** matriz, int x){
+
+     int i,cont;
+
+     for (i=0,cont=1;i<x;i++){
+       free(matriz[i]);
+       cont++;
+}
+free(matriz);
+}
+
+---------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/*15. Escriba un programa que, dado un número entero n ingresado por
+teclado, construya una pirámide de pascal de n filas. Un triángulo de
+pascal es una serie de filas apiladas que comienza con un elemento y
+agrega un elemento más en cada fila. El primer y último elemento de
+cada fila es un 1. Los demás elementos se calculan sumando los 2
+números superiores de la fila anterior. Por ejemplo, para obtener el
+segundo elemento de la cuarta fila (4) deben sumarse el primer (1) y
+segundo (3) elemento de la tercera fila de forma que 1+3 = 4. Tenga en
+cuenta las siguientes condiciones:
+a) Utilizar una estructura de datos eficiente. Contemple la información necesaria para recorrer
+la pirámide y liberar la memoria de forma correcta.
+b) Implemente una función que dado un entero n retorne una pirámide de pascal de n filas.
+c) Implemente una función para imprimir la pirámide.
+d) Implemente una función para destruir la pirámide.*/
+void Imprimir(int** matriz,int x);
+void Construir(int** matrix,int x);
+int ** Reservar(int x);
+void Liberar(int ** matriz, int x);
+void imprimirPiramidePascal(int** matriz,int n);
+int main(){
+
+int** matriz;
+
+int x;
+printf("Ingrese tamanio ");
+scanf("%d",&x);
+
+matriz=Reservar(x);
+Construir(matriz,x);
+Imprimir(matriz,x);
+imprimirPiramidePascal(matriz,x);
+Liberar(matriz,x);
+return 0;
+}
+
+
+int ** Reservar(int x){
+
+  int ** matriz;
+  int i, cant=1;
+
+  matriz=(int**) malloc(x*sizeof(int*));
+
+  for (i=0;i<x;i++){
+     matriz[i]=malloc(cant*sizeof(int));
+     cant++;
+    }
+
+return matriz;
+}
+
+void Construir(int** matriz,int x){
+
+     int i,j,cant=1;
+     for (i=0;i<x;i++){
+         for (j=0;j<cant;j++){
+
+            if ((j==0)||(j==cant-1)){
+                    matriz[i][j]=1;}
+            else{
+                  matriz[i][j]=( matriz[i-1][j-1]+ matriz[i-1][j]);
+            }
+         }
+    cant++;
+}
+}
+
+void Imprimir(int** matriz,int x){
+ printf("\nImprimir\n");
+ int i,j,cant=1;
+
+     for (i=0;i<x;i++){
+         for (j=0;j<cant;j++){
+                printf("%4d",matriz[i][j]);
+         }
+     cant++;
+     printf("\n");
+     }
+}
+
+
+void Liberar(int ** matriz, int x){
+     int i;
+     for (i=0;i<x;i++){
+       free(matriz[i]);
+}
+free(matriz);
+}
+
+
+////ChatGPT///
+void imprimirPiramidePascal(int** matriz,int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            printf("  "); // Espacios en blanco para desplazar hacia la derecha
+        }
+        for (int j = 0; j <= i; j++) {
+            printf("%-4d ", matriz[i][j]); // Alineación izquierda
+        }
+        printf("\n");
+    }
+}
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
+/*16. Escriba un programa que permita conocer todos los divisores de un número entero n leído desde
+teclado. Los números deben almacenarse en un arreglo unidimensional. Como se desea optimizar el
+espacio a ocupar, la memoria debe reservarse a medida que se la va necesitando. Una vez que se
+almacenaron todos los divisores, imprímalos junto al número n. Por último, libere la memoria
+reservada.*/
+int main()
+{
+    int x,i, cant=0;
+    int *ptr;
+    printf("Ingrese un numero ");
+    scanf("%d",&x);
+    printf("\n");
+    ptr=malloc(0);
+
+    for (i=1;i<=x;i++){
+            if (x%i==0){
+                    cant++;
+                    realloc(ptr,cant*sizeof(int));
+                    ptr[cant-1]=i;
+            }
+    }
+
+    printf("Imprimo divisores de %d\n",x);
+
+    for (i=0;i<cant;i++)
+        printf("El numero %d es divisor de %d\n",ptr[i],x);
+
+
+    free(ptr);
+    return 0;
+}
+
+///////v2//////
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
+/*16. Escriba un programa que permita conocer todos los divisores de un número entero n leído desde
+teclado. Los números deben almacenarse en un arreglo unidimensional. Como se desea optimizar el
+espacio a ocupar, la memoria debe reservarse a medida que se la va necesitando. Una vez que se
+almacenaron todos los divisores, imprímalos junto al número n. Por último, libere la memoria
+reservada.*/
+int main()
+{
+    int x,i, cant=0;
+    int *ptr,*h;
+    printf("Ingrese un numero ");
+    scanf("%d",&x);
+    printf("\n");
+    ptr=malloc(sizeof(int));
+    ptr[0]=1;
+    cant++;
+    for (i=2;i<=x;i++){
+            if (x%i==0){
+                    realloc(ptr,cant*sizeof(int));
+                    cant++;
+                    ptr[cant]=i;
+
+
+            }
+    }
+
+    printf("Imprimo divisores de %d\n",x);
+
+    for (i=0;i<cant;i++)
+        printf("El numero %d es divisor de %d\n",ptr[i],x);
+
+
+    free(ptr);
+    return 0;
+}
+
+
+17)
+#include <stdio.h>
+#include <stdlib.h>
+#define N 10
+int*** crearTensor(int t){
+ int i,j;
+ int*** a;
+ a = (int***) calloc(t,sizeof(int**));
+ for (i=0; i<t; i++){
+ a[i] = (int**) calloc(t, sizeof(int*));
+ for (j=0; j<t; j++){
+ a[i][j] = (int*) calloc(t, sizeof(int));
+ }
+ }
+ return a;
+}
+int main()
+{
+ int*** e;
+ e = crearTensor(N);
+ return 0;
+}
+Analice el código y realice un diagrama de cómo se reserva memoria para la variable a y cómo queda
+la variable e luego del llamado al módulo. ¿Por qué es necesario que la variable a sea de tipo int***?
+
+
+M. PRIN      M DIN (Punteros)            M DIN (Punteros)              Datos
+
+a***------------a1**
+                a2** -------------------- a21*
+                a3**                      a22*----------------------Datos
+                                          a23*
+
+
+a               a[i]                      a[i][j]                   a[i][j][k]               
+
+;"E" queda como el grafico de "A" (Matriz ternaria de t*t*t, cubica) , Es necesario para facilitar el acceso a la misma
+
+
+
+
+
+
+///EXTRA////
+
+#include <stdio.h>
+#include <stdlib.h>
+void mostrar(int [], int);
+#define N 10
+int main()
+{  int i=0, n;
+   int *pesos=NULL;
+
+//   pesos = malloc(N * sizeof(int));
+   printf("ingrese el peso (0, 250]: ");
+   scanf("%d", &n);
+
+   while (n>0 && n<= 250){
+      if ((i % N)==0)
+        pesos = realloc(pesos, (i+N)*sizeof(int));
+
+      pesos[i]= n;
+      i++;
+      printf("ingrese el peso (0, 250]: ");
+      scanf("%d", &n);
+   }
+
+   mostrar(pesos, i);
+   free(pesos);
+   return 0;
+}
+
+void mostrar(int V[], int cant){
+  int i;
+  for (i=0; i<cant; i++)
+    printf("%d ", V[i]);
+  printf("\n");
+}

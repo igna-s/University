@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.target=Ejercicio2_4
+comment1.params=args
+comment1.target=void\ main(java.lang.String[])
+comment2.params=v
+comment2.target=int\ rivergano(Partido[])
+comment3.params=v
+comment3.target=int\ golesboca(Partido[])
+comment4.params=v
+comment4.target=double\ promedioempate(Partido[])
+numComments=5

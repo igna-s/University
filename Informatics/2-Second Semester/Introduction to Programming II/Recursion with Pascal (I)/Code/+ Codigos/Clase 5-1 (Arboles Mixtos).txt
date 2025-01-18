@@ -1,0 +1,150 @@
+Descargar de Asignaturas: ProgramaEncomiendas y realice las siguientes actividades:
+ACTIVIDAD 9
+ a. Crear una estructura eficiente para la búsqueda, que almacene para cada peso, los códigos de encomienda registrados para el mismo.
+ b. Imprimir a partir de la estructura generada, cada peso de encomienda con los códigos de encomienda registrados para dicho peso}
+
+Program encomiendas;
+Type
+
+   encomienda = record
+                  codigo: integer;
+                  peso: integer;
+                end;
+     // Lista de encomiendas
+  lista = ^nodoL;
+  nodoL = record
+    dato: encomienda;
+    sig: lista;
+  end;
+
+   // NUVA LISTA QUE ALMACENA CODIGOS
+  listaC = ^nodo;
+  nodo = record
+    codigo: integer;
+    sig: listaC;
+  end;
+
+
+   // ARBOL DE ENTEROS (PESO) Y DE LISTAS DE CODIGOS
+  arbol= ^nodoA;
+  nodoA = Record
+    peso: integer;
+    codigos:listaC;
+    HI: arbol;
+    HD: arbol;
+  End;
+
+//AGREGA ADELANTE PERO LISTA DE CODIGOS
+ procedure agregarAdelanteCod(var l: ListaC; x: integer);
+var
+  aux: listaC;
+begin
+  new(aux);
+  aux^.CODIGO := x;
+  aux^.sig := l;
+  l:= aux;
+end;
+   //IMPRIME LISTA DE CODIGOS
+ procedure imprimirListaCod(l: ListaC);
+begin
+ While (l <> nil) do begin
+   writeln('Codigo: ', l^.codigo);
+   l:= l^.sig;
+ End;
+end;
+{-----------------------------------------------------------------------------
+AgregarAdelante - Agrega una encomienda adelante en l}
+procedure agregarAdelante(var l: Lista; enc: encomienda);
+var
+  aux: lista;
+begin
+  new(aux);
+  aux^.dato := enc;
+  aux^.sig := l;
+  l:= aux;
+end;
+
+
+{-----------------------------------------------------------------------------
+CREARLISTA - Genera una lista con datos de las encomiendas }
+procedure crearLista(var l: Lista);
+var
+  e: encomienda;
+  i: integer;
+begin
+ l:= nil;
+ for i:= 1 to 20 do begin
+   e.codigo := i;
+   e.peso:= random (10);
+   while (e.peso = 0) do e.peso:= random (10);
+   agregarAdelante(L, e);
+ End;
+end;
+
+
+{-----------------------------------------------------------------------------
+IMPRIMIRLISTA - Muestra en pantalla la lista l }
+procedure imprimirLista(l: Lista);
+begin
+ While (l <> nil) do begin
+   writeln('Codigo: ', l^.dato.codigo, '  Peso: ', l^.dato.peso);
+   l:= l^.sig;
+ End;
+end;
+
+{PROCEDURE INSERTARARBOL - INSERTA EL PESO Y UNA LISTA DE CODIGOS EN UN ARBOL}
+procedure insertararbol(e:encomienda;var a:arbol);
+begin
+  if a = nil then begin
+    new(a);
+    a^.peso:=e.peso;
+    a^.codigos:=nil;
+    agregarAdelanteCod(a^.codigos, e.codigo) ;
+    a^.HI:=NIL;
+    a^.HD:=NIL;
+  end
+  else if (a^.peso > e.peso) then insertararbol(e,a^.HI)
+    else if (a^.peso < e.peso) then insertararbol(e,a^.HD)
+    else
+         agregarAdelanteCod(a^.codigos, e.codigo)
+end;
+
+ {PROCEDURE ARBOL ENTEROS - INSERTA EN ARBOL ORDENADO LOS VALORES DE UNA LISTA}
+  procedure arbolenteros(l:lista;var AENT:arbol);
+  begin
+    while l<>nil do begin
+      insertararbol(l^.dato,AENT);
+      l:=l^.sig;
+    end;
+  end;
+
+ // RECORRE EL ARBOL, IMPRIME PESO Y LLAMA UN PROCEEDURE PARA IMPRIMIR SU LISTA
+Procedure enOrden( a: arbol );
+begin
+  if ( a <> nil ) then begin
+    enOrden (a^.HI);
+    writeln (' ///// PESO:' , a^.peso,' ///// ' ) ;
+    imprimirListacod(a^.codigos);
+    enOrden (a^.HD);
+
+  end;
+end;
+
+
+//PROGRAMA PRINCIPAL
+Var
+ a: arbol;
+ l: lista;
+begin
+ Randomize;
+ a:=nil;
+ crearLista(l);
+ writeln ('Lista de encomiendas generada: ');
+ imprimirLista(l);
+ arbolenteros(l,a);
+ writeln (' ');
+ writeln ('Arbol de encomiendas generada: ');
+ enorden ( a);
+ writeln(' ');
+ readln;
+end.

@@ -1,0 +1,208 @@
+programa E2
+procesos
+  proceso IZQUIERDA
+  comenzar
+    repetir 3
+      derecha
+  fin
+  proceso Esquina(ES exito:boolean)
+  variables
+    Ca,Av:numero
+  comenzar
+    Ca:=PosCa
+    Av:=PosAv 
+    BloquearEsquina(100,100)
+    Pos(100,100)
+    si HayFlorEnLaEsquina
+      tomarFlor
+    sino 
+      exito:=F 
+    Pos(Av,Ca)
+    LiberarEsquina(100,100)
+  fin
+  proceso Escalon (ES exito: boolean; E Rand: numero)
+  comenzar
+    exito:= V
+    Esquina(exito)
+    si HayFlorEnLaBolsa
+      depositarFlor     
+    derecha
+    repetir 3
+      BloquearEsquina(PosAv +1,PosCa)
+      mover
+      LiberarEsquina(PosAv -1,PosCa)
+      derecha
+      BloquearEsquina(PosAv,PosCa -1)
+      mover
+      LiberarEsquina(PosAv,PosCa +1)
+      si exito= V
+        Esquina(exito)
+        si HayFlorEnLaBolsa
+          depositarFlor
+      BloquearEsquina(PosAv,PosCa -1)
+      mover
+      LiberarEsquina(PosAv,PosCa +1)
+      IZQUIERDA
+      BloquearEsquina(PosAv +1,PosCa)
+      mover
+      LiberarEsquina(PosAv -1,PosCa)
+      si exito = V
+        Esquina(exito)
+        si HayFlorEnLaBolsa
+          depositarFlor
+    BloquearEsquina(PosAv +1,PosCa)
+    mover
+    LiberarEsquina(PosAv -1,PosCa)
+    derecha
+    BloquearEsquina(PosAv ,PosCa -1)
+    mover
+    LiberarEsquina(PosAv,PosCa +1)
+    si exito =V
+      Esquina(exito)
+      si HayFlorEnLaBolsa
+        depositarFlor
+  fin
+  proceso CALLE (ES Papeles: numero; E Rand: numero)
+  variables
+    Flores:numero
+  comenzar
+    Papeles:=0
+    Flores:=0
+    mientras HayPapelEnLaEsquina
+      tomarPapel
+      Papeles:=Papeles+1
+    mientras HayFlorEnLaEsquina
+      tomarFlor
+      Flores:=Flores+1
+    repetir Rand
+      BloquearEsquina(PosAv +1,PosCa)
+      mover
+      LiberarEsquina(PosAv -1,PosCa)
+      mientras HayPapelEnLaEsquina
+        tomarPapel
+        Papeles:=Papeles+1
+      mientras HayFlorEnLaEsquina
+        tomarFlor
+        Flores:=Flores+1    
+    Informar('Objetos',Papeles+Flores)  
+  
+  fin
+areas
+  AreaDiag: AreaC(2,83,100,90)
+  AreaP1: AreaP (1,1,1,1)
+  AreaP2: AreaP (2,1,2,1)
+  AreaP3: AreaP (3,1,3,1)
+  AreaP4: AreaP (4,1,4,1)
+  AreaPCom: AreaPC(100,100,100,100)
+  Linea1: AreaC (1,2,81,82)
+  Linea2: AreaC (1,91,81,98)
+
+robots
+  robot tipo1
+  variables
+    MiAv,MiCa,Robot,Papeles CA,Au, Pasos:numero
+    Exito: boolean
+  comenzar
+    MiAv:=PosAv
+    MiCa:=PosCa
+    RecibirMensaje(Robot,c)
+    RecibirMensaje(CA,c)
+    Informar('SoyElRobot___YMeAsignaronLaCalle___',Robot,CA)
+    BloquearEsquina(CA,90)
+    Pos(CA,90)
+    Escalon(Exito,CA)
+    Pos(MiAv,MiCa)
+    LiberarEsquina(CA+7,83)    
+    EnviarMensaje(Robot,c)
+    EnviarMensaje(Exito,c)
+    si Exito= V 
+      IZQUIERDA  
+      RecibirMensaje(Pasos,c)
+      si (CA < 91) & (CA> 82)
+        CA:= CA+8
+      BloquearEsquina(1,CA)
+      Pos(1,CA)
+      CALLE(Papeles,Pasos)
+      Pos(MiAv,MiCa)
+      LiberarEsquina(Pasos +1,CA)
+      EnviarMensaje(Robot,c)
+      EnviarMensaje(Papeles,c)
+
+
+  fin 
+
+  robot tipo2
+  variables
+    Papeles,Robot,r,X,Max,RMax: numero
+    Exito: boolean
+  comenzar
+    Random(r,2,93)
+    EnviarMensaje(1,r1)
+    EnviarMensaje(r,r1)
+    Random(r,2,93)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(r,r2)
+    Random(r,2,93){2,93}
+    EnviarMensaje(3,r3)
+    EnviarMensaje(r,r3)
+    X:=0 
+    repetir 3
+      RecibirMensaje(Robot,*)
+      RecibirMensaje(Exito,*)
+      si Exito= V
+        X:=X+1
+        Random(r,60,80)
+        si Robot=1
+          EnviarMensaje(r,r1)
+        sino 
+          si Robot=2
+            EnviarMensaje(r,r2)
+          sino
+            EnviarMensaje(r,r3)
+    si X=0
+      RMax:=0
+    sino
+      Max:=-1
+      repetir X
+        RecibirMensaje(r,*)
+        RecibirMensaje(Papeles,*)
+        si Papeles>Max
+          Max:=Papeles
+          RMax:=r
+    Informar('ElRobotConMasPapelesEs',RMax) 
+  fin
+variables   
+  r1,r2,r3: tipo1
+  c: tipo2
+    
+comenzar
+  AsignarArea(r1,AreaDiag)
+  AsignarArea(r2,AreaDiag)
+  AsignarArea(r3,AreaDiag)
+  
+  AsignarArea(r1,AreaPCom)
+  AsignarArea(r2,AreaPCom)
+  AsignarArea(r3,AreaPCom)
+  
+  AsignarArea(c,AreaP1)
+  AsignarArea(r1,AreaP2)
+  AsignarArea(r2,AreaP3)
+  AsignarArea(r3,AreaP4)
+  
+  AsignarArea(r1,Linea2)
+  AsignarArea(r2,Linea2)
+  AsignarArea(r3,Linea2)
+  
+  AsignarArea(r1,Linea1)
+  AsignarArea(r2,Linea1)
+  AsignarArea(r3,Linea1)
+  
+  Iniciar(r1,2,1)
+  Iniciar(r2,3,1)
+  Iniciar(r3,4,1)
+  Iniciar(c,1,1)
+  
+fin
+
+   
+

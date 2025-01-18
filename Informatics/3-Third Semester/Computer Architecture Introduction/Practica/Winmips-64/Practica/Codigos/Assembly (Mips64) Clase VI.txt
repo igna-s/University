@@ -1,0 +1,515 @@
+;1) El siguiente programa produce la salida de un mensaje predefinido en la ventana Terminal del simulador
+;WinMIPS64. Teniendo en cuenta las condiciones de control del puerto de E/S (en el resumen anterior), modifique el
+;programa de modo que el mensaje a mostrar sea ingresado por teclado en lugar de ser un mensaje fijo.
+
+
+
+.data
+texto: .asciiz "Hola, Mundo!" ; El mensaje a mostrar
+CONTROL: .word32 0x10000
+DATA: .word32 0x10008
+.text
+
+lwu $s0, DATA(r0) ; $s0 = dirección de DATA
+daddi $t0, $0, texto ; $t0 = dirección del mensaje a mostrar
+sd $t0, 0($s0) ; DATA recibe el puntero al comienzo del mensaje
+
+lwu $s1, CONTROL(r0) ; $s1 = dirección de CONTROL
+daddi $t0, $0, 6 ; $t0 = 6 -> función 6: limpiar pantalla alfanumérica
+sd $t0, 0($s1) ; CONTROL recibe 6 y limpia la pantalla
+daddi $t0, $0, 4 ; $t0 = 4 -> función 4: salida de una cadena ASCII
+sd $t0, 0($s1) ; CONTROL recibe 4 y produce la salida del mensaje
+halt
+
+
+
+V1
+
+
+.data
+TEXTO: .asciiz ""
+CONTROL: .word32 0x10000
+DATA: .word32 0x10008
+
+;El siguiente programa produce la salida de un mensaje predefinido en la ventana Terminal del simulador
+;WinMIPS64. Teniendo en cuenta las condiciones de control del puerto de E/S (en el resumen anterior), modifique el
+;programa de modo que el mensaje a mostrar sea ingresado por teclado en lugar de ser un mensaje fijo
+
+.text
+
+lwu $s0, DATA(r0) ; $s0 = dirección de DATA
+lwu $s1, CONTROL(r0) ; $s1 = dirección de CONTROL
+
+
+daddi $t0, $0, 6 ; $t0 = 6 -> función 6: limpiar pantalla alfanumérica
+sd $t0, 0($s1) ; CONTROL recibe 6 y limpia la pantalla
+
+daddi $t0, $0, 9 ; $t0 = 9 -> función :ingreso de un caracter ASCII
+sd $t0, 0($s1) ; CONTROL recibe 9 y produce la salida del mensaje
+
+lbu r30, 0($s0)   ;Paso el caracter a el ascii
+sb r30, TEXTO($0)
+
+daddi $t0,$0, TEXTO     ;Mando la dir de inicio a TEXTO
+sd $t0, 0($s0)
+
+daddi $t0, $0, 4 ; $t0 = 9 -> función : salida de un caracter ASCII
+sd $t0, 0($s1) ; CONTROL recibe 9 y produce la salida del mensaje
+
+halt
+
+
+
+
+V2
+
+
+
+.data
+TEXTO: .asciiz ""
+CONTROL: .word32 0x10000
+DATA: .word32 0x10008
+
+;El siguiente programa produce la salida de un mensaje predefinido en la ventana Terminal del simulador
+;WinMIPS64. Teniendo en cuenta las condiciones de control del puerto de E/S (en el resumen anterior), modifique el
+;programa de modo que el mensaje a mostrar sea ingresado por teclado en lugar de ser un mensaje fijo
+
+.text
+
+lwu $s0, DATA(r0) ; $s0 = dirección de DATA
+lwu $s1, CONTROL(r0) ; $s1 = dirección de CONTROL
+
+dadd $t1,$t0,$t0    ;Contador
+daddi $t2,$t0,48    ; Caracter "0"
+
+
+daddi $t0, $0, 6 ; $t0 = 6 -> función 6: limpiar pantalla alfanumérica
+sd $t0, 0($s1) ; CONTROL recibe 6 y limpia la pantalla
+
+loop: daddi $t0, $0, 9 ; $t0 = 9 -> función :ingreso de un caracter ASCII
+      sd $t0, 0($s1) ; CONTROL recibe 9 y produce la salida del mensaje
+
+      lbu $t0, 0($s0)   ;Paso el caracter a el ascii
+      beq $t2,$t0, sigo
+
+      sb $t0, TEXTO($t1)   ;Cargo el caracter en texto + deltaX
+      daddi $t1,$t1,1
+
+j loop
+
+sigo: daddi $t0,$0, TEXTO     ;Mando la dir de inicio a TEXTO
+sd $t0, 0($s0)
+
+daddi $t0, $0, 4 ; $t0 = 9 -> función : salida de un caracter ASCII
+sd $t0, 0($s1) ; CONTROL recibe 9 y produce la salida del mensaje
+
+halt
+
+
+
+
+; Nota.... Hubo confucion en la subrutina que llama a la otra, corregido en 3
+
+2).data
+TEXTO: .asciiz "CERO   "
+       .asciiz "UNO    "
+       .asciiz "DOS    "
+       .asciiz "TRES   "
+       .asciiz "CUATRO "
+       .asciiz "CINCO  "
+       .asciiz "SEIS   "
+       .asciiz "SIETE  "
+       .asciiz "OCHO   "
+       .asciiz "NUEVE  "
+CONTROL: .word32 0x10000
+DATA: .word32 0x10008
+
+
+
+;Escriba un programa que utilice sucesivamente dos subrutinas: La primera, denominada ingreso, debe solicitar el
+;ingreso por teclado de un número entero (de un dígito), verificando que el valor ingresado realmente sea un dígito. La
+;segunda, denominada muestra, deberá mostrar en la salida estándar del simulador (ventana Terminal) el valor del
+;número ingresado expresado en letras (es decir, si se ingresa un ‘4’, deberá mostrar ‘CUATRO’). Establezca el pasaje
+;de parámetros entre subrutinas respetando las convenciones para el uso de los registros y minimice las detenciones
+;del cauce (ejercicio similar al ejercicio 6 de Práctica 2).
+
+
+
+.text
+lwu $s0, DATA($0)
+lwu $s1, CONTROL($0)
+
+
+daddi $t0, $0, 6 ; $t0 = 6 -> función 6: limpiar pantalla alfanumérica
+sd $t0, 0($s1) ; CONTROL recibe 6 y limpia la pantalla
+
+daddi $a0, $0, TEXTO
+jal Ingreso
+halt
+
+;---------------------------------------------------------
+
+Ingreso: daddi $t0,$0,8 
+         sd $t0, 0($s1)   ;Guardo numero
+
+         lw $a1, 0($s0)
+         daddi $t0, $0,10
+         
+         slt $t0, $a1, $t0
+         
+         beq $0, $t0, FAINA
+         
+         dadd $s2,$0,$ra
+         jal Muestra
+         dadd $ra, $0,$s2
+
+FAINA: jr $ra
+         
+
+;---------------------------------------------------------
+
+Muestra: daddi $t0, $0, 8
+         dmul $t0, $t0, $a1  
+
+         dadd $t0, $a0, $t0  ;Dir efectiva en control
+         sd $t0, 0($s0)
+
+         daddi $t0, $0, 4 ; $t0 = 4 -> función 4: ascii
+         sd $t0, 0($s1) ; 
+
+jr $ra
+
+
+
+
+3) ;Escriba un programa que realice la suma de dos números enteros (de un dígito cada uno) utilizando dos subrutinas: La
+;denominada ingreso del ejercicio anterior (ingreso por teclado de un dígito numérico) y otra denominada
+;resultado, que muestre en la salida estándar del simulador (ventana Terminal) el resultado numérico de la suma de
+;los dos números ingresados (ejercicio similar al ejercicio 7 de Práctica 2)
+
+
+
+
+.data
+CONTROL: .word32 0x10000
+DATA: .word32 0x10008
+
+
+
+.text
+
+lwu $s1, CONTROL($0)
+lwu $s0, DATA ($0)
+
+
+daddi $t0, $0, 6 ; $t0 = 6 -> función 6: limpiar pantalla alfanumérica
+sd $t0, 0($s1) ; CONTROL recibe 6 y limpia la pantalla
+
+jal Suma
+
+halt
+
+;---------------------------------------------------------
+
+Ingreso: daddi $t0,$0,8 
+         sd $t0, 0($s1)   ;Guardo numero
+
+         lw $v1, 0($s0)
+         daddi $t0, $0,10
+         
+         slt $v0, $v1, $t0
+         
+         beq $0, $v0, FAINA
+         
+FAINA: jr $ra
+         
+
+;---------------------------------------------------------
+
+
+
+Suma: dadd $s2 ,$0, $ra
+
+      jal Ingreso
+      beq $v0, $0, PIZZA
+
+      dadd $t2, $0, $v1
+      jal Ingreso
+      beq $v0, $0, PIZZA
+
+      dadd $t3, $t2, $v1
+      sd $t3, 0($s0)
+
+      daddi $t0, $0, 2
+      sd $t0, 0($s1)
+
+PIZZA: dadd $ra, $s2, $0
+       jr $ra
+
+
+
+
+4) ;Escriba un programa que solicite el ingreso por teclado de una clave (sucesión de cuatro caracteres) utilizando la
+;subrutina char de ingreso de un carácter. Luego, debe comparar la secuencia ingresada con una cadena almacenada
+;en la variable clave. Si las dos cadenas son iguales entre si, la subrutina llamada respuesta mostrará el texto
+;“Bienvenido” en la salida estándar del simulador (ventana Terminal). En cambio, si las cadenas no son iguales, la
+;subrutina deberá mostrar “ERROR” y solicitar nuevamente el ingreso de la clave.
+
+
+
+
+.data
+TEXTO:  .asciiz "BIENVENIDO"
+TEXTO2: .asciiz "CHE, NO TENGO TODO EL DIA"
+CLAVE: .asciiz "HOLA"
+AUX: .asciiz "0000"
+CONTROL: .word32 0x10000
+DATA: .word32 0x10008
+
+
+
+.text
+
+lwu $s0, DATA($0)
+lwu $s1, CONTROL($0)
+
+
+daddi $t0, $0, 6 ; Limpio terminal
+sd $t0, 0($s1)
+
+
+loop:  daddi $t1, $0, 0
+
+bucle: jal caracter
+       sb $v0, AUX($t1)
+       daddi $t1, $t1, 1
+
+       slti $t0, $t1, 4
+       beq $0, $t0, Sigo
+       j bucle
+
+Sigo:  dadd $t0, $0,$0
+       dadd $t1, $0,$0
+       lwu $t0, AUX($0)
+       lwu $t1, CLAVE($0)
+
+       beq $t0, $t1, SI
+ 
+       daddi $t0, $0, TEXTO2 ; Paso inicio
+       sd $t0, 0($s0)
+
+
+       daddi $t0, $0, 4 ; Imprimo
+       sd $t0, 0($s1)
+      
+       j loop
+
+SI:    daddi $t0, $0, TEXTO ; Paso inicio
+       sd $t0, 0($s0)
+
+
+       daddi $t0, $0, 4 ;Imprimo
+       sd $t0, 0($s1)
+
+halt
+
+
+;---------------------------------------------
+
+
+
+caracter: daddi $t0, $0, 9
+          sd $t0, 0($s1)
+
+
+          lbu $v0, 0($s0)
+          jr $ra 
+
+
+
+
+
+
+
+;5)Escriba un programa que calcule el resultado de elevar un valor en punto flotante a la potencia indicada por un
+;exponente que es un número entero positivo. Para ello, en el programa principal se solicitará el ingreso de la base (un
+;número en punto flotante) y del exponente (un número entero sin signo) y se deberá utilizar la subrutina
+;a_la_potencia para calcular el resultado pedido (que será un valor en punto flotante). Tenga en cuenta que
+;cualquier base elevada a la 0 da como resultado 1. Muestre el resultado numérico de la operación en la salida estándar
+;del simulador (ventana Terminal).
+
+.data
+CONTROL: .word32 0x10000
+DATA: .word32 0x10008
+
+
+
+.text
+lwu $v0, DATA($0)
+LWU $v1, CONTROL($0)
+
+daddi $t0, $0, 8
+sd $t0, 0($v1)
+
+ld $a1, 0($v0)
+
+daddi $t0, $0, 8
+sd $t0, 0($v1)
+
+l.d f1, 0($v0)
+
+jal alapotencia
+
+
+      
+       s.d f2, 0($v0)
+
+       daddi $t0, $0, 3 ;Imprimo
+       sd $t0, 0($v1)
+
+
+
+
+halt
+
+
+
+
+
+
+
+;--------------------------------------
+
+
+
+alapotencia:   mtc1 $0, f0
+     cvt.d.l f0, f0
+     daddi $t1, $0,1
+     mtc1 $t1, f2
+     cvt.d.l f2, f2
+ 
+beq $a1, $0, Es1
+
+Loop: mul.d f2, f2, f1
+
+
+     daddi $a1, $a1, -1
+     beq $a1,$0, Fin
+     j Loop
+
+
+Es1:  add.d f2, f0, f2
+Fin: jr $ra
+
+
+
+
+
+
+
+
+
+;6) El siguiente programa produce una salida estableciendo el color de un punto de la pantalla gráfica (en la ventana
+;Terminal del simulador WinMIPS64). Modifique el programa de modo que las coordenadas y color del punto sean
+;ingresados por teclado.
+
+
+.data
+coorX: .byte 24 ; coordenada X de un punto
+coorY: .byte 24 ; coordenada Y de un punto
+color: .byte 255, 0, 255, 0 ; color: máximo rojo + máximo azul => magenta
+CONTROL: .word32 0x10000
+DATA: .word32 0x10008
+.text
+lwu $s6, CONTROL(r0) ; $s6 = dirección de CONTROL
+lwu $s7, DATA(r0) ; $s7 = dirección de DATA
+daddi $t0, $0, 7 ; $t0 = 7 -> función 7: limpiar pantalla gráfica
+sd $t0, 0($s6) ; CONTROL recibe 7 y limpia la pantalla gráfica
+lbu $s0, coorX(r0) ; $s0 = valor de coordenada X
+sb $s0, 5($s7) ; DATA+5 recibe el valor de coordenada X
+lbu $s1, coorY(r0) ; $s1 = valor de coordenada Y
+sb $s1, 4($s7) ; DATA+4 recibe el valor de coordenada Y
+lwu $s2, color(r0) ; $s2 = valor de color a pintar
+sw $s2, 0($s7) ; DATA recibe el valor del color a pintar
+daddi $t0, $0, 5 ; $t0 = 5 -> función 5: salida gráfica
+sd $t0, 0($s6) ; CONTROL recibe 5 y produce el dibujo del punto
+halt
+
+
+
+
+
+
+Version MASOKA /// Se puede hacer + facil
+
+
+.data
+coorX: .byte 24 ; coordenada X de un punto
+coorY: .byte 24 ; coordenada Y de un punto
+color: .byte 255, 0, 255, 0 ; color: máximo rojo + máximo azul => magenta
+CONTROL: .word32 0x10000
+DATA: .word32 0x10008
+
+.text
+lwu $s6, CONTROL(r0) ; $s6 = dirección de CONTROL
+lwu $s7, DATA(r0) ; $s7 = dirección de DATA
+
+
+daddi $t0, $0, 7 
+sd $t0, 0($s6) 
+
+
+daddi $t0, $0, 8 
+sd $t0, 0($s6) 
+
+lbu $s0, 0($s7)
+
+daddi $t0, $0, 8 
+sd $t0, 0($s6) 
+
+lbu $s1, 0($s7)
+
+
+daddi $t0, $0, 8 
+sd $t0, 0($s6) 
+
+lbu $s2, 0($s7)
+sb $s2, color($t1)
+
+daddi $t0, $0, 8 
+sd $t0, 0($s6) 
+
+lbu $s2, 0($s7)
+sb $s2, color($t1)
+daddi $t1,$t1, 1
+
+daddi $t0, $0, 8 
+sd $t0, 0($s6) 
+
+lbu $s2, 0($s7)
+sb $s2, color($t1)
+daddi $t1,$t1, 1
+
+daddi $t0, $0, 8 
+sd $t0, 0($s6) 
+
+lbu $s2, 0($s7)
+sb $s2, color($t1)
+daddi $t1,$t1, 1
+
+daddi $t0, $0, 6 
+sd $t0, 0($s6)              
+
+
+lwu $s2,color ($0)
+
+sb $s0, 5($s7) ; DATA+5 recibe el valor de coordenada X
+
+sb $s1, 4($s7) ; DATA+4 recibe el valor de coordenada Y
+
+sw $s2, 0($s7) ; DATA recibe el valor del color a pintar
+
+daddi $t0, $0, 5 ; $t0 = 5 -> función 5: salida gráfica
+sd $t0, 0($s6) ; CONTROL recibe 5 y produce el dibujo del punto
+halt
+

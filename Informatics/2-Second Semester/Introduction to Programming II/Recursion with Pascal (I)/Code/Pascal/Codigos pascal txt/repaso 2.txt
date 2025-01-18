@@ -1,0 +1,219 @@
+program eje02;
+Uses
+  sysutils;
+type
+
+{ ---------- C. CREACION LISTA ---------- }
+  REG_lista = record
+    codVuelo: String;
+    cantMillas: integer;
+    DNI: longint;
+    nombreApellido: string;
+    clase: string;
+  end;
+
+  lista = ^nodoLista;
+  nodoLista = record
+    dato: REG_lista;
+    sig: lista;
+  end;
+
+ //
+str10=string[10];
+{DATOS DE PUNTOS Y CODIGO DE VUELO}
+  pyc=record
+    puntos:integer;
+    codigo:str10;
+  end;
+{LISTA DE PUNTOS CON DATOS DE PUNTAJE Y CODIGO Y SIG}
+  listap=^nodo;
+  nodo=record
+    per:pyc;
+    sig:listap;
+  end;
+{DATOS DE PERSONA Y SU LISTA DE PUNTOS}
+  persona=record
+    nombr_apell:string;
+    listapuntaje:listap
+  end;
+
+{ARBOL DE PASAJEROS ORDENADO POR DNI}
+  arbol=^pasajero;
+  pasajero=record
+    dni:longint;
+    dato:persona;
+    HI:arbol;
+    HD:arbol;
+  end;
+{ ---------- F. CREACION LISTA ---------- }
+
+
+{ ---------- C. CARGAR LISTA ---------- }
+procedure pregunta (var r: REG_lista);
+  var
+    v : array [1..2] of string;
+    vl : array [1..26] of Char;
+  begin
+    vl[1]:= 'A';  vl[2]:= 'B';  vl[3]:= 'C';  vl[4]:= 'D';  vl[5]:= 'E';
+    vl[6]:= 'F';  vl[7]:= 'G';  vl[8]:= 'H';  vl[9]:= 'I';  vl[10]:= 'J';
+    vl[11]:= 'K'; vl[12]:= 'L'; vl[13]:= 'M'; vl[14]:= 'N'; vl[15]:= 'O';
+    vl[16]:= 'P'; vl[17]:= 'Q'; vl[18]:= 'R'; vl[19]:= 'S'; vl[20]:= 'T';
+    vl[21]:= 'U'; vl[22]:= 'V'; vl[23]:= 'W'; vl[24]:= 'X'; vl[25]:= 'Y';
+    vl[26]:= 'Z';
+
+    r.codVuelo:= Concat(vl[random(25)+1],vl[random(25)+1],IntToStr(random(3001)+1000)); //Codigo de vuelo
+    r.cantMillas:= random(20000)+1; //Millas
+    r.DNI:= random(10000000)+30000000; //DNI
+    r.nombreApellido:= Concat('Pasajero-',IntToStr(r.DNI)); //Nombre y Apellido
+    v[1]:= 'ejecutiva';
+    v[2]:= 'turista';
+    r.clase:= v[random(2)+1]; //Clase
+  end;
+
+procedure crearLista (var l: lista; r: REG_lista);
+var
+  nue, ant, act: lista;
+begin
+  new(nue);
+  nue^.dato:= r;
+  nue^.sig:= nil;
+
+  if (l = nil) then
+    l:= nue
+  else
+    begin
+      ant:= l;
+      act:= l;
+
+      while (act <> nil) and (act^.dato.codVuelo < nue^.dato.codVuelo) do
+        begin
+          ant:= act;
+          act:= act^.sig;
+        end;
+
+        if (ant = act) then
+          l:= nue
+        else
+          ant^.sig:= nue;
+        nue^.sig:= act;
+    end;
+end;
+
+procedure cargarLista (var l: lista);
+var
+  r: REG_lista;
+  x: Integer;
+begin
+  for x:=1 to 30 do
+    begin
+      pregunta(r);
+      crearlista(l,r);
+    end;
+end;
+{ ---------- F. CARGAR LISTA ---------- }
+
+
+{ ---------- C. IMPRIMIR LISTA ---------- }
+procedure imprimir(r: REG_lista);
+begin
+  with r do
+    writeln('Cod. Vuelo: ',codVuelo,' | Millas: ',cantMillas,' | DNI: ',DNI,' | Nombre y Apellido: ',nombreApellido,' | Clase: ',clase);
+end;
+
+procedure imprimirLista(l: lista);
+begin
+  while (l <> nil) do
+    begin
+      imprimir(l^.dato);
+      l:= l^.sig;
+    end;
+end;
+{ ---------- F. IMPRIMIR LISTlistapuntajeA ---------- }
+
+//NUEVOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+ procedure insrt_lista(var l:listap;p:string;m:integer;clase:string);
+var
+   a:listap;
+begin
+  new(a);
+  a^.per.codigo:=p;
+  if clase = 'turista'
+    then a^.per.puntos:=m*25
+      else a^.per.puntos:=m*100;
+  a^.sig:=l;
+  l:=a;
+end;
+
+procedure insertararbol(i:REG_lista;var a:arbol);
+begin
+  if a = nil then begin
+    new(a);
+    a^.dni:=i.Dni;
+    a^.dato.listapuntaje:=nil;
+    a^.dato.nombr_apell:=i.nombreApellido;
+    insrt_lista(a^.dato.listapuntaje,i.codVuelo,i.cantMillas,i.clase);
+    a^.HI:=NIL;
+    a^.HD:=NIL;
+  end
+  else if (a^.dni > i.dni) then insertararbol(i,a^.HI)
+    else if (a^.dni < i.dni) then insertararbol(i,a^.HD)
+      else
+        insrt_lista(a^.dato.listapuntaje,i.codVuelo,i.cantMillas,i.clase);
+    end;
+
+
+procedure arbolenteros(l:lista;var a:arbol);
+  begin
+    while l<>nil do begin
+      insertararbol(l^.dato,a);
+      l:=l^.sig;
+    end;
+  end;
+ function suma(l:listap):integer;
+ begin
+    suma:=0 ;
+    while l<>nil do begin
+    suma:=suma+(l^.per.puntos) ;
+    l:=l^.sig;
+    end;
+end;
+
+
+Procedure buscarmax( a: arbol;var m:integer;var dni:integer );
+var
+   x:integer;
+begin
+  if ( a <> nil ) then begin
+    buscarmax (a^.HI,m,dni);
+    x:= suma(a^.dato.listapuntaje) ;
+    if x>m then begin
+    m:=x;
+    dni:=a^.dni;
+    END;
+    buscarmax (a^.HD,m,dni);
+  end;
+end;
+
+var
+   max:integer;
+  l: lista;
+  a: arbol;
+  dni: longint;
+begin
+  Randomize;
+  max:=-1;
+  a:=nil;
+  l:= nil;
+  cargarLista(l);
+
+
+  arbolenteros(l,a) ;
+  writeln('------- IMPRIMIR LISTA -------');
+  imprimirLista(l);
+  writeln();
+  writeln('El ganador del premio por mayor puntaje es: ');
+  buscarmax( a, max,dni);
+  writeln('Dni:' , dni ,  ' con ' , max ,' puntos');
+  readln;
+end.
+{ ---------- F. PROGRAMA PRINCIPAL----------}  

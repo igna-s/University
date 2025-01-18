@@ -1,0 +1,2 @@
+ERROR COMP96_0651: "Operator "+" returning 'BIT_VECTOR' is not defined for such operands." "C:/Users/User/Desktop/6 Semestre/Villanogarcia/Trabajo N°5/Sumador8/src/Test.vhd" 33 36
+ERROR COMP96_0077: "Undefined type of expression. Expected type 'BIT_VECTOR'." "C:/Users/User/Desktop/6 Semestre/Villanogarcia/Trabajo N°5/Sumador8/src/Test.vhd" 33 29

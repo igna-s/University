@@ -1,0 +1,122 @@
+org 1000h
+TABLA db "TiagoIgnacio"
+SUMA db 0
+VOCALES DB "AEIOUaeiou"
+
+
+org 3000h
+
+SWAP:push bx
+     push cx
+     push dx
+
+     mov bx,cx
+     mov cl,[bx]
+     
+     push bx
+     
+     mov bx,dx
+     mov dl,[bx]
+     
+
+     mov [bx],cl
+     
+     pop bx
+     mov [bx],dl
+     
+     pop dx
+     pop cx
+     pop bx
+
+     ret
+     
+     
+VOCAL:push ax
+      mov bx,SP
+      add bx,4
+      mov al,[bx]
+      
+      mov bx,OFFSET VOCALES
+      add bx,9
+      
+      repetir: cmp al,[bx]
+               jz fin
+               dec bx
+               cmp bx,OFFSET VOCALES
+               jnz repetir
+               
+               cmp al,[bx]
+               jz fin
+               mov bl,00h
+               jmp fin2
+               fin: mov bl,0FFH
+               
+               fin2:pop ax
+                    ret
+               
+             
+               
+      
+     
+
+org 2000h
+  mov cx,OFFSET TABLA
+  mov dx,OFFSET SUMA -1
+  mov al, SUMA
+  
+  MIENTRAS:push ax
+           call SWAP
+           mov bx,cx
+           mov al,[bx]
+           push ax
+           call VOCAL
+           pop ax
+           
+           cmp bl,0FFH
+           
+           pop ax
+           jnz seguir ;suma
+           inc ax
+           
+           
+    seguir:cmp cx,dx
+           jz fin_mientras
+           push ax
+           mov bx,dx
+           mov al,[bx]
+           push ax
+           call VOCAL
+           pop ax
+           
+           cmp bl,0FFH
+           
+           pop ax
+           jnz fin_mientras ;suma
+           inc ax
+           
+     fin_mientras: CMP CX,DX
+                   JZ FIN
+                   INC CX
+                   CMP CX,DX
+                   JZ FIN
+                   DEC DX
+                   CMP CX,DX
+                   JNZ MIENTRAS
+                   
+                  
+     push ax 
+     mov bx,dx
+     mov al,[bx]
+     push ax
+     call VOCAL
+     pop ax
+           
+    cmp bl,0FFH
+    pop ax
+    jnz FIN
+    inc ax
+  
+FIN:mov bx,OFFSET SUMA
+    mov [bx],ax
+    hlt
+end

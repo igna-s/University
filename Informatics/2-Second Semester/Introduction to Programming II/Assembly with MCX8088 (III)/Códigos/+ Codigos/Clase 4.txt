@@ -1,0 +1,114 @@
+;Ejercicio 5.  Dado los siguientes datos en la memoria de datos, 
+;escriba un programa en Assembler que recorra la tabla y llame a una subrutina 
+;que sume el VALOR a cada posición de TABLA (recibe ambos valores por pila).
+
+;Decida qué pasaje de parámetros es más conveniente para cada dato. 
+		
+ORG 1000H
+TABLA 	DB 	1,4,5,3,10,7,14,78,23,18
+VALOR	DB 	3
+
+
+
+; Faltarian los 4 push/ pop para mayor reutilizabilizidad (No agregado por cuestiones visuales)
+org 3000h
+
+Subru: mov bx, SP
+       add bx,4
+       mov cx,[bx] ;cx : 3
+       sub bx,2
+       mov bx,[bx]
+       add [bx],cx
+ret
+
+
+
+
+
+
+
+org 2000h
+mov ch,0
+mov cl,VALOR
+mov dx,Offset TABLA
+
+
+
+volver: push cx
+        push dx 
+        call Subru
+        pop dx
+        pop cx
+        
+        inc dx
+        cmp dx, Offset VALOR
+        jnz volver
+
+hlt 
+end
+
+
+////////////////////////////////////////////////
+
+
+;Ejercicio 6.  Escriba una subrutina ES_IMPAR, que determina si un número (16 bits) es par o impar. 
+
+;La rutina debe recibir el número por valor a través de la pila.
+;La subrutina debe retornar vía registro el valor 00H si el número es par, o 01H en caso contrario.
+
+;Implemente un programa que utilizando la subrutina cuente la cantidad total de números impares 
+;en una tabla y almacene el resultado final en memoria principal.
+
+org 1000h
+
+Tabla dw 1,2,3,4,5,6,7,8,9
+Total dw 0
+
+
+; Faltan los 4 push/ pop, no agregados por cuestioners de visibilidad
+
+org 3000h
+
+ES_IMPAR: mov ax,00h
+          mov bx,sp
+          add bx,2
+          mov bx,[BX]
+          
+     Resto: sub bx,2     
+           jnc Resto
+           
+           add bx,2
+           cmp bx,0
+           jz fin
+           mov ax,01h
+          
+fin: ret
+
+
+
+
+org 2000h
+
+mov dx, Offset Tabla
+mov cx,0
+
+volver: mov bx, dx
+        mov bx,[bx]
+        
+        push bx
+        Call ES_IMPAR
+        pop bx
+        
+        cmp ax,0       ;Se fija si es par
+        jz continue
+        inc cx
+        
+    continue:add dx, 2
+             cmp dx, Offset Total
+             jnz volver
+
+mov bx, Offset Total
+mov [bx], cx
+
+hlt
+end

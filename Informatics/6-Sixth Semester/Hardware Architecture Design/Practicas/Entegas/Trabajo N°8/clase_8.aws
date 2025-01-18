@@ -1,0 +1,11 @@
+[Version]
+Version=15.0
+[Designs]
+utils=.\Utils\Utils.adf
+[Browser]
+sort=order
+mode=none
+[Order]
+order=1
+[Expand]
+utils=1

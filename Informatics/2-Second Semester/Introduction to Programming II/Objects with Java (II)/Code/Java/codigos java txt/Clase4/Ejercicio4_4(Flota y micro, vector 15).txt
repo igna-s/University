@@ -1,0 +1,47 @@
+import java.util.Scanner;
+public class Ejercicio4_4{
+  public static void main(String[] args){
+    Scanner in = new Scanner(System.in);       
+    Micro Bus, Aux; 
+    Flota Fleet;
+    String Patente, Destino, HoraSalida;
+    int Asientos;
+    
+    //inicio
+    Fleet= new Flota();
+    Aux= new Micro();
+    System.out.println("Ingrese la PATENTE: ");
+    Patente= in.next();  
+     while (!Patente.equals("ZZZ000") && !Fleet.estaCompleta()){
+      System.out.println("Ingrese Destino: ");
+      Destino= in.next();   
+      System.out.println("Ingrese Hora Salida: ");
+      HoraSalida= in.next();   
+      System.out.println("Ingrese Asientos: ");
+      Asientos= in.nextInt();
+      Bus= new Micro(Patente,Destino,HoraSalida,Asientos);
+      Fleet.agregarMicro(Bus); 
+      
+      System.out.println("Ingrese otra PATENTE: ");
+      Patente= in.next();
+    }
+    if (Fleet.estaCompleta()) System.out.println ("Micro lleno"); 
+    
+    System.out.println("Ingrese PATENTE para eliminar: ");
+    Patente= in.next();
+    if (Fleet.buscarMicro(Patente)!=null){ System.out.println("Exito");
+         Fleet.borrarMicro(Patente);
+         }
+    else System.out.println("No encontrado");
+    
+    System.out.println("Ingrese DESTINO para informar: ");
+    Destino= in.next();
+    Aux= Fleet.buscarMicroPorDestino(Destino);
+    if (Aux==null) System.out.println("No encontado");
+    else {System.out.println("Datos: ");
+          System.out.print("Patente: "+Aux.getPatente()+" Hora: "+Aux.getHora());
+    }
+    in.close();
+  } 
+}
+

@@ -1,0 +1,177 @@
+http://deletesql.com/viewforum.php?f=5&sid=71fcf1814fc84e5fe57632c61e3865d4
+
+
+Estructura mínima de almacenamiento:
+
+Tabla:
+
+Objeto de almacenamiento perteneciente a una BD. Es una estructura en forma de cuadrante donde se almacenan registros o filas de datos. Cada tabla tiene un nombre único en la BD.
+
+Registro o fila:
+
+Cada una de las filas de una tabla, esta compuesto por campos o atributos.
+
+Campo:
+
+Cada uno de los “cajoncitos” de un registro donde se guardan los datos. Cada campo tiene un nombre único para la tabla de la cual forma parte, además es de un tipo (naturaleza) determinado, por tanto no podemos guardar limones en el cajón de las naranjas, en términos informáticos y a modo de ejemplo, no encontraremos un dato alfanumérico (letras y números) en un campo diseñado para guardar datos numéricos. Dedicaremos una lección a los tipos de datos más adelante.
+
+
+Ambiente de prueba online:
+http://deletesql.com/viewtopic.php?f=9&t=7&p=10
+
+select *
+  from EMPLEADOS
+
+
+select NOMBRE , APELLIDOS
+  from EMPLEADOS
+
+
+select NOMBRE , APELLIDOS
+  from EMPLEADOS
+ where SALARIO > 1350
+
+where SALARIO >= 1350 and SALARIO <= 1450
+where SALARIO between 1350 and 1450
+
+AND OR NOT
+
+LIKE
+select *
+  from EMPLEADOS
+ where APELLIDOS like 'R%' 
+
+
+
+ORDER BY
+ select NOMBRE,APELLIDOS,SALARIO
+ from EMPLEADOS
+ order by SALARIO     DESC
+
+o por numero de orden 
+
+
+Funciones de agregación
+select sum(SALARIO)
+  from EMPLEADOS
+
+select count(*)
+  from EMPLEADOS
+
+select sum(SALARIO) / count(*) as MEDIA_SALARIOS
+  from EMPLEADOS
+
+select avg(SALARIO) as MEDIA_SALARIOS
+  from EMPLEADOS
+
+
+
+
+GROUP BY
+
+ select SEXO , count(*) as EMPLEADOS
+    from EMPLEADOS
+group by SEXO
+
+DISTINCT
+select distinct SEXO
+  from EMPLEADOS
+
+Cuanto ejemplares hay x especie y sexo?
+select * from MASCOTAS   
+
+
+SELECT: ¿Qué datos nos piden?
+FROM: ¿Dónde están los datos?
+WHERE: ¿Qué requisitos deben cumplir los registros?
+GROUP BY: ¿Como deben agruparse los datos?
+HAVING: ¿Qué requisitos deben cumplir los cálculos de totalización?
+ORDER BY: ¿Por que columnas debe ordenarse el resultado?
+
+
+
+JOIN
+producto cartesiano
+select *
+  from CAMISAS , PANTALONES
+
+select CAMISA , PANTALON
+  from CAMISAS , PANTALONES
+
+select count(*) as COMBINACIONES
+  from CAMISAS , PANTALONES
+
+
+Clave primaria y clave foranea
+select * from CURSOS
+select * from PROFESORES
+
+cardinalidad 1 a N
+
+select *
+  from CURSOS C, PROFESORES P 
+ where C.ID_PROFE = P.ID_PROFE 
+
+
+
+INSERT
+INSERT INTO nombre_tabla (lista de campos separados por comas) 
+VALUES (lista de datos separados por comas)
+
+Ej
+insert into ALUMNOS (ID_ALUMNO , NOMBRE , APELLIDOS , F_NACIMIENTO) 
+values (1 , 'Pablo' , 'Hernandaz Mata' , '1995-03-14')
+
+
+UPDATE
+UPDATE nombre_tabla 
+   SET campo1 = valor1,
+       campo2 = valor2,
+       ...
+       campoN = valorM
+WHERE condicines
+
+Ej
+update EMPLEADOS
+   set SALARIO = SALARIO * 1.02
+ where SALARIO < 3000 
+
+
+DELETE
+DELETE
+  FROM nombre_tabla
+ WHERE condiniones
+
+Ej
+delete from MACOTAS
+ where ESTADO = 'B'
+
+
+
+Como se crean las tablas? diseño de Entidad Relación
+create table EQUIPOS (
+  ID_EQUIPO int(10)     not null,
+  EQUIPO    varchar(30) not null
+); 
+
+alter table EQUIPOS add constraint primary key EQUIPOS_PK (ID_EQUIPO); 
+
+como las borro
+DROP TABLE EQUIPOS;
+
+como se crea una BD?
+CREATE DATABASE taller2DB;
+use taller2DB;
+
+como se borra una BD?
+DROP DATABASE taller2DB;
+
+
+
+
+
+
+
+
+
+

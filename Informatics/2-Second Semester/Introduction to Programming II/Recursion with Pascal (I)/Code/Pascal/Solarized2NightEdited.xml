@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Lazarus>
+    <ColorSchemes Version="11">
+      <Names Count="1">
+        <Item1 Value="Solarized2NightEdited"/>
+      </Names>
+      <Globals Version="11">
+        <SchemeSolarized2NightEdited>
+          <ahaGutter Background="5522697"/>
+          <ahaDefault Background="3549952" Foreground="8683626"/>
+          <ahaErrorLine Background="131539" Foreground="clWhite" BackPriority="500" ForePriority="500" FramePriority="500"/>
+          <ahaMouseLink Foreground="35253" FrameColor="35253" FrameEdges="sfeBottom" BackPriority="2500" ForePriority="1500" FramePriority="7500"/>
+          <ahaTextBlock Background="6180106" BackPriority="7000" ForePriority="7000" FramePriority="7000"/>
+          <ahaWordGroup FrameColor="7485139" BackPriority="3000" ForePriority="3000" FramePriority="3000"/>
+          <ahaFoldedCode Background="8468179" Foreground="8468179" FrameColor="8468179" BackPriority="8000" ForePriority="8000" FramePriority="8000" FrameAlpha="255"/>
+          <ahaRightMargin Foreground="clSilver"/>
+          <ahaTopInfoHint Background="clSkyBlue" Foreground="clBlack" FrameColor="clMaroon" FrameStyle="slsDashed" FrameEdges="sfeBottom" BackPriority="8500" ForePriority="8500" FramePriority="8500"/>
+          <ahaBracketMatch Background="4471317" Foreground="35253" BackPriority="3000" ForePriority="3000" FramePriority="3000"/>
+          <ahaHighlightAll Background="clYellow" BackPriority="4000" ForePriority="4000" FramePriority="4000"/>
+          <ahaModifiedLine Foreground="39301" FrameColor="35253"/>
+          <ahaHighlightWord FrameColor="39301" BackPriority="3000" ForePriority="3000" FramePriority="3000"/>
+          <ahaLineHighlight Background="5522697" BackPriority="500" ForePriority="500" FramePriority="500"/>
+          <ahaSyncroEditCur FrameColor="8533715" BackPriority="6000" ForePriority="6000" FramePriority="6000"/>
+          <ahaExecutionPoint Background="10066380" Foreground="clBlack" BackPriority="500" ForePriority="500" FramePriority="500"/>
+          <ahaSyncroEditArea Background="5652743" BackPriority="2000" ForePriority="2000" FramePriority="2000"/>
+          <ahaSyncroEditSync FrameColor="3093212" BackPriority="6000" ForePriority="6000" FramePriority="6000"/>
+          <ahaCodeFoldingTree Foreground="8616549" FrameColor="8468179"/>
+          <ahaGutterSeparator Foreground="clGray"/>
+          <ahaIfDefNodeActive BackPriority="9050" ForePriority="9050" FramePriority="9050"/>
+          <ahaSyncroEditOther FrameColor="13798182" BackPriority="6000" ForePriority="6000" FramePriority="6000"/>
+          <ahaTemplateEditCur FrameColor="10002730" BackPriority="6000" ForePriority="6000" FramePriority="6000"/>
+          <ahaIfDefBlockActive BackPriority="9000" ForePriority="9000" FramePriority="9000"/>
+          <ahaTemplateEditSync FrameColor="8533715" BackPriority="6000" ForePriority="6000" FramePriority="6000"/>
+          <ahaEnabledBreakpoint Background="12939371" Foreground="clBlack" BackPriority="500" ForePriority="500" FramePriority="500"/>
+          <ahaIfDefNodeInactive BackPriority="9150" ForePriority="9150" FramePriority="9150"/>
+          <ahaIncrementalSearch Background="clBlack" Foreground="16580045" BackPriority="4000" ForePriority="4000" FramePriority="4000"/>
+          <ahaInvalidBreakpoint Background="39302" Foreground="clWhite" BackPriority="500" ForePriority="500" FramePriority="500"/>
+          <ahaTemplateEditOther FrameColor="clMaroon" BackPriority="6000" ForePriority="6000" FramePriority="6000"/>
+          <ahaUnknownBreakpoint Background="13486335" Foreground="clBlack" BackPriority="500" ForePriority="500" FramePriority="500"/>
+          <ahaDisabledBreakpoint Background="16762823" Foreground="clGray" BackPriority="500" ForePriority="500" FramePriority="500"/>
+          <ahaIfDefBlockInactive Foreground="clSilver" BackPriority="9050" ForePriority="9050" FramePriority="9050" ForeAlpha="165"/>
+          <ahaIfDefNodeTmpActive BackPriority="9050" ForePriority="9050" FramePriority="9050"/>
+          <ahaIfDefBlockTmpActive BackPriority="9000" ForePriority="9000" FramePriority="9000"/>
+          <ahaSpecialVisibleChars BackPriority="8100" ForePriority="8100" FramePriority="8100"/>
+        </SchemeSolarized2NightEdited>
+      </Globals>
+      <LangObjectPascal Version="11">
+        <SchemeSolarized2NightEdited>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+          <Number Foreground="10068523"/>
+          <String Foreground="10068523"/>
+          <Comment Foreground="9868419" Style="fsItalic"/>
+          <Directive Foreground="clTeal"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <IDE_Directive Foreground="13798182"/>
+          <Reserved_word Foreground="13798182" Style="fsBold"/>
+        </SchemeSolarized2NightEdited>
+      </LangObjectPascal>
+      <LangLazarus_Form_definition Version="11">
+        <SchemeSolarized2NightEdited>
+          <Key Style="fsBold"/>
+          <Number Foreground="clBlue"/>
+          <String Foreground="clBlue"/>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+        </SchemeSolarized2NightEdited>
+      </LangLazarus_Form_definition>
+      <LangXML_document Version="11">
+        <SchemeSolarized2NightEdited>
+          <Text Foreground="clBlack" Style="fsBold"/>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <Element_Name Foreground="clMaroon" Style="fsBold"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <CDATA_Section Foreground="clOlive" Style="fsItalic"/>
+          <Attribute_Name Foreground="clMaroon"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <Attribute_Value Foreground="clNavy" Style="fsBold"/>
+          <DOCTYPE_Section Foreground="clBlue" Style="fsItalic"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <Entity_Reference Foreground="clBlue" Style="fsBold"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+          <Processing_Instruction Foreground="clBlue"/>
+          <Namespace_Attribute_Name Foreground="clRed"/>
+          <Namespace_Attribute_Value Foreground="clRed" Style="fsBold"/>
+        </SchemeSolarized2NightEdited>
+      </LangXML_document>
+      <LangHTML_document Version="11">
+        <SchemeSolarized2NightEdited>
+          <Asp Background="clYellow" Foreground="clBlack"/>
+          <Value Foreground="16744448"/>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <Identifier Style="fsBold"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <Unknown_word Foreground="clRed" Style="fsBold"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <Reserved_word Foreground="clNavy" Style="fsBold"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <Escape_ampersand Foreground="clLime" Style="fsBold"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+        </SchemeSolarized2NightEdited>
+      </LangHTML_document>
+      <LangC__ Version="11">
+        <SchemeSolarized2NightEdited>
+          <Space Foreground="clWindow"/>
+          <Number Foreground="clBlue"/>
+          <String Foreground="clBlue"/>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <ahaGutter Background="clBtnFace"/>
+          <Assembler Foreground="clBlack"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <Preprocessor Foreground="clGreen" Style="fsItalic"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <Reserved_word Foreground="clNavy" Style="fsBold"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+        </SchemeSolarized2NightEdited>
+      </LangC__>
+      <LangPerl Version="11">
+        <SchemeSolarized2NightEdited>
+          <Space Foreground="clWindow"/>
+          <Number Foreground="clBlue"/>
+          <Pragma Style="fsBold"/>
+          <String Foreground="clBlue"/>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <Variable Style="fsBold"/>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <Reserved_word Foreground="clNavy" Style="fsBold"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+        </SchemeSolarized2NightEdited>
+      </LangPerl>
+      <LangJava Version="11">
+        <SchemeSolarized2NightEdited>
+          <Space Foreground="clWindow"/>
+          <Number Foreground="clBlue"/>
+          <String Foreground="clBlue"/>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <Documentation Foreground="clGreen" Style="fsItalic"/>
+          <Reserved_word Foreground="clNavy" Style="fsBold"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+        </SchemeSolarized2NightEdited>
+      </LangJava>
+      <LangUNIX_Shell_Script Version="11">
+        <SchemeSolarized2NightEdited>
+          <Number Foreground="clBlue"/>
+          <String Foreground="clBlue"/>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <Variable Foreground="clPurple"/>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <Reserved_word Foreground="clNavy" Style="fsBold"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+        </SchemeSolarized2NightEdited>
+      </LangUNIX_Shell_Script>
+      <LangPython Version="11">
+        <SchemeSolarized2NightEdited>
+          <Float Foreground="clBlue"/>
+          <Octal Foreground="clBlue"/>
+          <Number Foreground="clBlue"/>
+          <String Foreground="clBlue"/>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <Hexadecimal Foreground="clBlue"/>
+          <SyntaxError Foreground="clRed"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <Documentation Foreground="clGreen" Style="fsItalic"/>
+          <Reserved_word Foreground="clNavy" Style="fsBold"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <Non_reserved_keyword Foreground="clNavy" Style="fsBold"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+          <System_functions_and_variables Style="fsBold"/>
+        </SchemeSolarized2NightEdited>
+      </LangPython>
+      <LangPHP Version="11">
+        <SchemeSolarized2NightEdited>
+          <Number Foreground="clBlue"/>
+          <String Foreground="clBlue"/>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <Reserved_word Foreground="clNavy" Style="fsBold"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+        </SchemeSolarized2NightEdited>
+      </LangPHP>
+      <LangSQL Version="11">
+        <SchemeSolarized2NightEdited>
+          <Number Foreground="clBlue"/>
+          <String Foreground="clBlue"/>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <Function Style="fsBold"/>
+          <ahaGutter Background="clBtnFace"/>
+          <Data_type Style="fsBold"/>
+          <Exception Style="fsItalic"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <Reserved_word Foreground="clNavy" Style="fsBold"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <Default_packages Style="fsBold"/>
+          <SQL_Plus_command Style="fsBold"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+          <Reserved_word__PL_SQL_ Style="fsBold"/>
+        </SchemeSolarized2NightEdited>
+      </LangSQL>
+      <LangJavascript Version="11">
+        <SchemeSolarized2NightEdited>
+          <Number Foreground="clBlue"/>
+          <String Foreground="clBlue"/>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <Reserved_word Foreground="clNavy" Style="fsBold"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+        </SchemeSolarized2NightEdited>
+      </LangJavascript>
+      <LangDiff_File Version="11">
+        <SchemeSolarized2NightEdited>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <Unknown_word Style="fsItalic"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <Diff_New_File Background="clGreen" Style="fsBold"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <Diff_Added_line Foreground="clGreen"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <Diff_Changed_Line Foreground="clPurple"/>
+          <Diff_Chunk_Marker Style="fsBold"/>
+          <Diff_Removed_Line Foreground="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <Diff_Original_File Background="clRed" Style="fsBold"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+          <Diff_Chunk_Line_Counts Foreground="clPurple" Style="fsBold"/>
+          <Diff_Chunk_New_Line_Count Foreground="clGreen" Style="fsBold"/>
+          <Diff_Chunk_Original_Line_Count Foreground="clRed" Style="fsBold"/>
+        </SchemeSolarized2NightEdited>
+      </LangDiff_File>
+      <LangMS_DOS_batch_language Version="11">
+        <SchemeSolarized2NightEdited>
+          <Key Style="fsBold"/>
+          <Number Foreground="clBlue"/>
+          <Comment Foreground="clNavy" Style="fsItalic"/>
+          <Variable Foreground="clGreen"/>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+        </SchemeSolarized2NightEdited>
+      </LangMS_DOS_batch_language>
+      <LangINI_file Version="11">
+        <SchemeSolarized2NightEdited>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <Section Style="fsBold"/>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+        </SchemeSolarized2NightEdited>
+      </LangINI_file>
+      <Langpo_language_files Version="11">
+        <SchemeSolarized2NightEdited>
+          <Key Style="fsBold"/>
+          <Flags Foreground="clTeal"/>
+          <String Foreground="clFuchsia"/>
+          <Comment Foreground="clGreen" Style="fsItalic"/>
+          <ahaGutter Background="clBtnFace"/>
+          <ahaDefault Background="clNone" Foreground="clNone"/>
+          <Identifier Foreground="clGreen" Style="fsBold"/>
+          <ahaErrorLine Background="clRed"/>
+          <ahaMouseLink Foreground="clBlue" FrameColor="clBlue"/>
+          <ahaTextBlock Background="10841427" Foreground="clWhite"/>
+          <ahaWordGroup FrameColor="clRed"/>
+          <ahaFoldedCode Background="clNone" Foreground="13408665" FrameColor="13408665" FrameAlpha="0"/>
+          <ahaLineNumber Background="16053492" Foreground="13408665"/>
+          <Previous_value Foreground="clOlive" Style="fsItalic"/>
+          <ahaBracketMatch Background="clAqua" Foreground="clNone" FrameColor="13421782"/>
+          <ahaModifiedLine Background="16053492" Foreground="clLime" FrameColor="clYellow"/>
+          <ahaHighlightWord FrameColor="13421782"/>
+          <ahaLineHighlight Background="15138810"/>
+          <ahaSyncroEditCur FrameColor="clFuchsia"/>
+          <ahaSyncroEditArea Background="16449510"/>
+          <ahaSyncroEditSync FrameColor="clRed"/>
+          <ahaCodeFoldingTree Background="16053492" Foreground="13408665" FrameColor="clNone"/>
+          <ahaGutterSeparator Background="clWhite"/>
+          <ahaSyncroEditOther FrameColor="clBlue"/>
+          <ahaTemplateEditCur FrameColor="clAqua"/>
+          <ahaTemplateEditSync FrameColor="clFuchsia"/>
+          <ahaEnabledBreakpoint Background="16762823"/>
+          <ahaInvalidBreakpoint Background="clGreen"/>
+          <ahaUnknownBreakpoint Background="16762823"/>
+          <ahaIfDefBlockInactive ForeAlpha="0"/>
+        </SchemeSolarized2NightEdited>
+      </Langpo_language_files>
+    </ColorSchemes>
+  </Lazarus>
+</CONFIG>

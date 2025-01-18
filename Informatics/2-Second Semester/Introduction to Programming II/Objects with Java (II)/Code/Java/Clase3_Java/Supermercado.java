@@ -1,0 +1,50 @@
+import java.util.Scanner;
+  public class Supermercado{
+    public static void main(String[] args) {
+      Scanner in = new Scanner(System.in);
+      int i,x=0;
+      String nombre, marca, descripcion;
+      int codigo, unidades;
+      int stocknuevo, cantidadnueva;
+      boolean resultado;
+      System.out.print("Escriba la cantidad de productos que va a ingresar= ");
+      x=in.nextInt();
+      Producto[]v=new Producto[x];
+      for(i=0;i<x;i++){
+        System.out.println ("Ingrese NOMBRE del producto= ");
+        nombre= in.next();
+        System.out.println ("Ingrese la MARCA del producto= ");
+        marca= in.next();
+        System.out.println ("Ingrese el CODIGO del producto= ");
+        codigo= in.nextInt();
+        System.out.println ("Ingrese las UNIDADES del producto= ");
+        unidades= in.nextInt();
+        System.out.println ("Ingrese una breve DESCRIPCION del producto= ");
+        descripcion= in.next();
+        in.next();
+        v[i]= new Producto(nombre,codigo,unidades,marca,descripcion);
+      }
+      System.out.println("Ingrese el CODIGO del producto que quiere aumentar en Stock= ");
+      stocknuevo=in.nextInt();
+      System.out.println("Ingrese la CANTIDAD de cuanto quiere aumentar ese producto= ");
+      cantidadnueva=in.nextInt();
+      resultado= agregarStock(stocknuevo,cantidadnueva,v,x);
+      if(resultado) System.out.println("El codigo de producto era valido y el stock pudo ser ingresado correctamente.");
+      else  System.out.println("El codigo de producto era invalido y el stock no pudo ser ingresado correctamente.");
+      for(i=0;i<x;i++)
+        System.out.println (v[i].toString());
+    }  
+    public static boolean agregarStock(int s,int c,Producto[] v, int dimf){
+      boolean b=false;
+      int i,oldQ;
+      for(i=0;i<dimf;i++)
+        if (v[i].getCodigo()==s){
+          oldQ=v[i].getUnidades();  
+          v[i].setUnidades(c+oldQ);
+          b=true;
+        }
+      return b;
+    }   
+        
+        
+    }

@@ -1,0 +1,92 @@
+
+programa E2
+procesos
+  proceso perimetro (E largo: numero; E ancho: numero; ES cont: numero)
+  comenzar
+    cont:=0
+    repetir 2
+      repetir largo
+        mover
+        mientras HayFlorEnLaEsquina
+          tomarFlor
+          cont:= cont+1
+      derecha
+      repetir ancho
+        mover
+        mientras HayFlorEnLaEsquina
+          tomarFlor
+          cont:= cont+1
+      derecha   
+  fin  
+areas
+  Area1: AreaP(15,15,30,35)
+  Area2: AreaP(40,40,55,60)
+  Area3: AreaP (1,1,1,1)
+  Area4: AreaP (2,2,2,2)
+  Area5: AreaP (6,6,6,6)
+  AreaCom: AreaPC(10,10,10,10)
+
+robots
+  robot tipo1
+  variables
+    MiAv,MiCa, CA,AV,L,A, Cont:numero
+  comenzar
+    MiAv:=PosAv
+    MiCa:=PosCa
+    RecibirMensaje(AV,r)
+    RecibirMensaje(CA,r)
+    RecibirMensaje(L,r)
+    RecibirMensaje(A,r)
+    Pos(AV,CA)
+    perimetro (L,A,Cont)
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    mientras HayFlorEnLaBolsa
+      depositarFlor
+    Pos(MiAv,MiCa)  
+    LiberarEsquina(10,10)
+    EnviarMensaje(Cont,r)
+  fin 
+
+  robot tipo2
+  variables
+    tot, Aux: numero
+  comenzar
+    tot:=0
+    EnviarMensaje(15,r1)
+    EnviarMensaje(15,r1)
+    EnviarMensaje(20,r1)
+    EnviarMensaje(15,r1)
+    EnviarMensaje(40,r2)
+    EnviarMensaje(40,r2)
+    EnviarMensaje(20,r2)
+    EnviarMensaje(15,r2)
+    repetir 2
+      RecibirMensaje(Aux,*)
+      tot:=tot+Aux
+    Informar('FloresTotales', tot)
+  fin
+variables   
+  r1,r2: tipo1
+  r: tipo2
+    
+comenzar
+  AsignarArea(r1,Area1)
+  AsignarArea(r1,AreaCom)
+  AsignarArea(r1,Area4)
+  AsignarArea(r2,Area2)
+  AsignarArea(r2,AreaCom)
+  AsignarArea(r2,Area5)
+  AsignarArea(r,Area3)
+  
+
+  
+  Iniciar(r,1,1)
+  Iniciar(r1,2,2)
+  Iniciar(r2,6,6)
+  
+fin
+
+    
+    
+   

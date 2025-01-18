@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="57" Y="20"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="14">
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="2" Column="28"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="22" Column="41"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="3" Column="30"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="8" Column="22"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="11"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="6" Column="20"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="8" Column="38"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="3" Column="20"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="19" Column="54"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="6" Column="33"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="3" Column="25"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="34" Column="6" TopLine="5"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="6" Column="19"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="8" Column="31"/>
+      </Position>
+      <Position>
+        <Filename Value="Calculo_potencia.lpr"/>
+        <Caret Line="20" Column="62"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

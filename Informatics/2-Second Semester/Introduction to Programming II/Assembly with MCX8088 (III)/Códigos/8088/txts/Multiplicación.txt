@@ -1,0 +1,12 @@
+ORG 1000h
+n1    dw 0Bh ;INGRESE NUMEROS DESEADOS EN N1 Y N2
+n2    dw 0Bh
+ORG 2000h
+mov ax,n1
+mov bx,n2
+mov cx,1h
+total: add bx,ax
+  inc cx
+  cmp ax,cx
+  jnz total
+END

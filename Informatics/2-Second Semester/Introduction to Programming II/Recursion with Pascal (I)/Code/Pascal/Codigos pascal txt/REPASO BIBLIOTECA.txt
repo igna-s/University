@@ -1,0 +1,112 @@
+{Una biblioteca quiere tener un mejor acceso a sus libros.
+Para ello, nos piden generar un árbol binario de búsqueda con los datos de todos sus libros.
+De cada libro se conoce: título, ISBN y clasificador bibliográfico (código alfanumérico que permite clasificar el tema del ejemplar), que se leen desde teclado.
+La lectura finaliza con el ISBN 0 (cero). Interesa poder buscar los libros eficientemente por ISBN.
+
+Se pide:
+Generar árbol binario de búsqueda según el enunciado.
+
+Una vez generado el árbol:
+Realice un módulo que reciba el árbol y un ISBN de libro, y retorne verdadero si existe dicho libro en el árbol o falso en caso contrario.
+Realizar un módulo que reciba el árbol y un código clasificador, y devuelva la cantidad de veces que aparece en el árbol (el módulo debe tener en cuenta que puede no existir).
+Realice un módulo que reciba el árbol y un título de libro, y retorne verdadero si existe dicho libro en el árbol o falso en caso contrario.
+Realizar un programa que invoque a los módulos realizados e informe desde el programa principal los datos correspondientes.}
+PROGRAM Problema_Biblioteca;
+type
+  datos=record
+    titulo:string;
+    clasificador:string;
+  end;
+
+  arbol=^nodo;
+  Nodo=record
+    ISBN:integer;
+    dato:datos;
+    HI:arbol;
+    HD:arbol;
+  end;
+
+dato_l=record
+  isbn_L:integer;
+  titulo_l:string;
+  clasificador_l:string;
+end;
+
+
+procedure insertararbol(d:dato_l;var a:arbol);
+begin
+  if a = nil then begin
+    new(a);
+    a^.ISBN:=d.isbn_L;
+    a^.dato.titulo :=d.titulo_l;
+    a^.dato.clasificador:=d.clasificador_l;
+    a^.HI:=NIL;
+    a^.HD:=NIL;
+  end
+  else if (a^.ISBN > d.isbn_L) then insertararbol(d,a^.HI)
+    else if (a^.ISBN < d.isbn_L) then insertararbol(d,a^.HD)
+end;
+Function busqueda (a:arbol; x:integer): integer;
+begin
+  if (a=nil) then  busqueda:=-1
+  else if (x= a^.isbn) then busqueda:=1
+    else if (x < a^.isbn) then busqueda:=busqueda(a^.HI ,x)
+      else busqueda:=busqueda(a^.HD ,x);
+end;
+procedure insertar(d:dato_l; var a:arbol);
+begin
+  write('Escriba el ISBN del libro (si se inserta 0 acabara la inserscion de los datos)= ');
+  readln(d.isbn_L);
+  while (d.isbn_L <> 0) do begin
+    write('Escriba el titulo del libro= ');
+    readln(d.titulo_l);
+    write('Escriba el clasificador bibliografico= ');
+    readln(d.clasificador_l) ;
+    insertararbol(d,a);
+    write('Escriba el ISBN del libro= ');
+    readln(d.isbn_L);
+  end;
+end ;
+procedure contar(a:arbol; str:string; var s:integer);
+
+begin
+  if ( a <> nil ) then begin
+    contar (a^.HI,str,s);
+    contar (a^.HD,str,s);
+    if (a^.dato.clasificador=str) then s:=s+1;
+  end;
+end;
+
+procedure buscar(a:arbol; str:string;var x:integer);
+begin
+  if ( a <> nil ) and (x<>1) then begin
+    contar (a^.HI,str,x);
+    contar (a^.HD,str,x);
+    if (a^.dato.titulo=str) then x:=1;
+  end;
+end;
+
+var
+  a:arbol;
+  d:dato_l;
+  x,y,s:integer;
+  str:string;
+begin
+  a:=nil;
+  s:=0;
+  insertar(d,a);
+  write('ingrese el elemento a buscar mediante ISBN= ');
+  readln(x);
+  y:=busqueda(a,x);
+  if y<>-1 then writeln('el elemento que estaba buscando devolvio el nodo ')
+    else writeln('el elemento no se encontro');
+  write('ingrese el elemento a contar mediante codigo clasificador= ');
+  readln(str);contar(a,str,s);
+  writeln('el clasificador "' ,str,'" se encontro ',s,' veces');
+  s:=0;
+  write('ingrese el libro a buscar mediante el titulo del mismo= ');
+  readln(str);buscar(a,str,s);
+  if s <> -1 then writeln('el titulo "' ,str,'" se encontro :) ')
+  else  writeln('el titulo "' ,str,'" no se encontro :( ');
+  readln;
+End. 

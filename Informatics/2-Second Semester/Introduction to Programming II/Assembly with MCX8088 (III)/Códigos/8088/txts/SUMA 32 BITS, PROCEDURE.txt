@@ -1,0 +1,47 @@
+ORG 1000H ; variables 
+
+A1 Dw 0FFFEH
+A2 Dw 0
+
+B1 DW 1H
+B2 DW 0
+
+ORG 2000H ; código
+  MOV CX,A1
+  ADD CX,B1
+  MOV DX,0H
+  JNC SALTO
+  ADD DX,1H
+SALTO: ADD DX,A2
+   ADD DX,B2  
+  FIN: HLT
+HLT
+END
+
+
+////////
+ORG 1000H ; variables 
+
+A1 Dw 0FFFEH
+A2 Dw 1H
+
+B1 DW 1H
+B2 DW 1H
+ORG 3000H
+SUM32:  ADD CX,DX
+  MOV DX,0H
+  JNC SALTO
+  ADD DX,1H
+  SALTO: ADD DX,AX
+   ADD DX,BX  
+ RET
+
+
+ORG 2000H ; código
+  MOV AX, A2
+  MOV BX,B2
+  MOV CX,A1
+  MOV DX, B1
+  CALL SUM32
+  HLT
+END

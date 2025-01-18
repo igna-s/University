@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="ACTIVIDAD7Y8.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="224"/>
+        <CursorPos Y="247"/>
+        <UsageCount Value="22"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="7">
+      <Position>
+        <Filename Value="ACTIVIDAD7Y8.lpr"/>
+        <Caret Line="204" Column="62" TopLine="191"/>
+      </Position>
+      <Position>
+        <Filename Value="ACTIVIDAD7Y8.lpr"/>
+        <Caret Line="248" Column="17" TopLine="220"/>
+      </Position>
+      <Position>
+        <Filename Value="ACTIVIDAD7Y8.lpr"/>
+        <Caret Line="247" Column="28" TopLine="220"/>
+      </Position>
+      <Position>
+        <Filename Value="ACTIVIDAD7Y8.lpr"/>
+        <Caret Line="204" Column="37" TopLine="197"/>
+      </Position>
+      <Position>
+        <Filename Value="ACTIVIDAD7Y8.lpr"/>
+        <Caret Line="207" Column="16" TopLine="191"/>
+      </Position>
+      <Position>
+        <Filename Value="ACTIVIDAD7Y8.lpr"/>
+        <Caret Line="191" Column="14" TopLine="182"/>
+      </Position>
+      <Position>
+        <Filename Value="ACTIVIDAD7Y8.lpr"/>
+        <Caret Line="223" Column="31" TopLine="206"/>
+      </Position>
+      <Position>
+        <Filename Value="ACTIVIDAD7Y8.lpr"/>
+        <Caret Line="10" Column="97" TopLine="70"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

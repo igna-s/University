@@ -1,0 +1,65 @@
+public class Flota 
+{
+    private  Micro [] micros;
+    private int cantM;
+   
+    
+    public Flota(){
+      this.cantM=0;
+      this.micros= new Micro[15]; 
+    }
+   
+    public void setcantM(int cantM){
+        this.cantM=cantM;
+    }
+    public int getcantM(){
+        return cantM;
+    }
+
+    public boolean estaCompleta(){
+        if (this.cantM>=15) return true;
+            else return false;
+    }
+    
+     
+    public void agregarMicro(Micro M){
+        if (!this.estaCompleta()){
+             micros[cantM]= M;
+             this.setcantM(cantM+1);
+            }
+     }
+     
+     
+    public void borrarMicro(String patente){
+       int x=0;
+       while (x<cantM && !patente.equals(micros[x].getPatente())){
+               x++;
+              }
+       if (patente.equals(micros[x].getPatente())){
+           micros[x]=null;
+           micros[x]=micros[getcantM()-1];
+           this.setcantM(cantM-1);
+           
+        }  
+    }
+    
+    public Micro buscarMicro(String patentec){
+        int x=0;
+       while (x<cantM && !patentec.equals(micros[x].getPatente())){
+               x++;
+              }
+       if (x<15 && cantM>0) return micros[x];  
+        else return null;
+    
+    }
+    
+    public Micro buscarMicroPorDestino(String destiny){
+        int x=0;
+       while (x<cantM && !destiny.equals(micros[x].getDestino())){
+               x++;
+              }
+       if (x<15 && cantM>0) return micros[x];  
+        else return null ;
+    
+    }
+}

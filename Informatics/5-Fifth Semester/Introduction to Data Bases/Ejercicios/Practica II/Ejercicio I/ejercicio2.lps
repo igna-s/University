@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="ejercicio2.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ejercicio21"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="110"/>
+        <CursorPos Y="128"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="29">
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="72" Column="44" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="71" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="64" Column="50" TopLine="55"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="59" Column="11" TopLine="67"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="73" Column="72" TopLine="61"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="75" Column="18" TopLine="66"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="87" Column="26" TopLine="72"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="83" Column="10" TopLine="69"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="75" Column="4" TopLine="69"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="83" Column="4" TopLine="69"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="88" Column="5" TopLine="80"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="73" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="96" TopLine="79"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="94" Column="6" TopLine="79"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="92" Column="9" TopLine="79"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="91" Column="32" TopLine="79"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="90" Column="5" TopLine="79"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="137" Column="9" TopLine="119"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="113" Column="35" TopLine="105"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="136" Column="12" TopLine="125"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="61" Column="12" TopLine="52"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="118" Column="18" TopLine="109"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="122" Column="30" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="123" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="122" Column="30" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="121" Column="43" TopLine="113"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="24" TopLine="17"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="124" Column="49" TopLine="115"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="126" Column="16" TopLine="115"/>
+      </Position>
+      <Position>
+        <Filename Value="ejercicio2.lpr"/>
+        <Caret Line="25" TopLine="17"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

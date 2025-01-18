@@ -1,0 +1,66 @@
+;a)	Implemente una subrutina en Assembler que reciba un parámetro A 
+   ;por referencia y un parámetro B por valor y reemplace el valor de A,
+   ;sólo si el valor de B es menor al de A. 
+
+;b)	Implemente un programa en Assembler que, utilizando la subrutina del inciso a),
+    ;reemplace los valores de la TablaA por los de la TablaB cuando corresponda 
+    ;(posición a posición). Por ejemplo, si tenemos las siguientes tablas: 
+
+
+;-	TablaA ? 1, 2, 5, 4, 7,…
+;-	TablaB ? 2, 3, 4, 5, 7,…
+
+;los valores finales serán: TablaA ? 1, 2, 4, 4, 7,…
+
+;Además, el programa debe sumar eficientemente los valores de TablaB mayores a 5
+;y almacenar este resultado en memoria principal. 
+
+
+
+org 1000h
+
+TablaB db 0, 3, 4, 5, 7,7
+TablaA db 1, 2, 5, 4, 7,8
+Suma dw 0
+
+org 3000h
+
+Rutina: push bx ;empuja la dir de memoria tabla b, para utilizar bx
+        mov bx, cx ;trae la direccion tabla a
+        cmp [bx],dl ; compara elem tabla a y tabla b
+        jc fin ; si da carry significa que el elemento de la tabla b es mayor
+        mov dh,0  ; si no dio carry inicializa la variable el high de d en 0 por las dudas
+        mov [bx],dl; y cumple con el requisito de a) mover el elemento de la tabla B al de la tabala A
+        
+        fin: pop bx; Devuelve la direccion de bx
+             ret; retorna a programa principal
+
+org 2000h
+
+mov ax, Suma ; guarda suma
+mov cx, OFFSET TablaA ;dir de tabla a
+mov BX, OFFSET TablaB ;dir de tabla b
+
+
+repetir: mov dl,[bx]; elemento de la tabla b es Byte
+         call Rutina ;llama a rutina
+         
+         cmp dl,6 ;Compara el valor de tabla b con 6 para fijarse si es mayor a 5
+         jc seguir; si dio carry significa que el elemento de la tabla b dio menor a 6
+         mov dh,0 ; else Pone en 0 por las dudas el high de d
+         add ax,dx ; suma el valor anterio de la tabla b (si son mayores a 5)
+         
+ seguir: add bx,1 ;aumenta el valor de la direccion de la tabla b
+         add cx,1; aumenta el valor de la direccion de la tabla a
+         cmp cx,Offset Suma; resta la dir de tabla a con la suma
+         jnz repetir; si da cero la resta de las direcciones de la tabla a 
+                    ;y el de la dir de suma el programa avanza a la siguiente instruccion
+
+mov bx,Offset Suma ;guarda la direccion de suma
+mov [bx], ax ;y en la direccion de suma guarda el valor de la suma de los valores
+             ; de la tabla b que sean mayores a 5
+
+
+
+hlt; fin
+end

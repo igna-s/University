@@ -1,0 +1,17 @@
+﻿Color,Tamanio,Se_estira?,Edad,Inflado?
+Amarillo,Chico,Si,Adulto,Si
+Amarillo,Chico,Si,Niño,Si
+Amarillo,Chico,No,Adulto,No
+Amarillo,Chico,No,Niño,No
+Amarillo,Grande,Si,Adulto,Si
+Amarillo,Grande,Si,Niño,Si
+Amarillo,Mediano,No,Adulto,No
+Amarillo,Mediano,No,Niño,No
+Rojo,Chico,Si,Adulto,Si
+Rojo,Chico,Si,Niño,No
+Rojo,Mediano,No,Adulto,No
+Rojo,Mediano,No,Niño,No
+Rojo,Grande,Si,Adulto,Si
+Rojo,Grande,Si,Niño,No
+Rojo,Grande,No,Adulto,No
+Rojo,Grande,No,Niño,No

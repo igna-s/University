@@ -1,0 +1,385 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+
+#define DIM 10
+/*Realice un programa que inicialice un vector con números al azar, imprima sus valores, los ordene y
+los vuelva a imprimir. Modularice con una función de inicialización, una función para ordenación y
+una función de impresión.*/
+
+void Inicializar (int *,int);
+void Imprimir (int *,int);
+void Ordenar (int [],int);
+
+int main(){
+
+int v[DIM];
+
+   Inicializar(v,DIM);
+   Imprimir(v,DIM);
+   Ordenar(v,DIM);
+   Imprimir(v,DIM);
+}
+
+void Inicializar (int *v , int x){
+
+srand(time(NULL));
+
+int i;
+ for (i=0;i<x;i++){
+    v[i]=rand()%100;
+     }
+}
+
+void Imprimir(int *v, int x){
+ int i;
+  printf("Activando proceso de impresion\n");
+
+ for (i=0;i<x;i++)
+    printf("El numero %d es %d\n", i , v[i]);
+}
+
+void Ordenar(int v[],int x){
+
+int act,i,min,aux, posmin;
+
+for (act=0;act<x;act++){
+    min=99999999;
+
+    for (i=act;i<x;i++){
+
+        if (v[i]<min){
+            min=v[i];
+            posmin=i;
+        }
+    }
+   aux= v[act];
+   v[act]=v[posmin];
+   v[posmin]=aux;
+
+}
+
+}
+
+
+
+
+2)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+#define CANT_DATOS 5
+
+void Generar(int *,int);
+void opcion1(int datos[]);
+void opcion2(int* datos);
+void opcion3(int* datos);
+void opcion4(int datos[]);
+void opcion5(int datos[]);
+void opcion6(int* datos);
+void opcion7(int datos[]);
+void opcion8(int* datos);
+void Imprimir(int *v, int x);
+
+// La principal diferencia es el modo de operacion, meidante punteros o vectores, y la forma de hacerlo
+int main(){
+
+int v[CANT_DATOS];
+Generar(v, CANT_DATOS);
+Imprimir(v,CANT_DATOS);
+
+
+opcion1(v);
+Imprimir(v,CANT_DATOS );
+
+Generar(v, CANT_DATOS);
+opcion2(v);
+Imprimir(v,CANT_DATOS );
+
+Generar(v, CANT_DATOS);
+opcion3(v);
+Imprimir(v,CANT_DATOS );
+
+Generar(v, CANT_DATOS);
+opcion4(v);
+Imprimir(v,CANT_DATOS );
+
+Generar(v, CANT_DATOS);
+opcion5(v);
+Imprimir(v,CANT_DATOS );
+
+Generar(v, CANT_DATOS);
+opcion6(v);
+Imprimir(v,CANT_DATOS );
+
+Generar(v, CANT_DATOS);
+opcion7(v);
+Imprimir(v,CANT_DATOS );
+
+Generar(v, CANT_DATOS);
+opcion8(v);
+Imprimir(v,CANT_DATOS );
+
+return 0;
+}
+
+
+
+void opcion1(int datos[]){         //Divide a datos a la mitad, trunca si no es entero
+ int i;
+ for (i=0; i<CANT_DATOS; i++){
+ datos[i] = datos[i]*0.5;
+ }
+}
+
+void opcion2(int *datos){
+ int i;
+ for (i=0; i<CANT_DATOS; i++){   //Divide a datos a la mitad, trunca si no es entero (Warning undefined suma uno a la direccion de datos antes del igual, que aplica en la siguiente linea, riezgo de explosion)
+ (*datos++) = (*datos)/2;
+ }
+}
+
+void opcion3(int *datos){
+ int i;
+ for (i=0; i<CANT_DATOS; i++, datos++){ //Divide a datos a la mitad, trunca si no es entero, suma datos++ junto con i;
+ *datos= *datos*0.5;
+ }
+}
+
+void opcion4(int datos[]){   //Divide a datos a la mitad, trunca si no es entero, (Warning undefined suma uno a la direccion de datos antes del igual, que aplica en la siguiente linea, riezgo de explosion)
+ int i;
+ for (i=0; i<CANT_DATOS; i++){
+ *datos++= *datos/2;
+ }
+}
+
+void opcion5(int datos[]){          //Asigna a la posicion siguiente, la psicion actual dividido 2 (Warning undefined suma uno a la direccion de datos antes del igual, y guarda el resultado de la division en la siguiente que aplica en la siguiente linea, riezgo de explosion)
+ int i;
+ for (i=0; i<CANT_DATOS; i++, datos--){
+ *datos++= *datos++*0.5;
+ }
+}
+
+
+void opcion6(int *datos){        //Asigna a la posicion siguiente, la posicion actual dividido 2
+ int i;
+ for (i=0; i<CANT_DATOS; i++){    //Metodo= Al valor actual y al siguiente le guarda act/2....Tecnicamente piso memoria externa
+ *datos= *datos++*0.5;
+ }
+}
+
+
+void opcion7(int datos[]){     //Divide a datos a la mitad, trunca si no es entero
+ int i;
+ for (i=0; i<CANT_DATOS; i++){
+ datos[i]= *(datos+i)*0.5;
+ }
+}
+
+void opcion8(int *datos){     //Divide a datos a la mitad, trunca si no es entero
+ int i;
+ for (i=0; i<CANT_DATOS; i++){
+ *(datos+i)= datos[i]/2;
+ }
+}
+
+void Imprimir(int *v, int x){
+ int i;
+  printf("Activando proceso de impresion\n");
+
+ for (i=0;i<x;i++)
+    printf("El numero %d es %d\n", i , v[i]);
+}
+
+void Generar(int *v, int x){
+   v[0]=20;
+   v[1]=17;
+   v[2]=20;
+   v[3]=33;
+   v[4]=55;
+}
+
+//Cuando pasa el operation must be undefined, casi siempre se afecta el valor de la direccion siguiente;
+
+
+
+3)
+
+
+/*Escriba las siguientes funciones:
+
+a. upperStr que recibe como parámetro una cadena y la modifica convirtiendo todas sus letras
+a mayúsculas.
+b. lowerStr que recibe como parámetro una cadena y la modifica convirtiendo todas sus letras
+a minúsculas.
+c. numToStr que recibe como parámetros un entero y una cadena y retorna la cadena
+modificada con la representación del número en caracteres. Por ejemplo, para el número 124
+la cadena de caracteres deberá quedar con “124”.
+d. numToText que recibe como parámetros un entero (del 0 a 99) y una cadena y retorna la
+cadena modificada con la representación del número en texto. Ejemplo para el número 35 la
+cadena de caracteres deberá quedar con “treinta y cinco”. */
+#include <stdio.h>
+#include <stdlib.h>
+#define CONSTA 55
+#include <string.h>
+
+void Imprimir(char*v);
+void upperStr(char*v);
+void lowerStr(char*v);
+void numToStr (char*v, int x);
+void numToText(char*v, int x);
+int main(){
+
+char c[CONSTA];
+int Lectura;
+/*
+printf("Ingrese una frase, que termina con el primer espacio\n");
+scanf("%s",c);
+Imprimir(c);
+upperStr(c);
+Imprimir(c);
+lowerStr(c);
+Imprimir(c);
+numToStr(c, 1234);
+Imprimir(c);*/
+
+printf("Ingrese un numero, fin=100\n");
+scanf("%d",&Lectura);
+
+ while (Lectura<100){
+   numToText(c, Lectura);
+   Imprimir(c);
+   printf("Ingrese un numero\n");
+   scanf("%d",&Lectura);
+}
+
+return 0;
+}
+
+void Imprimir(char* v){
+    int i=0;
+    printf("El resultado es\n");
+    while (v[i]!='\0'){
+        printf("%c",v[i]);
+        i++;
+    }
+    printf("\n");
+}
+
+void upperStr(char*v){
+    int i=0;
+
+
+    while (v[i]!='\0'){
+          if ((v[i]<='z')&&(v[i]>='a'))
+            v[i]=(v[i]-'a'+'A');
+          i++;
+}
+}
+void lowerStr(char*v){
+    int i=0;
+
+
+    while (v[i]!='\0'){
+          if ((v[i]<='Z')&&(v[i]>='A'))
+            v[i]=(v[i]-'A'+'a');
+          i++;
+}
+}
+
+void numToStr (char*v, int x){
+
+    int aux,i=0;
+    char c;
+
+    while (x>9){
+         aux=x%10;
+         x/=10;
+         v[i]=(aux+48);
+         i++;
+    }
+    v[i]=(x+48);
+    i++;
+    v[i]='\0';
+
+    aux=strlen(v)-1;
+
+for(i=0;i<(strlen(v)/2);i++,aux--){
+    c=v[aux];
+    v[aux]=v[i];
+    v[i]=c;
+
+}
+}
+
+void numToText(char*v, int x){
+
+char W[10];
+char*w=W ;
+*v='\0';
+
+if ((x==11)||(x==12)||(x==13)||(x==14)||(x==15)){    ///Primer caso, Numeros SUS
+    switch(x){
+    case 11: w="Once";  break;
+    case 12: w="Doce";  break;
+    case 13: w="Trece";  break;
+    case 14: w="Catorce";  break;
+    case 15: w="Quince";  break;
+    }
+    strcat(v,w);
+}
+
+else{
+
+int aux=x%10;
+x/=10;
+
+
+if ((x==0)&&(aux==0)){    ///Segundo caso, Cero
+    w="Cero";
+    strcat(v,w);
+}
+else{
+
+if (x>0){                             ///Agrego las decenas, si hubiese
+    switch(x){
+    case 1: w="Diez";  break;
+    case 2: w="Veinte";  break;
+    case 3: w="Treinta";  break;
+    case 4: w="Cuarenta";  break;
+    case 5: w="Cincuenta";  break;
+    case 6: w="Sesenta";  break;
+    case 7: w="Setenta";  break;
+    case 8: w="Ochenta";  break;
+    default:w="Noventa";
+
+    }
+}
+strcat(v,w);
+if ((aux!=0)&&(x!=0)){       ///Si no termina en 0, agrego la y
+   w=" y ";
+    strcat(v,w);
+}
+
+
+switch(aux){                            ///Agrego el resto
+    case 1: w= "Uno";  break;
+    case 2: w= "Dos";  break;
+    case 3: w= "Tres";  break;
+    case 4: w= "Cuatro";  break;
+    case 5: w= "Cinco";  break;
+    case 6: w= "Seis";  break;
+    case 7: w= "Siete";  break;
+    case 8: w= "Ocho";  break;
+    case 9:w= "Nueve";break;
+    default: w=" ";
+}
+strcat(v,w);
+}
+
+}
+}
+

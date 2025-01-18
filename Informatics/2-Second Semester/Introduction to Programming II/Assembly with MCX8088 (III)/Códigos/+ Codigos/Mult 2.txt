@@ -1,0 +1,46 @@
+org 1000h
+Tot dw 3
+Numero dw 1000000000000000b
+org 3000h
+
+multi:cmp dx,0
+      jz fin
+      add ax,ax
+      jnc sig
+      add ax,1
+      sig: dec dx
+      jmp multi
+      fin:  ret
+
+org 2000h
+mov ax,Numero
+mov dx, Tot
+call multi
+
+hlt
+end
+
+
+
+////////v2.0 Terminator ////////
+
+org 1000h
+Tot dw 3
+Numero dw 1000000000000000b
+org 3000h
+
+multi:cmp dx,0
+      jz fin
+      add ax,ax
+      adc ax,0
+      dec dx
+      jmp multi
+      fin:  ret
+
+org 2000h
+mov ax,Numero
+mov dx, Tot
+call multi
+
+hlt
+end

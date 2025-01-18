@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.target=Supermercado
+comment1.params=args
+comment1.target=void\ main(java.lang.String[])
+comment2.params=s\ c\ v\ dimf
+comment2.target=boolean\ agregarStock(int,\ int,\ Producto[],\ int)
+numComments=3

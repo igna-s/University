@@ -1,0 +1,691 @@
+1)
+ORG 1000H
+NUM0 DB 0CAH
+NUM1 DB 0
+NUM2 DW ?
+NUM3 DW 0ABCDH
+NUM4 DW ?
+ORG 2000H
+MOV BL, NUM0    /// Directo de memoria (Mueve el valor de Num0:CA al registro bl)
+MOV BH, 0FFH    /// Inmediato (Asigna FF a Bh)
+MOV CH, BL      /// Directo de registro (Asigna lo contenido en Bl:CA al registro CH
+MOV AX, BX      /// Directo de registro (Asigna a Ax, lo contenido en bx:FFCA
+MOV NUM1, AL    /// Directo de memoria (Asigna lo contenido en bl:CA a Num0)   ????
+MOV NUM2, 1234H /// Inmediato de memoria (Asigna a Num2 1234)    ????
+MOV BX, OFFSET NUM3    ///Indirecto (Mueve a Bx, la direccion de Num3:1004)
+MOV DL, [BX]     ///Indirecto con registro (Mueve lo contenido en la direccion Bx a dl:CD, 8bytes)
+MOV AX, [BX]     ///Indirecto con registro (Mueve lo contenido en la direccion Bx a Ax:ABCD, 16 bytes)
+MOV BX, 1006H    ///Inmediato (Asigna 1006 a bx)
+MOV WORD PTR [BX], 1006H   ///Indirecto (Mueve 16 bits, a la direccion 1006, y le asigna 1006)
+HLT
+END
+
+C) “ri” (IR) :El registro de instrucción RI es un registro de la unidad de control de la CPU en donde se almacena la instrucción que se está ejecutando.
+    
+   “id” (IP): Identificador de procesos. El identificador de procesos es un número entero usado por el kernel de algunos sistemas operativos QUE IDENTIFICA la instruccion siguiente
+
+El (IP) contador de programa contiene la dirección de la instrucción que debe ejecutarse a continuación, mientras que el (IR) registro de instrucciones contiene la instrucción real que se ejecutará (Suma, resta,etc).
+
+
+2)
+
+ORG 1000H
+NUM0 DB 80H
+NUM1 DB 200
+NUM2 DB -1
+R DB 01111111B
+H DB 10101010B
+
+ORG 2000H
+MOV AL, NUM0
+ADD AL, AL          //Suma 80h con 80h, y lo guarda en al
+INC NUM1            //Añade a NUM 1 uno y queda en 201
+MOV BH, NUM1
+MOV BL, BH
+DEC BL              // Decrementa el 201 en 1 y lo guarda en bl
+SUB BL, BH          // Resta 200 a 201 y lo guarda en bl
+MOV CH, H
+AND CH, R           //  Compara 10101010B con 01111111B y queda 00101010B (Guardado en CH) Solo queda en 1 donde ambos digitos eran 1
+NOT R               // Invierte r, queda 00000000B (Guardado en R)
+OR CH, R            // Compara 00101010B con 10000000B y queda  10101010B (Guardado en CH)  Solo queda en 1 donde haya habido algun 1 en la suma
+XOR CH, 11111111B   // Compara 10101010B con 11111111B y queda  01010101B (Guardado en CH)  Solo quedan en 1 donde hay un solo 1
+HLT
+END
+
+
+a) ADD   C	O	S	Z     00000000 10000000
+                                      00000000 10000000
+  
+         1      1    	0       1     00000000 00000000
+
+Carry=1 :_Como son sumas db, indica que se supero el valor maximo a representar y le sobra un 1 que quedo irrepresentado)
+Overflow=1 : Indica que el resultado cambio de signo de manera rara (Si a un negativo le sumas un negativo no da positivo)
+Sign=0: Indica que el bit mas significativo (0=0)
+Zero=1: Indica que el resultado de la operacion es 0 (z=1 es 0 ;z=0 !=0) 
+
+
+   SUB C	O	S	Z    00000000 11001000
+                                     00000000 11001001
+
+       1	0	1	0    00000000 11111111
+
+Carry=1 : Indica que tubo que pedir prestado un 1 para poder hacer la resta (El numero restado es mayor que el a restar)
+Overflow=0 : Indica que la suma parece correcta (Si a in negativo le restas un negativo puede llegar a dar negativo, depende los operandos)
+Sign= 1 : Indica que el bit mas significativo es 1
+Zero=0 : Indica que no da 0
+
+Dan indicaciones de la correctitud del resultado dependiendo el sistema con el que se trabaje, mas que nada indica inconsistencias con Bss y Ca2
+
+
+¿Qué cadenas binarias representan a NUM1=11001000 BSS y NUM2:11111111 CA2 en la memoria del simulador? ¿En qué sistemas binarios
+están expresados estos valores BSS Y CA2?
+
+Confeccionar una tabla que indique para cada operación aritmética ó lógica del programa, el valor de sus
+operandos, en qué registro o dirección de memoria se almacenan y el resultado de cada operación. (HECHO EN EL PROGRAMA)
+
+
+
+
+3) El siguiente programa implementa un contador utilizando una instrucción de transferencia de control. Analice
+el funcionamiento de cada instrucción y en particular las del lazo repetitivo que provoca la cuenta.
+
+ORG 1000H
+INI DB 0
+FIN DB 15
+ORG 2000H
+MOV AL, INI
+MOV AH, FIN
+SUMA: INC AL
+CMP AL, AH
+JNZ SUMA
+HLT
+END
+
+Cuestionario:
+3a) ¿Cuántas veces se ejecuta el lazo? (15 VECES) ¿De qué variables depende esto en el caso general? que (AL=AH ;Osea que la resta de ambos de 0)
+3b) Analice y ejecute el programa reemplazando la instrucción de salto condicional JNZ por las siguientes,
+indicando en cada caso el contenido final del registro AL:
+1°) JS Salta mientras Al sea menor que Ah (En al quedo 15)
+2°) JZ Salta mientras Al-Ah =0 (En al quedo 1, nunca se repitio)
+3°) JMP Salta incondicionalmete (Al= infinito)
+
+
+
+
+4) Escribir un programa en lenguaje assembly del MSX88 que implemente la sentencia condicional de un lenguaje
+de alto nivel IF A < B THEN C = A ELSE C = B. Considerar que las variables de la sentencia están
+almacenadas en los registros internos de la CPU del siguiente modo A en AL, B en BL y C en CL. 
+
+
+ORG 2000h
+mov al, 5
+mov bl,6
+mov cl, 7  
+
+cmp al,bl
+jns Salto
+
+mov cl,al
+jmp fin
+Salto: mov cl,bl
+       fin: hlt
+       end
+
+
+
+
+
+Determine
+las modificaciones que debería hacer al programa si la condición de la sentencia IF fuera:
+a) A ≤ B
+
+ORG 2000h
+mov al, 7
+mov bl,6
+mov cl, 7  
+
+cmp bl,al
+jns Salto
+
+mov cl,bl
+jmp fin
+Salto: mov cl,al
+       fin: hlt
+       end
+
+b) A = B
+
+ORG 2000h
+mov al, 7
+mov bl,4
+mov cl, 9
+
+cmp bl,al
+jnz Salto
+
+mov cl,al
+jmp fin
+Salto: mov cl,bl
+       fin: hlt
+       end
+
+
+5)
+
+org 1000h
+TABLA DB 2,4,6,8,10,12,14,16,18,20
+FIN DB ?
+TOTAL DB ?
+MAX DB 13
+ORG 2000H
+MOV AL, 0
+MOV CL, OFFSET FIN-OFFSET TABLA
+MOV BX, OFFSET TABLA
+SUMA: ADD AL, [BX]
+INC BX
+DEC CL
+JNZ SUMA
+
+MOV TOTAL,AL
+HLT
+END
+
+B)lO QUE SE AGREGA ES ESTO MOV TOTAL,AL
+
+
+6)
+ORG 1000H
+
+TABLA DB 2,4,6,8,10,12,13,14,16,18,20
+FIN DB ?
+TOTAL DB ?
+MAX DB 13
+
+ORG 2000H
+MOV AL, 0
+MOV AH, MAX
+MOV CL, OFFSET FIN-OFFSET TABLA
+MOV BX, OFFSET TABLA
+SUMA: CMP [BX], AH
+   JS SIGUE
+   INC AL
+SIGUE: INC BX
+DEC CL
+JNZ SUMA
+
+MOV TOTAL,AL
+HLT
+END
+
+
+
+
+7.1) ; Memoria de Datos
+ORG 1000H
+NUM1 DB 5H
+NUM2 DB 3H
+; Memoria de Instrucciones
+ORG 2000H
+MOV DX, 0
+MOV AH, 0
+MOV AL, NUM1
+CMP AL, 0
+JZ FIN
+MOV CL, NUM2
+LOOP: CMP CL, 0
+JZ FIN
+ADD DX, AX
+DEC CL
+JMP LOOP
+FIN: HLT
+END
+
+7.2) ; Memoria de Datos
+ORG 1000H
+NUM1 DB 5H
+NUM2 DB 3H
+; Memoria de Instrucciones
+ORG 3000H ; Subrutina MUL
+MUL: CMP AL, 0
+JZ FIN
+CMP CL, 0
+JZ FIN
+LAZO: ADD DX, AX
+DEC CX
+JNZ LAZO
+FIN: RET
+ORG 2000H ; Programa principal
+MOV AL, NUM1
+MOV CL, NUM2
+MOV DX, 0
+MOV AH, 0
+CALL MUL
+HLT
+END
+
+
+7.3) ; Memoria de datos
+ORG 1000H
+NUM1 DW 5H ; NUM1 y NUM2 deben ser mayores que cero
+NUM2 DW 3H
+; Memoria de Instrucciones
+ORG 3000H ; Subrutina 
+MUL: MOV BX, AX 
+ADD DX, [BX] 
+PUSH DX
+MOV BX, CX 
+MOV DX, [BX] 
+DEC DX 
+MOV [BX], DX
+POP DX
+JNZ MUL
+RET
+
+
+MUL ORG 2000H ; Programa principal
+MOV AX, OFFSET NUM1
+MOV CX, OFFSET NUM2
+MOV DX, 0
+CALL MUL
+hld 
+end
+
+
+
+7.4) ; Memoria de datos
+ORG 1000H
+NUM1 DW 5H
+NUM2 DW 3H
+RES DW ?
+; Subrutina MUL
+ORG 3000H
+MUL: PUSH BX
+MOV BX, SP
+PUSH CX
+PUSH AX
+PUSH DX
+ADD BX, 6
+MOV CX, [BX]
+ADD BX, 2
+MOV AX, [BX]
+SUMA: ADD DX, AX
+DEC CX
+JNZ SUMA
+SUB BX, 4
+MOV AX, [BX]
+MOV BX, AX
+MOV [BX], DX
+POP DX
+POP AX
+POP CX
+POP BX
+RET
+; Programa principal
+ORG 2000H
+MOV AX, NUM1
+PUSH AX
+MOV AX, NUM2
+PUSH AX
+MOV AX, OFFSET RES
+PUSH AX
+MOV DX, 0
+CALL MUL
+POP AX
+POP AX
+ POP AX
+ HLT
+END
+
+a) Al llamar a CALL, Se apila la direccion de retorno en la pila y se va hacia la subrutina
+b) Al llamar a PUSH, Se apila lo que sea que contenido el registro y se aumenta el SP
+   AL llamar a POP, Se desapila lo que estaba contenido en la direccion del SP y se devuelve al registro solicitado
+c) Al llamar a RET, se recupera la direccion de memoria, se desapila y se vuelve hacia esa instruccion 
+
+
+8)  ;Faltan los push-Pop de b,c y d (No puestos por cuestiones visuales)
+
+;Escribir una subrutina ROTARIZ que haga una rotación hacia la izquierda de 
+;los bits de un byte almacenado en la memoria del microprocesador. 
+;Dicho byte y el número de posiciones a rotar deben pasarse por valor desde el
+;programa principal a la subrutina a través de registros.
+
+
+ORG 1000H
+Resultado Db ?
+
+org 3000h
+
+ROTARIZ: cmp ah,0
+         jz Fin
+         ADD al,al
+         ADC AL,0
+         DEC AH
+         JMP ROTARIZ
+Fin: mov Resultado, al
+     ret
+
+
+
+org 2000h 
+mov al, 1
+mov ah, 5
+call ROTARIZ
+hlt
+end
+
+
+
+9)
+;Escribir una subrutina CONCAR que cuente el número de caracteres de una cadena
+;de caracteres terminada en Cero (00H) almacenada en la memoria del microprocesador. 
+;La cadena se pasa a la subrutina por referencia vía REGISTR
+;Faltan los push pop
+
+ORG 1000H
+Valor db 0FFh
+
+org 3000h
+
+ROTARIZ: cmp ah,0
+         jz Fin
+         ADD al,al
+         ADC AL,0
+         DEC AH
+         JMP ROTARIZ
+Fin: mov Valor, al
+     ret
+
+
+
+org 2000h 
+mov al, Valor
+mov ah, 2
+call ROTARIZ
+hlt
+end
+
+
+
+
+
+
+;10) Escribir una subrutina SWAP que intercambie dos datos de 16 bits
+;almacenados en memoria. 
+;Los parámetros deben ser pasados por referencia desde el programa principal 
+;a través de la pila
+
+
+ORG 1000H
+A dw 0FFFFh
+B dw 0000
+
+
+ORG 3000H
+
+SWAP: Push AX
+      Push BX
+      Push CX
+      Push DX
+      
+     mov Bx,sp
+     add Bx, 10
+     mov CX,[BX]   ;Offset A CX
+     add bx, 2
+     mov DX, [BX]  ;Offset B DX
+     
+     mov bx,[bx]
+     mov ax, [Bx]
+     push ax
+     mov bx, cx
+     mov ax, [bx]
+     mov bx, dx
+     mov [bx],ax
+     pop ax
+     mov bx, cx
+     mov [bx],ax
+     
+     
+     
+     Pop DX
+     POP BX
+     POP CX
+     POP AX
+     
+     RET
+      
+
+
+
+
+org 2000h
+MOV bx, Offset B
+push BX
+mov BX, Offset A
+push BX
+call SWAP
+pop bx
+pop bx
+HLT 
+END
+
+11)
+
+;Modificar la subrutina del ejercicio 9 para que cuente la cantidad
+;de veces que se repite un dado caracter en una cadena. Además, la subrutina debe 
+;cambiar el caracter especificado por una "X". El caracter a buscar se debe
+;pasar por valor mientras que la cadena a analizar por referencia, todo a través de registros.
+
+ORG 1000H
+
+CADENA DB "TestT0"
+RESUL db 0
+
+org 3000h
+
+CONCAR: PUSH DX
+        PUSH CX
+        MOV DL,0
+        
+REPETIR: MOV Ah,[bx]
+         cmp ah, 30h ;0
+         JZ FIN
+         CMP Ah,Al
+         JNZ CONTI
+         INC DL
+         MOV byte ptr [BX], 58h ; "X"
+  CONTI: INC BX
+         jmp REPETIR
+
+FIN: MOV RESUL, DL
+     POP CX
+     POP DX
+     RET
+
+
+org 2000h
+mov al, 54h ; "T"
+mov bx, Offset CADENA
+call CONCAR
+hlt
+END
+
+
+12)
+;Falta Push Pop BX CX Y DX
+;UsAndo la subrutina ROTARIZ del ejercicio 8, escriba una subrutina ROTARDER 
+;que haga una rotación hacia la derecha de un byte almacenado en la memoria del
+;microprocesador. 
+;Dicho byte y el número de posiciones a rotar deben pasarse por valor desde el
+;programa principal a la subrutina a través de registros.
+
+ORG 1000H
+Valor db 1
+
+org 3000h
+
+ROTARDER: Mov dl,8
+          sub dl, ah
+          mov ah,dl
+          
+
+ROTARIZ: cmp ah,0
+         jz Fin
+         ADD al,al
+         ADC AL,0
+         DEC AH
+         JMP ROTARIZ
+Fin: mov Valor, al
+     ret
+
+
+
+org 2000h 
+mov al, Valor
+mov ah, 2
+call ROTARDER
+hlt
+end
+
+
+13)
+
+
+;Escriba la subrutina ES_VOCAL, que determina si un caracter es vocal o no.
+
+;La rutina debe recibir el caracter por valor, y debe retornar, vía registro, el valor 0FFH 
+
+;si el caracter es una vocal, o 00H en caso contrario. 
+
+
+ORG 1000H
+Tabla db "EIOUaeiuoA"
+res1 db ?
+res2 db ?
+
+org 3000h
+ES_VOCAL: push dx
+          push cx
+          push bx
+          push ax
+
+          mov bx, Offset Tabla
+          mov dh,10
+          mov dl, 00h
+          
+   Repetir:cmp dh,0
+           jz Fin
+           
+           cmp  [BX], al
+           jz LoEs
+
+           inc bx
+           dec dh
+           jmp Repetir
+    LoEs: mov dl, 0FFH
+    
+    Fin:  pop ax
+          mov al, dl
+          pop bx
+          pop cx
+          pop dx
+          RET
+
+
+
+
+ORG 2000H
+mov al, 41H     ;"A"
+CALL ES_VOCAL
+mov res1, al
+mov al, 42H     ;"B"
+CALL ES_VOCAL
+mov res2, al
+HLT 
+END
+
+
+
+14)
+
+;Escriba la subrutina ES_VOCAL, que determina si un caracter es vocal o no.
+;La rutina debe recibir el caracter por valor, y debe retornar, vía registro, el valor 0FFH 
+;si el caracter es una vocal, o 00H en caso contrario. 
+
+;Usando la subrutina del ejercicio anterior (ejercicio 13) escribir la subrutina VOCALES, 
+;que recibe una cadena por referencia, y devuelve, en un registro, la cantidad de vocales que tiene esa cadena.
+
+
+ORG 1000H
+Cadena db "AuxSexo"
+Tabla db "AEIOUaeiuo"
+res1 db ?
+res2 db ?
+
+org 3000h
+ES_VOCAL: push dx
+          push cx
+          push bx
+          push ax
+
+          mov bx, Offset Tabla
+          mov dh,10
+          mov dl, 00h
+          
+   Repetir:cmp dh,0
+           jz Fin
+           
+           cmp  [BX], al
+           jz LoEs
+
+           inc bx
+           dec dh
+           jmp Repetir
+    LoEs: mov dl, 0FFH
+    
+    Fin:  pop ax
+          mov al, dl
+          pop bx
+          pop cx
+          pop dx
+          RET
+
+VOCALES: push dx
+         push cx
+         push ax
+         push bx
+         
+         mov bx,sp
+         add bx, 10
+         mov bx, [BX]
+         mov dx,0
+         
+Continuar:cmp bx, Offset Tabla
+          jz Vuelta
+         
+         mov al, [BX]
+         CALL ES_VOCAL
+         cmp al,0FFh
+         jnz Saltito
+         inc dl
+         
+ Saltito:INC BX
+         jmp Continuar
+         
+ Vuelta: pop bx
+         pop ax
+         mov ax,0
+         mov al, dl
+         pop cx
+         pop dx
+         ret
+
+
+
+ORG 2000H
+mov bx, Offset Cadena
+push bx
+CALL VOCALES
+pop bx
+mov res2, al
+HLT 
+END

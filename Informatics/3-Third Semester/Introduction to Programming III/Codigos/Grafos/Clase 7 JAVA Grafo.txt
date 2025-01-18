@@ -1,0 +1,123 @@
+Facultad de Informática - UNLP
+Año 2023
+Programación III
+TEMA 7: Grafos
+Práctica nº 7 - A
+
+Ejercicio 1
+a. ¿Cuál es la diferencia entre un grafo y un árbol?
+Un grafo es un modelo para representar relaciones entre elementos
+de un conjunto.
+ Grafo: (V,E), V es un conjunto de vértices o nodos, con una
+relación entre ellos; E es un conjunto de pares (u,v), u,v Є V ,
+llamados aristas o arcos
+
+Un arbol es un Grafo sin ciclos, conexo, en el que un nodo se ha designado 
+como raíz.
+
+b. Indicar para cada uno de los siguientes casos si la relación se representa a través de un
+grafo no dirigido o de un grafo dirigido (digrafo).
+
+i. Vértices: países. Aristas: es limítrofe. //GND
+ii. Vértices: países. Aristas: principales mercados de exportación. //GD
+iii. Vértices: dispositivos en una red de computadoras. Aristas: conectividad. //GND
+iv. Vértices: variables de un programa. Aristas: relación “usa”. (Decimos que la variable
+x usa la variable y, si y aparece del lado derecho de una expresión y x aparece del
+lado izquierdo, por ejemplo x = y). //GD
+
+Ejercicio 2
+a. En un grafo NO DIRIGIDO de n vértices, ¿Cuál es el número de aristas que puede tener? Fundamentar.
+Puede tener n*(n-1)/2 aristas, Ya que cada arista puede tener (n-1) conexiones, hay n aristas, y el /2 es porque cada arista tiene 1 solo camino, no 2 (Si se cuenta en 1 en el otro no)
+
+Ej: n=2 hay una arista
+    n=3 hay 3 arista
+
+i. ¿Cuál es el mínimo número de aristas que puede tener se exige que el grafo sea
+conexo? 
+(n-1), Ya que todas las aristas estarian conectadas a una siguiente, salvo la ultima
+
+ii. ¿Cuál es el máximo número de aristas que puede tener si se exige que el grafo sea
+acíclico?
+ (N - 1), Esto se debe a que cada vértice puede tener aristas hacia todos los demás vértices excepto hacia sí mismo y aquellos que se encuentran en su "futuro" (en términos de orden topológico).
+
+iii. ¿Cuál es el número de aristas que puede tener si se exige que el grafo sea conexo y
+acíclico?
+(n-1), , Ya que habria solo caminos en un sentido donde, por ejemplo todas las aristas estarian conectadas a una siguiente, salvo la ultima
+
+iv. ¿Cuál es el mínimo número de aristas que puede tener si se exige que el grafo sea
+completo? (Un grafo es completo si hay una arista entre cada par de vértices.)
+n*(n-1)/2 aristas, Ya que cada arista puede tener (n-1) conexiones, hay n aristas, y el /2 es porque cada arista tiene 1 solo camino, no 2 (Si se cuenta en 1 en el otro no)
+
+b. En un grafo dirigido y que no tiene aristas que vayan de un nodo a sí mismo, ¿Cuál es el
+mayor número de aristas que puede tener? Fundamentar.
+n*(n-1), Ya que cada arista puede tener (n-1) conexiones, hay n aristas
+
+Ejercicio 3
+Teniendo en cuenta las dos representaciones de grafos: Matriz de Adyacencias y Lista de
+Adyacencias.
+a. Bajo qué condiciones usaría una Matriz de Adyacencias en lugar de una Lista de
+Adyacencias para representar un grafo. Y una Lista de Adyacencias en lugar de una Matriz
+de Adyacencias. Fundamentar.
+Usaria:
+La Lista cuando son grafos muy masivos o con pocas interconexiones
+La Matriz cuando son grafos chicos o cuyas conexiones son del orden de v^2
+
+b. ¿En función de qué parámetros resulta apropiado realizar la estimación del orden de
+ejecución para algoritmos sobre grafos densos? ¿Y para algoritmos sobre grafos dispersos?
+Fundamentar.
+El primero es lineal, ya que acceder a un elemento tarda eso 
+El segundo es de t(n) X, ya que acceder a un elemento tarda eso 
+
+c. Si representamos un grafo no dirigido usando una Matriz de Adyacencias, ¿cómo sería la
+matriz resultante? Fundamentar.
+Seria simetrica con respeccto a una horizontal, ya que el vertice 1 estaria conectado con el 2 y viseversa
+
+Ejercicio 4
+A continuación la especificación de un Grafo
+Interface Grafo
+● El método agregarVertice(Vertice<T> v) //Agrega un vértice al Grafo. Verifica que el vértice
+no exista en el Grafo.
+● El método eliminarVertice(Vertice<T> v) // Elimina el vértice del Grafo. En caso que el
+vértice tenga conexiones con otros vértices, se eliminan todas sus conexiones.
+● El método conectar(Vertice<T> origen, Vertice<T> destino) //Conecta el vértice origen con
+el vértice destino. Verifica que ambos vértices existan, caso contrario no realiza ninguna
+conexión.
+● El método conectar(Vertice<T> origen, Vertice<T> destino, int peso) // Conecta el vértice
+origen con el vértice destino con peso. Verifica que ambos vértices existan, caso contrario no
+realiza ninguna conexión.
+● El método desConectar(Vertice<T> origen, Vertice<T> destino) //Desconecta el vértice
+origen con el destino. Verifica que ambos vértices y la conexión origen -->destino existan,
+caso contrario no realiza ninguna desconexión. En caso de existir la conexión destino
+-->origen, ésta permanece sin cambios.
+● El método esAdyacente(Vertice<T> origen, Vertice<T> destino): boolean // Retorna true
+si origen es adyacente a destino. False en caso contrario.
+● El método esVacio(): boolean // Retorna true en caso que el grafo no contenga ningún
+vértice. False en caso contrario.
+● El método listaDeVertices(): ListaGenerica<Vertice<T>> //Retorna la lista con todos los
+vértices del grafo.
+● El método peso(Vertice<T> origen, Vertice<T> destino): int //Retorna el peso de la
+conexión origen -->destino . Si no existiera la conexión retorna 0.
+● El método listaDeAdyacentes(Vertice<T> v)): ListaGenerica<Arista> // Retorna la lista de
+adyacentes de un vértice.
+● El método vertice(int posicion): Vertice<T> // Retorna el vértice dada su posición.
+Interface Vértice
+● El método dato(): T // Retorna el dato del vértice.
+● El método setDato(T d) // Setea el dato del vértice
+● El método posicion(): int // Retorna la posición del vértice.
+Interface Arista
+● El método verticeDestino(): Vertice<T> // Retorna el vértice destino de la arista.
+● El método peso(): int // Retorna el peso de la arista
+
+
+
+Copie las clases provistas por la cátedra (en el .zip están contenidas en el paquete prog3.grafos y de
+ser necesario la implementación de lista genérica). Además:
+
+a. Analice qué métodos cambiarían el comportamiento en el caso de utilizarse para modelar
+grafos NO dirigidos.
+Basicamente, al conectar/ desconectar habria que recordar hacerlo en ambos vertices, con los mismos valores, o hacer una funcion que lo haga indicando con una 3er variable que se trata de este tipo de grafos
+
+b. Verifique las implementaciones de las clases GrafoImplMatrizAdy y GrafoImplListAdy con
+las clases de Test JUnits provistas por la cátedra. No anda
+
+

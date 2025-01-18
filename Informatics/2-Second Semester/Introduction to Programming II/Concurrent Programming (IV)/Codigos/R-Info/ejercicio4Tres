@@ -1,0 +1,119 @@
+programa ejercicio4Tres
+
+  
+areas  
+  AreaCom: AreaPC(2,2,10,10)
+ 
+  Area1: AreaP(2,1,2,1)
+  Area2: AreaP(3,1,3,1)
+  Area3:AreaP(4,1,4,1)
+  Area4:AreaP(5,1,5,1)
+  AreaJ:AreaP(1,1,1,1)
+robots
+  robot tipo1
+  variables
+    MiCa, MiAv,rob, RCa,RAv,Flores:numero
+  comenzar
+    MiCa:=PosCa
+    MiAv:=PosAv
+    RecibirMensaje(rob,R5)
+    RecibirMensaje(RCa,R5)
+    RecibirMensaje(RAv,R5)
+    BloquearEsquina(RAv,RCa)
+    Pos(RAv,RCa)
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      Flores:=Flores + 1
+      Pos(MiAv,MiCa)
+      LiberarEsquina(RAv,RCa)
+      
+      BloquearEsquina(RAv,RCa)
+      Pos(RAv,RCa)
+      
+    Pos(MiAv,MiCa)
+    LiberarEsquina(RAv,RCa)
+    EnviarMensaje(rob,R5)
+    EnviarMensaje(Flores,R5)
+    
+
+      
+
+  fin
+  
+  robot tipo2
+  variables
+    RCa,RAv,rob,flor,max,roboM:numero
+  comenzar
+    Random(RAv,2,10)
+    Random(RCa,2,10)
+    
+    EnviarMensaje(1,R1)
+    EnviarMensaje(RCa,R1)
+    EnviarMensaje(RAv,R1)
+    
+    EnviarMensaje(2,R2)
+    EnviarMensaje(RCa,R2)
+    EnviarMensaje(RAv,R2)
+    
+    EnviarMensaje(3,R3)
+    EnviarMensaje(RCa,R3)
+    EnviarMensaje(RAv,R3)
+    
+    EnviarMensaje(4,R4)   
+    EnviarMensaje(RCa,R4)
+    EnviarMensaje(RAv,R4)
+   
+    repetir 4 
+      RecibirMensaje(rob,*)
+      si rob=1
+        RecibirMensaje(flor,R1)
+      sino
+        si rob=2
+          RecibirMensaje(flor,R2)
+        sino
+          si rob=3
+            RecibirMensaje(flor,R3)
+          sino
+            RecibirMensaje(flor,R4)   
+      si flor > max
+        max:= flor
+        roboM:= rob    
+    Informar(roboM)        
+              
+          
+      
+      
+  fin
+
+
+  
+variables
+  R1,R2,R3,R4 : tipo1
+  R5: tipo2  
+comenzar
+  AsignarArea(R1,Area1)
+  AsignarArea(R1,AreaCom)
+  
+  AsignarArea(R2,Area2)
+  AsignarArea(R2,AreaCom)
+  
+  AsignarArea(R3,Area3)  
+  AsignarArea(R3,AreaCom)
+  
+  AsignarArea(R4,Area4)
+  AsignarArea(R4,AreaCom)
+  
+  AsignarArea(R5,AreaJ)
+ 
+  Iniciar(R1,2,1)
+  Iniciar(R2,3,1)
+  Iniciar(R3,4,1)
+  Iniciar(R4,5,1)
+  Iniciar(R5,1,1)
+  
+fin           
+
+
+
+
+

@@ -1,0 +1,166 @@
+<mxfile host="app.diagrams.net" modified="2023-10-22T00:17:42.387Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="wvoh-cX-hIsNHTV-oB_-" version="22.0.6" type="device">
+  <diagram name="Página-1" id="ZsCuaO-6FW3WfOD8ZkoT">
+    <mxGraphModel dx="3243" dy="2608" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;startArrow=block;startFill=1;endArrow=none;endFill=0;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;" edge="1" parent="1" source="wZLkl4ZeBPyMkfqDCG8b-1" target="wZLkl4ZeBPyMkfqDCG8b-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-1" value="&lt;font style=&quot;vertical-align: inherit;&quot;&gt;&lt;font style=&quot;vertical-align: inherit;&quot;&gt;Aeropuerto&lt;/font&gt;&lt;/font&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;" vertex="1" parent="1">
+          <mxGeometry x="240" y="40" width="160" height="124" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-2" value="- código: String&lt;br&gt;- latitud: double&lt;br&gt;- longitud: double&lt;br&gt;- país: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-1">
+          <mxGeometry y="26" width="160" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#0F8B8D;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-1">
+          <mxGeometry y="90" width="160" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-4" value="+ method(type): type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-1">
+          <mxGeometry y="98" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;endArrow=none;endFill=0;startArrow=block;startFill=1;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;" edge="1" parent="1" source="wZLkl4ZeBPyMkfqDCG8b-5" target="wZLkl4ZeBPyMkfqDCG8b-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-5" value="Aerolinea" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;" vertex="1" parent="1">
+          <mxGeometry x="670" y="40" width="160" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-6" value="- vuelos: Vuelos[]&lt;br&gt;- código: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-5">
+          <mxGeometry y="26" width="160" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-7" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#0F8B8D;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-5">
+          <mxGeometry y="70" width="160" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-8" value="+ method(type): type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-5">
+          <mxGeometry y="78" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;startArrow=block;startFill=1;endArrow=none;endFill=0;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;" edge="1" parent="1" source="wZLkl4ZeBPyMkfqDCG8b-9" target="wZLkl4ZeBPyMkfqDCG8b-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-9" value="Vuelos" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;" vertex="1" parent="1">
+          <mxGeometry x="655" y="170" width="190" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-10" value="- código: int&lt;br&gt;- origen: Aeropuerto&lt;br&gt;- destino: Aeropuerto&lt;br&gt;- tiempoorigen: Tiempo&lt;br&gt;-tiempodestino: Tiempo&lt;br&gt;- estado: String&lt;br&gt;- embarque: String&lt;br&gt;- costoExtra: double&lt;br&gt;- tripulación: Tripulacion&lt;br&gt;&amp;nbsp;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-9">
+          <mxGeometry y="26" width="190" height="144" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-11" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#0F8B8D;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-9">
+          <mxGeometry y="170" width="190" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-63" value="+ vender (boolean): boolean" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-9">
+          <mxGeometry y="180" width="190" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-13" value="Sistema de Administración de Aerolíneas (SAA). El SAA permitirá registrar información de&lt;br/&gt;aeropuertos, aerolíneas y vuelos de las mismas. La información con la que se cuenta es la&lt;br/&gt;siguiente:&lt;br/&gt;“Cada aeropuerto se identifica por un código de tres letras (por ejemplo BUE identifica al&lt;br/&gt;aeropuerto Ministro Pistarini de Buenos Aires o LIM que identifica al aeropuerto Jorge Chávez&lt;br/&gt;de Lima) y tiene datos de su georeferenciación (latitud y longitud). Por otro lado, cada&lt;br/&gt;aerolínea tiene asociado un conjunto de vuelos que inicialmente puede ser cero. Acerca de los&lt;br/&gt;vuelos que pertenecen a una aerolínea, siempre están identificados por un código de vuelo&lt;br/&gt;formado por el código de la aerolínea y un número (LAN 1256 o TA 24). Cada vuelo tiene&lt;br/&gt;asociado un aeropuerto origen y un aeropuerto destino que no pueden ser iguales, fecha/hora&lt;br/&gt;de partida y fecha/hora de llegada, puerta de embarque, un estado de la partida (confirmado,&lt;br/&gt;demorado, en tiempo), etc. Cada vuelo también tendrá asignado un avión, el cual tiene 1 o más&lt;br/&gt;secciones. Por ejemplo: primera clase, ejecutiva y económica, siempre hay sólo UNA sección&lt;br/&gt;de cada tipo. Cada avión tiene un conjunto de asientos organizados como N filas y M&lt;br/&gt;columnas. Las filas están representadas por números, mientras que las columnas se&lt;br/&gt;representan por letras (A, B, etc.).&lt;br/&gt;El SAA permite realizar diversas operaciones: crear aeropuertos, aerolíneas y vuelos, así como&lt;br/&gt;administrar la relación entre ellos. También permite encontrar vuelos entre dos aeropuertos y&lt;br/&gt;realizar la reserva de asientos o incluso, cuando un pasajero no quiere pagar el costo extra de&lt;br/&gt;la reserva de asiento (algunos vuelos tienen este costo extra), el SAA sabe elegir qué asiento&lt;br/&gt;asignar, teniendo en cuenta el balanceo de la carga en el avión).&lt;br/&gt;El SAA además permite emitir un reporte general y completo acerca de todos los aeropuertos,&lt;br/&gt;aerolíneas, vuelos, secciones de vuelos y asientos reservados, así como también reportes&lt;br/&gt;específicos, como encontrar todos los asientos disponibles para una sección de un vuelo en&lt;br/&gt;particular o cuantos asientos libres quedan en total en un vuelo.”&lt;br/&gt;a. Realice el diagrama de clases&lt;br/&gt;2. Verifique si su modelo se adapta a las siguientes consideraciones, y de ser necesario&lt;br/&gt;modifique su diagrama:&lt;br/&gt;a. Así como existe “primera clase” o “clase turista”, se ha creado una nueva clase: “Tránsito”&lt;br/&gt;donde se ubicaran a los pasajeros que no vuelan hacia su destino final, sino que usan el&lt;br/&gt;vuelo como un punto de conexión.&lt;br/&gt;b. El sistema debe permitir realizar el cambio de asiento reservado&lt;br/&gt;c. El sistema debe permitir registrar información de la tripulación de vuelo (piloto, co-piloto,&lt;br/&gt;comandante de abordo y auxiliar de vuelo) asociado a un vuelo en particular.&lt;br/&gt;d. El sistema debe poder recuperar todos los vuelos de un piloto en particular y el historial de&lt;br/&gt;aerolíneas en las que trabajó.&lt;br/&gt;e. El sistema debe permitir dejar registro de denuncias realizadas por los pasajeros, quienes&lt;br/&gt;pueden indicar en qué vuelo ocurrió el incidente, sus comentarios al respecto e incluso&lt;br/&gt;podrían subir una foto si la hubiere.&lt;br/&gt;f. El sistema debe permitir hacer una estadística de los países más visitados.&lt;br/&gt;g. El sistema debe determinar cuántos pasajeros de un determinado vuelo ya pasaron por el&lt;br/&gt;check-in.&lt;br/&gt;" style="text;align=center;fontStyle=1;verticalAlign=middle;spacingLeft=3;spacingRight=3;strokeColor=none;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;html=1;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="1">
+          <mxGeometry x="-90" y="-670" width="80" height="1810" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-14" value="SAA" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;" vertex="1" parent="1">
+          <mxGeometry x="370" y="-270" width="300" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-15" value="- aerolíneas: Aerolínea[][]&lt;br&gt;- vuelos: Vuelos[][]&lt;br&gt;- aeropuerto: Aeropuerto[][]&lt;br&gt;- denuncia: Denuncia[]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-14">
+          <mxGeometry y="26" width="300" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-16" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#0F8B8D;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-14">
+          <mxGeometry y="118" width="300" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-17" value="+ añadirAerolinea(): void&lt;br&gt;+ añadirAeropuerto(): void&lt;br&gt;+ añadirVuelo(): void&lt;br&gt;+ encontrarVuelo(Aeropuerto, Aeropuerto): Vuelos[][]&lt;br&gt;+ EmitirReporte(): String&lt;br&gt;+ InfoPiloto(): String&lt;br&gt;+ EstadisticaPaisMasVisitado(): String&lt;br&gt;+ PasoElCheck(Vuelo): int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-14">
+          <mxGeometry y="126" width="300" height="134" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;" edge="1" parent="1" source="wZLkl4ZeBPyMkfqDCG8b-10" target="wZLkl4ZeBPyMkfqDCG8b-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;endArrow=none;endFill=0;startArrow=block;startFill=1;" edge="1" parent="1" source="wZLkl4ZeBPyMkfqDCG8b-24" target="wZLkl4ZeBPyMkfqDCG8b-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-24" value="Tiempo" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;strokeColor=#0F8B8D;fontColor=#143642;fillColor=#FAE5C7;" vertex="1" parent="1">
+          <mxGeometry x="410" y="490" width="160" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-25" value="- día: String&lt;br&gt;- mes: String&lt;br&gt;- año: String&lt;br&gt;- hora: String&lt;br&gt;- min: String&lt;br&gt;- seg: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-24">
+          <mxGeometry y="26" width="160" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-26" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-24">
+          <mxGeometry y="130" width="160" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-27" value="+ method(type): type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-24">
+          <mxGeometry y="138" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;startArrow=block;startFill=1;endArrow=none;endFill=0;" edge="1" parent="1" source="wZLkl4ZeBPyMkfqDCG8b-28" target="wZLkl4ZeBPyMkfqDCG8b-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-28" value="Avion" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;strokeColor=#0F8B8D;fontColor=#143642;fillColor=#FAE5C7;" vertex="1" parent="1">
+          <mxGeometry x="625" y="480" width="250" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-29" value="- tieneprim boolean&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;- tieneejec: boolean&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;- tieneeconom: boolean&lt;br&gt;- asientos: Asiento [][]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-28">
+          <mxGeometry y="26" width="250" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-30" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-28">
+          <mxGeometry y="110" width="250" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-31" value="+ asientosDisponibles(Seccion): boolean[][]&lt;br&gt;+ cantidadDisponible(): int&lt;br&gt;+ asignarPasajeros(): String&lt;br&gt;+ reasignarPasajeros(Asiento): String&lt;br&gt;+ abordar(Asiento): boolean" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-28">
+          <mxGeometry y="118" width="250" height="82" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;startArrow=block;startFill=1;endArrow=none;endFill=0;" edge="1" parent="1" source="wZLkl4ZeBPyMkfqDCG8b-10" target="wZLkl4ZeBPyMkfqDCG8b-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-39" value="Asiento" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;strokeColor=#0F8B8D;fontColor=#143642;fillColor=#FAE5C7;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="400" width="180" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-40" value="- tipo:&amp;nbsp;Seccion&lt;br&gt;- base: double&lt;br&gt;- ocupado: boolean&lt;br&gt;- quienocupa: string&lt;br&gt;- abordado: boolean" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-39">
+          <mxGeometry y="26" width="180" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-41" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-39">
+          <mxGeometry y="110" width="180" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-42" value="+ calculoPrecioNormal(): int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-39">
+          <mxGeometry y="118" width="180" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;startArrow=block;startFill=1;endArrow=none;endFill=0;" edge="1" parent="1" source="wZLkl4ZeBPyMkfqDCG8b-43" target="wZLkl4ZeBPyMkfqDCG8b-39">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;startArrow=block;startFill=1;endArrow=none;endFill=0;" edge="1" parent="1" source="wZLkl4ZeBPyMkfqDCG8b-43" target="wZLkl4ZeBPyMkfqDCG8b-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-43" value="Seccion &amp;lt;Enum&amp;gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;strokeColor=#0F8B8D;fontColor=#143642;fillColor=#FAE5C7;" vertex="1" parent="1">
+          <mxGeometry x="1009" y="610" width="160" height="132" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-44" value="+ PRIMERA&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;+ EJECUTIVA&lt;br&gt;+ ECONOMICA&lt;br&gt;+ TRANSITO" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-43">
+          <mxGeometry y="26" width="160" height="84" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-45" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-43">
+          <mxGeometry y="110" width="160" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-66" value="Tripulacion" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;strokeColor=#0F8B8D;fontColor=#143642;fillColor=#FAE5C7;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="210" width="160" height="124" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-67" value="- piloto: String&lt;br&gt;- copiloto: String&lt;br&gt;- comandante: String&lt;br&gt;- auxiliar: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-66">
+          <mxGeometry y="26" width="160" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-68" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-66">
+          <mxGeometry y="90" width="160" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-69" value="+ method(type): type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-66">
+          <mxGeometry y="98" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-70" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;startArrow=block;startFill=1;endArrow=none;endFill=0;" edge="1" parent="1" source="wZLkl4ZeBPyMkfqDCG8b-10" target="wZLkl4ZeBPyMkfqDCG8b-67">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-71" value="Denuncia" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;strokeColor=#0F8B8D;fontColor=#143642;fillColor=#FAE5C7;" vertex="1" parent="1">
+          <mxGeometry x="780" y="-260" width="160" height="124" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-72" value="- pasajero: String&lt;br&gt;- vuelo: Vuelo&lt;br&gt;- foto: RGB[][" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-71">
+          <mxGeometry y="26" width="160" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-73" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-71">
+          <mxGeometry y="90" width="160" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-74" value="+ method(type): type" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontColor=#143642;" vertex="1" parent="wZLkl4ZeBPyMkfqDCG8b-71">
+          <mxGeometry y="98" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;" edge="1" parent="1" source="wZLkl4ZeBPyMkfqDCG8b-15" target="wZLkl4ZeBPyMkfqDCG8b-71">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wZLkl4ZeBPyMkfqDCG8b-87" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1.007;exitY=0.901;exitDx=0;exitDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;exitPerimeter=0;" edge="1" parent="1" source="wZLkl4ZeBPyMkfqDCG8b-29" target="wZLkl4ZeBPyMkfqDCG8b-39">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

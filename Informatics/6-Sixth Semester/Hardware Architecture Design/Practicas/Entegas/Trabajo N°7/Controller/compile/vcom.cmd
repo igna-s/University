@@ -1,0 +1,1 @@
+-w -d c:/Users/User/Desktop/Practica_N7/Controller/compile -s c:/Users/User/Desktop/Practica_N7/library.cfg -j c:/Users/User/Desktop/Practica_N7/Controller/projlib.cfg -work Controller -reorder -O3 -e 100 -work Controller -2002 c:/Users/User/Desktop/Practica_N7/Controller/src/Estructura.vhd c:/Users/User/Desktop/Practica_N7/Controller/src/TestControler.vhd 

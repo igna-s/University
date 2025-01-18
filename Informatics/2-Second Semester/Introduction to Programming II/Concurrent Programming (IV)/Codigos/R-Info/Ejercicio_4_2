@@ -1,0 +1,99 @@
+programa ejercicio4Dos
+procesos
+  proceso tomarF
+  comenzar
+    mientras HayFlorEnLaEsquina
+      tomarFlor
+  fin
+  proceso tomarP
+  comenzar
+    mientras HayPapelEnLaEsquina
+      tomarPapel
+  fin    
+    
+areas  
+  Area1: AreaC(1,1,5,10)
+  Area2: AreaC(6,1,10,9)
+  
+  AreaF1: AreaP(6,10,6,10)
+  AreaF2: AreaP(7,10,7,10)
+  
+  AreaComun: AreaPC(10,10,10,10)
+  
+  AreaP1:AreaP(8,10,8,10)
+  AreaP2:AreaP(9,10,9,10)
+robots
+  robot tipo1
+  variables
+    MiCa, MiAv, RCa,RAv:numero
+  comenzar
+    MiCa:=PosCa
+    MiAv:=PosAv
+    repetir 5
+      Random(RAv,1,5)
+      Random(RCa,1,10)
+      BloquearEsquina(RAv,RCa)
+      Pos(RAv,RCa)
+      tomarF
+      Pos(MiAv,MiCa)
+      LiberarEsquina(RAv,RCa)
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    mientras (HayFlorEnLaBolsa)
+      depositarFlor 
+    Pos(MiAv,MiCa)
+    LiberarEsquina(10,10)  
+  fin
+  
+  robot tipo2
+  variables
+    MiCa, MiAv, RCa,RAv:numero
+  comenzar
+    MiCa:=PosCa
+    MiAv:=PosAv
+    repetir 3
+      Random(RAv,6,10)
+      Random(RCa,1,9)
+      BloquearEsquina(RAv,RCa)
+      Pos(RAv,RCa)
+      tomarP
+      Pos(MiAv,MiCa)
+      LiberarEsquina(RAv,RCa)
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    mientras (HayPapelEnLaBolsa)
+      depositarPapel
+    Pos(MiAv,MiCa)
+    LiberarEsquina(10,10)  
+  fin
+
+
+  
+variables
+  RF1, RF2: tipo1
+  RP1, RP2: tipo2  
+comenzar
+  AsignarArea(RF1,Area1)
+  AsignarArea(RF1,AreaF1)
+  AsignarArea(RF1,AreaComun)
+  
+  AsignarArea(RF2,Area1)
+  AsignarArea(RF2,AreaF2)
+  AsignarArea(RF2,AreaComun)
+  
+  AsignarArea(RP1,Area2)  
+  AsignarArea(RP1,AreaP1)
+  AsignarArea(RP1,AreaComun)
+  
+  AsignarArea(RP2,Area2)
+  AsignarArea(RP2,AreaP2)
+  AsignarArea(RP2,AreaComun)
+ 
+  Iniciar(RF1,6,10)
+  Iniciar(RF2,7,10)
+  Iniciar(RP1,8,10)
+  Iniciar(RP2,9,10)
+fin           
+
+
+

@@ -1,0 +1,72 @@
+org 1000h
+
+Conversion db "s?EZU¡eetee"
+Suma db 0
+Min db  "abcdefghijklmnopqrstuvwxyz"
+Mayu db "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+
+org 3000h
+    MAYUS:     Push ax
+               Push bx
+               mov al,26
+               mov bx,Sp
+               add bx,6h
+               mov bx,[bx]
+               mov ah, [bx]; ah, Letra al, Veces
+            
+               
+               Repetir: mov bx,cx
+                        mov bl,[bx]
+                        cmp bl,ah
+                        JZ Cambio
+                        inc dx
+                        inc cx
+                        dec al
+                        cmp al,0
+                        JNZ Repetir
+                
+               Jmp Volver
+               
+                Cambio:Mov ah, bl
+                       Mov bx, dx
+                       mov ah,[bx]
+                       
+                       mov bx,Sp
+                       add bx,6h
+                       mov bx,[bx]
+                       mov [bx],ah
+                       
+                       
+               
+              Volver: Pop bx
+                      Pop ax
+                      ret
+
+org 2000h
+
+mov bx, Offset Conversion
+mov ah, Suma   ; Al : Letra comp con E
+
+            Repe: mov cx, Offset Min
+                  mov dx, Offset Mayu
+                  Push bx
+                  Call MAYUS
+                  Pop bx
+                  
+                  mov al,[bx]
+                  cmp al,69 ; E
+                  JNZ Saltito
+                  inc ah
+                  
+                  Saltito: inc bx
+                  Cmp bx, Offset Suma
+                  jnz Repe
+            
+            mov Suma, ah
+      
+            
+hlt 
+end
+
+

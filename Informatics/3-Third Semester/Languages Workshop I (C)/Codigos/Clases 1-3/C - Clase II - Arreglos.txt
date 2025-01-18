@@ -1,0 +1,418 @@
+1)
+/*Escriba un programa que genere 50 números enteros en forma pseudoaleatoria
+y que los almacene en un arreglo unidimensional.
+Luego de realizada la carga, informar la cantidad de números pares que se encuentran
+ en posiciones impares del arreglo y también la cantidad de números impares que se
+encuentran en posiciones pares.*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#define CONSTA 50
+
+
+void paresEimpares( int v[],int x,int *, int*);
+
+int main()
+{
+    int v[CONSTA];
+    int x=0,pares,impares;
+    srand(time(NULL));
+
+    for (x=0;x<CONSTA;x++)
+        v[x]=rand();
+        
+    
+
+    paresEimpares(v,CONSTA,&pares,&impares);
+    printf("Hay %d pares en posicion impar y %d impares en pos par",pares, impares);
+    return 0;
+
+}
+
+void paresEimpares( int v[],int lim,int *pares,int *impar){
+     *pares=0; *impar=0;
+     int i;
+     for (i=0;i<lim;i++){
+     if (i%2) {
+            if ((v[i]%2)==0) (*pares)++;  ///Pos impar
+     }
+     else if ((v[i]%2)) (*impar)++; ///Pos par
+}
+}
+
+
+2)
+#include <stdio.h>
+#include <stdlib.h>
+#define CONSTA 5
+
+/*Escriba 3 funciones que reciban un arreglo unidimensional de float y que:
+a. retorne el promedio de sus valores.
+b. retorne el mínimo de sus valores.
+c. retorne la posición del máximo de sus valores.*/
+
+float promedio (float v[],int );
+float minimo (float v[],int);
+int posmax (float v[],int);
+
+int main()
+{
+    float v[CONSTA];
+    int x;
+    srand(time(NULL));
+
+    for (x=0;x<CONSTA;x++){
+        v[x]=rand()%10;
+        printf(" Numero %3.2lf \n",v[x]);
+    }
+     printf("Promedio= %3.2lf \n",promedio (v,CONSTA));
+     printf("Minimo= %3.2lf \n",minimo (v,CONSTA));
+     printf("Posicion maximo= %d \n",posmax (v,CONSTA));
+
+
+    return 0;
+
+}
+float promedio (float v[],int dim){
+    float tot=0;
+    int x;
+    for (x=0;x<dim;x++)
+        tot+=v[x];
+    return (tot/dim);
+}
+
+float minimo (float v[],int dim){
+ float min=9999;
+    int i;
+    for (i=0;i<dim;i++){
+        if (v[i]<min) min=v[i];
+    }
+    return (min);
+}
+
+int posmax (float v[],int dim){
+ float max=-1;
+ int pos,i;
+    for (i=0;i<dim;i++){
+        if (v[i]>max){
+            max=v[i];
+            pos=i;}
+    }
+    return (pos);
+    }
+
+3)
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define Fila 2
+#define Columna 3
+
+/*Sea A una matriz con m filas y n columnas y c un número.
+ La multiplicación de una matriz A por un escalar c está dada
+ por multiplicar cada entrada de A por c:
+
+Escriba una función que reciba una matriz A y un número c
+, y que retorne en A la multiplicación escalar cA*/
+
+//int [][b](float v[][b],a);
+void Multiescalar(int v[][Columna],int i,int,int);
+int main()
+{
+    int v[Fila][Columna];
+    int i,j,x;
+    srand(time(NULL));   ////i= fila, j= columna
+
+    for (i=0;i<Fila;i++){
+        printf("\n Fila %d \n",i);
+
+        for (j=0;j<Columna;j++){
+           v[i][j]=rand()%10;
+           printf(" %d ",v[i][j]);}
+           }
+
+    printf("\nIngrese un numero para multiplicacion escalar\n");
+    scanf("%d",&x);
+    Multiescalar(v, Fila, Columna,x);
+
+    printf("\nLa matriz queda\n");
+     for (i=0;i<Fila;i++){
+        printf("\n Fila %d \n",i);
+
+        for (j=0;j<Columna;j++){
+           printf(" %d ",v[i][j]);}
+     }
+
+    return 0;
+}
+
+void Multiescalar(int v[][Columna],int i, int j,int x){
+        for (i=0;i<Fila;i++){
+        for (j=0;j<Columna;j++)
+           v[i][j]*=x;
+        }
+
+}
+
+4)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define Fila 3
+#define Columna 3
+
+/*Sea A una matriz con m filas y n columnas. La matriz transpuesta.
+En donde el elemento ajide la matriz original A se convertirá
+en el elemento aij de la matriz transpuesta At
+
+Escriba una función que reciba una matriz cuadrada A e imprima en
+pantalla su matriz transpuesta.
+*/
+
+//int [][b](float v[][b],a);
+void Transpuesto(int v[][Columna],int i,int);
+int main()
+{
+    int v[Fila][Columna];
+    int i,j,x;
+    srand(time(NULL));   ////i= fila, j= columna
+
+    for (i=0;i<Fila;i++){
+        printf("\n Fila %d \n",i);
+
+        for (j=0;j<Columna;j++){
+           v[i][j]=rand()%10;
+           printf(" %d ",v[i][j]);}
+           }
+
+   if (Fila==Columna){
+
+    printf("\nLa matriz transpuesta queda\n");
+    Transpuesto(v, Fila, Columna);
+
+   }
+   else printf("\nLa Matriz no es cuadrada, fin de ejecucion");
+
+    return 0;
+}
+
+void Transpuesto(int v[][Columna],int i, int j){
+        for (i=0;i<Fila;i++){
+           printf("\n Fila %d \n",i);
+        for (j=0;j<Columna;j++)
+             printf(" %d ",v[j][i]);
+        }
+
+}
+
+
+5)
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define Fila 3
+#define Columna 3
+#define Fila2 3
+#define Columna2 3
+
+/*Dadas dos matrices A y B de m x n, la suma (A+B) se calcula de la siguiente manera:
+(A + B)i,j = Ai,j + Bi,j, donde 1 ≤ i ≤ m y 1 ≤ j ≤ n.
+
+Escriba una función que reciba tres matrices A, B y C de mismas dimensiones, y calcule la suma de
+A y B en C. */
+
+void Sumatoria(int res[][Columna],int v[][Columna],int v2[][Columna],int i,int);
+void Inicio(int v[][Columna],int,int);
+void Imprimir(int v[][Columna],int fil, int col);
+int main()
+{
+    int v[Fila][Columna];
+    int v2[Fila2][Columna2];
+    int res[Fila][Columna];
+    srand(time(NULL));   ////i= fila, j= columna
+
+    Inicio(v,Fila,Columna);
+    Inicio(v2,Fila,Columna);
+
+   if ((Fila==Fila2)&&(Columna==Columna2)){
+
+    printf("\nLa SUMATORIA queda\n");
+    Sumatoria(res,v,v2, Fila, Columna);
+    Imprimir(res,Fila,Columna);
+
+   }
+   else printf("\nLas Matrices no son iguales, fin de ejecucion");
+
+    return 0;
+}
+
+void Inicio(int v[][Columna],int fila,int columna){ //Inicia e imprime una Matriz
+      int i,j;
+      for (i=0;i<Fila;i++){
+        printf("\n Fila %d \n",i);
+
+        for (j=0;j<Columna;j++){
+           v[i][j]=rand()%10;
+           printf(" %d ",v[i][j]);}
+           }
+      printf("\n") ;
+}
+
+void Sumatoria(int res[][Columna],int v[][Columna],int v2[][Columna],int fil, int col){
+        int i,j;
+        for (i=0;i<fil;i++){
+            for (j=0;j<col;j++)
+                res[i][j]=(v2[i][j]+v[i][j]);
+        }
+}
+void Imprimir(int v[][Columna],int fil, int col){
+        int i,j;
+        for (i=0;i<fil;i++){
+           printf("\n Fila %d \n",i);
+        for (j=0;j<col;j++)
+             printf(" %d ",v[i][j]);
+        }
+}
+
+
+
+
+6)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define Fila 10
+
+
+/*Escriba un programa que lea un número entero desde teclado y
+luego informe la cantidad de veces que aparece cada dígito en el mismo.*/
+
+void Imprimir (int v[],int);
+void Cantidad (int v[],int,int );
+int main(){
+   int x;
+   int v[Fila]={0};
+
+   printf("Ingrese un numero\n");
+   scanf("%d",&x);
+   printf("\n");
+
+   Cantidad(v,Fila,x);
+   Imprimir(v,Fila);
+
+return(0);
+
+}
+
+void Imprimir (int v[],int fila){
+   for(int i=0;i<fila;i++)
+       printf("El numero %d, aparece %d veces\n ",i,v[i]);
+
+}
+void Cantidad (int v[],int fila,int x){
+     int aux;
+     while (x>=10){
+        aux=x%10;
+        x/=10;
+        (v[aux])++;
+     }
+     (v[x])++;
+     }
+
+
+
+7)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define Dia 30
+#define Mes 12
+#define Ano 10
+
+
+/*Se dispone de un arreglo con información de las precipitaciones de todos los días de todos los meses de los últimos 10 años.
+Se desea conocer para cada año el mes en que menos llovió y también cual es el año que tuvo menor precipitación promedio.
+Nota: por simplicidad asuma que todos los meses tienen 30 días.*/
+
+void Crear (int v[][Mes][Ano]);
+void Imprimir (int v[][Mes][Ano]);
+int PresProm (int v[][Mes][Ano]);
+int MenosLluvia (int v[][Mes][Ano], int x);
+
+int main(){
+   int x=0;
+   int v[Dia][Mes][Ano]={0};
+
+   Crear(v);
+   printf("El año con menos lluvia fue %d \n",PresProm(v));
+
+   while (x<12){
+     printf("En el año %d ,El mes con menos lluvia fue %d \n",x+1,MenosLluvia(v,x));
+    x++;
+   }
+
+   Imprimir(v);
+
+return(0);
+
+}
+
+void Imprimir (int v[][Mes][Ano]){
+   for(int i=0;i<Ano;i++){
+        printf("Año %d \n ",i+1);
+     for(int j=0;j<Mes;j++){
+             printf("Mes : %d \n ",j+1);
+        for(int k=0;k<Dia;k++) printf("Precipitaciones en dia %d : %d \n ",k+1,v[i][j][k]);
+     }
+   }
+}
+void Crear (int v[][Mes][Ano]){
+   for(int i=0;i<Ano;i++){
+     for(int j=0;j<Mes;j++){
+        for(int k=0;k<Dia;k++) v[i][j][k]=rand()%100;
+     }
+   }
+
+}
+
+//Pain
+int MenosLluvia (int v[][Mes][Ano], int x){
+      int tot [Mes]={0,0,0,0,0,0,0,0,0,0,0,0};
+      int  messi, min = 99999;
+      for(int i=x;i<=x;i++){
+           for(int j=0;j<Mes;j++){
+              for(int k=0;k<Dia;k++) ((tot[j])+=(v[i][j][k]));;}
+
+}
+for(int i=0;i<Mes;i++){
+        if (tot[i]<min){
+                min=tot[i];
+                messi=i;
+}}
+return (messi+1);}
+// Pain
+
+int PresProm (int v[][Mes][Ano]){
+    int tot [Ano]={0,0,0,0,0,0,0,0,0,0};
+    int anio,min=99999;
+
+for(int i=0;i<Ano;i++){
+     for(int j=0;j<Mes;j++){
+        for(int k=0;k<Dia;k++) ((tot[i])+=(v[i][j][k]));
+     }
+}
+for(int i=0;i<Ano;i++){
+        if (tot[i]<min){
+                min=tot[i];
+                anio=i;
+}}
+return (anio+1);
+}
+
+
+

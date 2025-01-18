@@ -1,0 +1,46 @@
+programa EjercicioUno
+
+   
+areas
+  area1 : AreaC(1,1,100,100)
+robots 
+  robot tipo1
+  variables 
+    Papeles:numero 
+    vacia:numero
+  comenzar
+    vacia:=0
+    Papeles:=0
+    repetir 5
+      repetir 99
+        si ~(HayFlorEnLaEsquina)
+          vacia:=vacia+1
+        sino
+          mientras (HayFlorEnLaEsquina) 
+            tomarFlor
+            Papeles:=Papeles + 1
+        mover
+      si ~(HayFlorEnLaEsquina)
+        vacia:=vacia+1
+      sino
+        mientras (HayFlorEnLaEsquina) 
+          tomarFlor
+          Papeles:=Papeles + 1
+  
+      repetir Papeles  
+        depositarFlor
+      Informar(vacia)
+      Pos(PosAv +2,1)  
+  fin 
+  
+
+
+  
+variables
+  robot1:tipo1
+ 
+comenzar
+  AsignarArea(robot1,area1)
+  Iniciar(robot1,1,1)
+fin
+

@@ -1,0 +1,241 @@
+1)
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/*Escriba un programa que lea informaci n relativa a la cantidad de especies de
+ aves de 14 pa ses de Am rica.
+De cada pa s se lee el c digo de pa s y la cantidad de especies.
+Informar los 2 pa ses con menor cantidad de especies.
+Adem s, se desea saber qu  porcentaje de pa ses tienen m s de 40 especies*/
+int main()
+{
+  int i,x,Min2=9990,Min=9999;
+  float Prom=0;
+  char y,MinCOD,MinCOD2;
+
+    for(i=0;i<4;i++){
+       printf("Ingrese el codigo de Pais\n");
+       scanf("%c",&y);
+       scanf("%c", &y);
+
+       printf("Ingrese especies en el Pais\n");
+       scanf("%d", &x);
+
+       if (x>40) Prom++;
+
+       if (x<Min) {
+            Min=x;
+            MinCOD=y;
+            }
+       else {
+            if (x<Min2){
+            Min2=x;
+            MinCOD2=y;
+            }}
+
+
+}
+printf("Codigo de pais Minimo: %c con %d especies registradas\n",MinCOD,Min);
+printf("Codigo de pais segundo: %c con %d especies registradas\n",MinCOD2,Min2);
+printf("Promedio de paises (+40)= %3.0f %",Prom*100/4);
+return 0;
+}
+
+
+
+2)
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/*Escriba un programa que lea informaci n relativa a la cantidad de especies de
+ aves de 14 pa ses de Am rica.
+De cada pa s se lee el c digo de pa s y la cantidad de especies.
+Informar los 2 pa ses con menor cantidad de especies.
+Adem s, se desea saber qu  porcentaje de pa ses tienen m s de 40 especies*/
+void Bin (int y);
+int Bin2 (int y,int aux);
+
+int main()
+{
+    int y,x=-1;
+       printf("Ingrese el numero a convertir\n");
+       scanf("%d",&y);
+
+       Bin(y);
+       printf("\n");
+       Bin2(y,x);
+
+return 0;
+}
+
+void Bin (int y){
+
+ int Aux=0;
+       while (1<=y){
+         printf("El digito %d es %d \n",Aux,y%2);
+         y/=2;
+         Aux++;
+
+   }
+}
+
+
+int Bin2 (int y,int aux){
+
+    if (y>=1){
+        aux++;
+        Bin2(y/2,aux);
+        printf("El digito %d es %d \n",aux,y%2);}
+    else
+        return y;
+
+
+3) 
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/*Implemente un programa que aproxime los primeros 6 d gitos del n mero
+PI (3.141592). Utiliza la serie de Nilakantha que permite calcular de
+forma iterativa los n meros de PI. La forma de la serie es:
+
+Implemente dos versiones utilizando para los c lculos intermedios el tipo
+de dato float y el tipo de dato double.  Observa alguna diferencia?
+En cualquier caso justifique.*/
+
+
+// No se observa ninguna diferencia, esto es porque el rengo representado esta adentro de ambos sistemas
+float PI();
+double PIDOBLE();
+
+
+int main()
+{
+    printf("Pi= %1.5f",PI());
+    printf("       PiDouble= %1.5lf", PIDOBLE());
+
+   return(0);
+}
+
+float PI(){
+    return (3.f+(4.f/24.f)-(4.f/120.f)+(4.f/336.f)-(4.f/720.f)+(4.f/1320.f));
+}
+
+double PIDOBLE(){
+    return (3.0+(4.0/24.0)-(4.0/120.0)+(4.0/336.0)-(4.0/720.0)+(4.0/1320.0));
+}
+
+
+4)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+//Escribir un programa que lea una secuencia de n meros enteros hasta entrar -1.
+//Convertir cada n mero en la suma de sus d gitos, sucesivamente, hasta que quede
+//solo un d gito. Imprimir en pantalla toda la secuencia para cada n mero ingresado. Ejemplo:
+//? 12853 ? 19 ? 10 ? 1
+//? 280 ? 10 ? 1
+//? 3005 ? 8
+
+int suma(int a);
+
+int main(){
+    int tot=0,x;
+
+    printf("Ingrese un caracter ");
+    scanf("%d",&x);
+
+    while (x!= -1){
+        tot=tot*10 + x;
+        printf("\nIngrese un caracter ");
+        scanf("%d",&x);
+    }
+
+    printf("\nEl numero ingresado fue %d\n",tot);
+
+    while (10 <= tot){
+        tot= suma(tot);
+        printf("Su suma da %d\n",tot);
+    }
+return (0);
+}
+
+
+int suma (int a){
+   int tot=0;
+
+     while (10<=a){
+          tot=a%10 +tot;
+           a/=10;
+           }
+
+return (tot+a);
+}
+
+
+5)
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+//Realizar un programa que simule un juego que utiliza dos dados.
+//Las reglas del juego son las siguientes:
+// Si en cualquier jugada los dados suman 2 o 12, el jugador pierde.
+// Si en la primer jugada los datos suman 7 u 11, el jugador gana.
+// Si en la primer jugada los dados no suman 2, 7, 11 ni 12, el jugador deber  seguir
+//arrojando los dados hasta conseguir el n mero obtenido en la primer jugada para ganar.
+
+int Jugar();
+
+int main(){
+    int x;
+
+    printf("Bienvenido a Casino Rivadavia, ingrese $1000 para iniciar ");
+    scanf("%d",&x);
+    printf("\n");
+
+    if (x==1000) {
+           x=Jugar();
+           if (x) printf("Felicidades, Ganaste $10\n");
+             else printf("Suerte la proxima :9\n");
+    }
+    else printf("Anda a ba arte wachin \n ");
+
+return (0);
+}
+
+
+int Jugar (){
+    int a,b,ret=-1;
+    srand(time(NULL));
+
+     do{
+        printf("La ronda acaba de iniciar\n");
+        a=rand()%6;
+        b=rand()%6;
+        printf("Los dados revelan los numeros %d y %d\n",a,b);
+        a+=b;
+        printf("Su sumatoria es %d\n",a);
+        if ((a==2)||(a==12)) ret=1;
+        if ((a==7)||(a==11)) ret=0;
+        if (ret==-1) printf("No obtuvo un resultado valido, reiniciando\n");
+     }
+     while (ret==-1);
+
+return (ret);
+}
+
+
+
+
+

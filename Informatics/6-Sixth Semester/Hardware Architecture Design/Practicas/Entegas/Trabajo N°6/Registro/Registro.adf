@@ -1,0 +1,65 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=4
+Current Config=compile
+[Configurations]
+compile=registro
+[Library]
+Registro=.\Registro\Registro.lib
+[$LibMap$]
+Registro=.
+Active_lib=
+[Settings]
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+REFRESH_FLOW=1
+FLOWTOOLS=NONE
+FAMILY=
+[HierarchyViewer]
+HierarchyInformation=test_shiftn|driver|0
+ShowHide=ShowTopLevel
+Selected=
+[folders]
+name0=ALINT-PRO Workspaces
+directory0=C:\Users\User\Desktop\6 Semestre\Villanogarcia\Trabajo N°6\Registro\
+extension0=alintws
+name1=Coverage Databases
+directory1=C:\Users\User\Desktop\6 Semestre\Villanogarcia\Trabajo N°6\Registro\
+extension1=acdb
+name2=Dll Libraries
+directory2=C:\Users\User\Desktop\6 Semestre\Villanogarcia\Trabajo N°6\Registro\
+extension2=dll
+name3=Event Lists
+directory3=C:\Users\User\Desktop\6 Semestre\Villanogarcia\Trabajo N°6\Registro\
+extension3=lst
+name4=HTML Files
+directory4=C:\Users\User\Desktop\6 Semestre\Villanogarcia\Trabajo N°6\Registro\
+extension4=htm;html
+name5=Log Files
+directory5=C:\Users\User\Desktop\6 Semestre\Villanogarcia\Trabajo N°6\Registro\
+extension5=log;htm;xml;txt
+name6=Matlab/Simulink Files
+directory6=C:\Users\User\Desktop\6 Semestre\Villanogarcia\Trabajo N°6\
+extension6=m;mdl;slx
+name7=Memory Files
+directory7=C:\Users\User\Desktop\6 Semestre\Villanogarcia\Trabajo N°6\Registro\
+extension7=mem;mif;hex
+name8=PDF Files
+directory8=C:\Users\User\Desktop\6 Semestre\Villanogarcia\Trabajo N°6\Registro\
+extension8=pdf
+name9=Profiler Databases
+directory9=C:\Users\User\Desktop\6 Semestre\Villanogarcia\Trabajo N°6\Registro\
+extension9=tbp
+name10=Script Files
+directory10=C:\Users\User\Desktop\6 Semestre\Villanogarcia\Trabajo N°6\Registro\
+extension10=do;tcl;pl
+name11=Waveform Files
+directory11=C:\Users\User\Desktop\6 Semestre\Villanogarcia\Trabajo N°6\Registro\
+extension11=asdb;awc;asdbc;asdbe
+[Files]
+/Shift.vhd=-1
+/Test.vhd=-1
+[Files.Data]
+.\src\Shift.vhd=VHDL Source Code
+.\src\Test.vhd=VHDL Source Code

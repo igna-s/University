@@ -1,0 +1,57 @@
+{Ejercicio 1: Realice un programa para que 2 robots junten todas las flores de los perímetros (15,15)-(30,35) y (40,40)-(55,60) respectivamente. 
+Luego, deben posicionarse en la esquina (10,10) y depositar todas las flores juntadas.}
+programa E1
+procesos
+  proceso perimetro
+  comenzar
+    repetir 2
+      repetir 20
+        mover
+        mientras HayFlorEnLaEsquina
+          tomarFlor
+      derecha
+      repetir 15
+        mover
+        mientras HayFlorEnLaEsquina
+          tomarFlor
+      derecha   
+  fin  
+areas
+  Area1: AreaP(15,15,30,35)
+  Area2: AreaP(40,40,55,60)
+  
+  AreaCom: AreaPC(10,10,10,10)
+
+robots
+  robot tipo1
+  variables
+    MiAv,MiCa:numero
+  comenzar
+    MiAv:=PosAv
+    MiCa:=PosCa
+    perimetro
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    mientras HayFlorEnLaBolsa
+      depositarFlor
+    Pos(MiAv,MiCa)  
+    LiberarEsquina(10,10)
+  fin 
+
+variables   
+  r1,r2: tipo1
+  
+    
+comenzar
+  AsignarArea(r1,Area1)
+  AsignarArea(r1,AreaCom)
+  AsignarArea(r2,Area2)
+  AsignarArea(r2,AreaCom)
+  
+  Iniciar(r1,15,15)
+  Iniciar(r2,40,40)
+fin
+
+    
+    
+   

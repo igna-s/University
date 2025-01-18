@@ -1,0 +1,126 @@
+programa ejercicio4Cuatro
+
+  
+areas  
+  AreaCom: AreaPC(11,11,11,11)
+ 
+  Area1: AreaP(4,1,4,100)
+  Area2: AreaP(6,1,6,100)
+  Area3:AreaP(8,1,8,100)
+  Area4:AreaP(10,1,10,100)
+  
+  AreaJ:AreaP(1,1,1,1)
+robots
+  robot tipo1
+  variables
+    MiCa, MiAv,rob,Pasos:numero
+    Cond:boolean
+  comenzar
+    Cond:= V
+    Pasos:=0
+    MiCa:=PosCa
+    MiAv:=PosAv
+    RecibirMensaje(rob,R5)
+
+    
+    mientras (Cond)
+      BloquearEsquina(11,11)
+      Pos(11,11)
+      si HayPapelEnLaEsquina
+        tomarPapel 
+      sino
+        Cond:=F  
+      si MiCa=3
+        Cond:=F 
+       
+      Pos(MiAv,MiCa)
+      LiberarEsquina(11,11)
+      
+      si HayPapelEnLaBolsa
+        depositarPapel
+      si Cond= V 
+        mover
+        Pasos:=Pasos + 1
+        MiCa:=PosCa
+        MiAv:=PosAv
+      
+
+
+    EnviarMensaje(rob,R5)
+    EnviarMensaje(Pasos,R5)
+    
+
+      
+
+  fin
+  
+  robot tipo2
+  variables
+    rob,pasos,max,roboM:numero
+  comenzar
+    max:=-1
+    EnviarMensaje(1,R1) 
+    EnviarMensaje(2,R2)
+    EnviarMensaje(3,R3)
+    EnviarMensaje(4,R4)   
+
+   
+    repetir 4 
+      RecibirMensaje(rob,*)
+      si rob=1
+        RecibirMensaje(pasos,R1)
+      sino
+        si rob=2
+          RecibirMensaje(pasos,R2)
+        sino
+          si rob=3
+            RecibirMensaje(pasos,R3)
+          sino
+            RecibirMensaje(pasos,R4)   
+      si pasos > max
+        max:= pasos
+        roboM:= rob    
+    Informar(roboM)        
+              
+          
+      
+      
+  fin
+
+
+  
+variables
+  R1,R2,R3,R4 : tipo1
+  R5: tipo2  
+comenzar
+  AsignarArea(R1,Area1)
+  AsignarArea(R1,AreaCom)
+  
+  AsignarArea(R2,Area2)
+  AsignarArea(R2,AreaCom)
+  
+  AsignarArea(R3,Area3)  
+  AsignarArea(R3,AreaCom)
+  
+  AsignarArea(R4,Area4)
+  AsignarArea(R4,AreaCom)
+
+  AsignarArea(R5,AreaJ)
+    
+  Iniciar(R1,4,1)
+  Iniciar(R2,6,1)
+  Iniciar(R3,8,1)
+  Iniciar(R4,10,1)
+  Iniciar(R5,1,1)
+
+  
+fin           
+
+
+
+
+
+
+
+
+

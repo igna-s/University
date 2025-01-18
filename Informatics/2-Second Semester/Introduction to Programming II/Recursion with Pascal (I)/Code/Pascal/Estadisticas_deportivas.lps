@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="Estadisticas_deportivas.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="279"/>
+        <CursorPos X="6" Y="305"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\..\..\..\AppData\Local\Temp\Temp1_Fuentes.zip\Ejercicio1.pas"/>
+        <UnitName Value="ejercicio1"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="27" Y="4"/>
+        <UsageCount Value="10"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="2">
+      <Position>
+        <Filename Value="Estadisticas_deportivas.lpr"/>
+        <Caret Line="291" Column="17" TopLine="267"/>
+      </Position>
+      <Position>
+        <Filename Value="Estadisticas_deportivas.lpr"/>
+        <Caret Line="302" Column="17" TopLine="269"/>
+      </Position>
+      <Position>
+        <Filename Value="Estadisticas_deportivas.lpr"/>
+        <Caret Line="277" Column="14" TopLine="258"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

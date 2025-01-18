@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Verificar si se proporcionó un argumento (extensión)
+if [ $# -ne 1 ]; then
+    echo "Uso: $0 <extensión>"
+    exit 1
+fi
+
+# Obtener la extensión del primer argumento
+extension="$1"
+
+# Buscar archivos con la extensión proporcionada y contarlos por usuario
+find /home -type f -name "*.$extension" -printf "%u\n" | sort | uniq -c > reporte.txt
+
+# Imprimir un mensaje de finalización
+echo "Reporte generado y guardado en reporte.txt"
+
+

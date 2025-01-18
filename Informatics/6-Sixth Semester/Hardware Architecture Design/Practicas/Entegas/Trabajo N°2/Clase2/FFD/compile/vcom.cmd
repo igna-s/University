@@ -1,0 +1,1 @@
+-w -d "C:/Users/User/Desktop/6 Semestre/Villanogarcia/Trabajo N°2/Clase2/FFD/compile" -s "C:/Users/User/Desktop/6 Semestre/Villanogarcia/Trabajo N°2/Clase2/library.cfg" -j "C:/Users/User/Desktop/6 Semestre/Villanogarcia/Trabajo N°2/Clase2/FFD/projlib.cfg" -work FFD -O3 -e 100 -work FFD -2002 "C:/Users/User/Desktop/6 Semestre/Villanogarcia/Trabajo N°2/Clase2/FFD/src/FFD Test.vhd" 

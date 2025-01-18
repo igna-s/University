@@ -1,0 +1,107 @@
+programa Ejercicio4
+procesos
+  proceso limpiar(ES cont:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cont:=cont +1 
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      cont:= cont +1
+  fin      
+
+    
+
+areas
+  
+  area1 : AreaP(7,4,7,4)
+  area2 : AreaP(9,4,9,4)
+  area3 : AreaP(11,4,11,4)
+  area4: AreaP (13,4,13,4)
+  area5 : AreaP(1,1,1,1)
+  area6: AreaPC (5,5,50,30)
+  
+robots 
+  robot tipo1
+  variables
+    r: boolean
+    cont, AV, CA, A, C: numero
+  comenzar 
+    Aux:=0
+    AV:= PosAv
+    CA:= PosCa
+    r:=F
+    RecibirMensaje (r, robot5)
+    mientras (r)
+      Random (A,5,50)
+      Random (C,5,30)
+      Pos(PosAv A,PosCa C)
+      
+      Pos (AV,CA)
+      EnviarMensaje (Aux,robot5) 
+      RecibirMensaje (r, robot5) 
+  fin 
+  
+  robot tipo2
+  variables
+    r:numero
+    flores:numero
+    max:numero
+    robotmaximo:numero
+  comenzar
+    derecha
+    max:=0
+    robotmaximo:=5
+    repetir 20
+      Random(r,1,4)
+      si r=1
+        EnviarMensaje(r,robot1)
+        RecibirMensaje (V, robot1)
+      sino  
+        si  r=2
+          EnviarMensaje(V,robot2)
+          RecibirMensaje (flores, robot2)
+        sino
+          si r=3
+            EnviarMensaje(V,robot3)
+            RecibirMensaje (flores, robot3)
+          sino
+            EnviarMensaje(V,robot4)
+            RecibirMensaje (flores, robot4)
+      si (max<flores)
+        max:=flores
+        robotmaximo:=r    
+    Informar(robotmaximo)
+    r:=0
+    EnviarMensaje(r,*) 
+  fin
+  
+variables
+  robot1:tipo1
+  robot2:tipo1
+  robot3:tipo1
+  robot4: tipo1
+  robot5: tipo2
+comenzar
+  AsignarArea(robot1,area1)
+  AsignarArea(robot1,area6)
+  
+  AsignarArea(robot2,area2)
+  AsignarArea(robot2,area6)
+  
+  AsignarArea(robot3,area3)
+  AsignarArea(robot3,area6) 
+  
+  AsignarArea(robot4,area4)
+  AsignarArea(robot4,area6)
+  
+  AsignarArea(robot5,area5)
+  
+  Iniciar(robot1,7,4)
+  Iniciar(robot2,9,4)
+  Iniciar(robot3,11,4)
+  Iniciar(robot4,13,4)
+  Iniciar(robot5,1,1)
+
+fin      
+

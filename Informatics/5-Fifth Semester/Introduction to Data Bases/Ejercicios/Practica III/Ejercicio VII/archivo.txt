@@ -1,0 +1,58 @@
+11223344 4.5  Carlos
+Gonzalez
+12131415 6.7  Maria
+Lopez
+13241142 5.6  Juan
+Fernandez
+14116442 5.8  Juana
+Fernandez
+15161718 6.2  Pedro
+Martinez
+16203242 5.4  Laura
+Rodriguez
+17181920 4.9  Sofia
+Garcia
+18212223 5.1  Alejandro
+Perez
+19242526 6.3  Andrea
+Hernandez
+20272829 4.8  Luis
+Diaz
+21303132 5.9  Ana
+Sanchez
+22243334 6.5  Marta
+Ramirez
+23263536 5.7  David
+Alvarez
+24273738 4.6  Elena
+Gomez
+25283940 6.1  Javier
+Ruiz
+26304142 5.0  Lucia
+Torres
+27244344 5.2  Marcos
+Jimenez
+28264546 6.0  Carmen
+Moreno
+29284748 4.7  Diego
+Vazquez
+30304950 5.3  Paula
+Fuentes
+31325152 6.4  Sergio
+Iglesias
+32345354 4.4  Natalia
+Ortega
+33365556 5.5  Gabriel
+Santos
+34385758 6.6  Sara
+Luna
+35405960 4.3  Oscar
+Castro
+36426162 5.4  Marina
+Flores
+37446364 6.7  Daniel
+Benitez
+38466566 4.2  Laura
+Serrano
+39486768 5.6  Alejandro
+Gutierrez

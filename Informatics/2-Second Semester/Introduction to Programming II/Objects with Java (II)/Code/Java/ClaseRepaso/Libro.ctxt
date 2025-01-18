@@ -1,0 +1,24 @@
+#BlueJ class context
+comment0.target=Libro
+comment0.text=\ libro\ que\ tambi\u00E9n\ tiene\ asociado\ un\ t\u00EDtulo,\r\n\ la\ cantidad\ de\ cap\u00EDtulos\ del\ mismo\ y\ si\ es\ o\ no\ una\ edici\u00F3n\ de\ bolsillo\u0000\r\n
+comment1.params=Titulo\ Capitulos\ Portable\ Identificacion\ Paginas\ Resumen\ A\u00F1o\ Resp
+comment1.target=Libro(java.lang.String,\ int,\ boolean,\ java.lang.String,\ int,\ java.lang.String,\ int,\ Responsable)
+comment10.params=
+comment10.target=java.lang.String\ Imprimir()
+comment2.params=
+comment2.target=Libro()
+comment3.params=Titulo
+comment3.target=void\ setTitulo(java.lang.String)
+comment4.params=
+comment4.target=java.lang.String\ getTitulo()
+comment5.params=Capitulos
+comment5.target=void\ setCapitulos(int)
+comment6.params=
+comment6.target=int\ getCapitulos()
+comment7.params=Resumen
+comment7.target=void\ setPortable(boolean)
+comment8.params=
+comment8.target=boolean\ getPortable()
+comment9.params=
+comment9.target=void\ deBolsillo()
+numComments=11

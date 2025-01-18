@@ -1,0 +1,41 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=4
+Current Config=compile
+[Configurations]
+compile=FullAdder
+[Library]
+FullAdder=.\FullAdder\FullAdder.lib
+[$LibMap$]
+FullAdder=.
+Active_lib=
+[Settings]
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+REFRESH_FLOW=1
+FLOWTOOLS=NONE
+FAMILY=
+show_inport=1
+show_outport=1
+show_inoutport=1
+show_buffer=1
+show_linkage=1
+show_constant=1
+show_file=1
+show_signal=1
+show_variable=1
+show_generic=1
+show_port=1
+[Files]
+/fulladder.vhd=-1
+/TestA.vhd=-1
+/TestB.vhd=-1
+[Files.Data]
+.\src\fulladder.vhd=VHDL Source Code
+.\src\TestA.vhd=VHDL Source Code
+.\src\TestB.vhd=VHDL Source Code
+[HierarchyViewer]
+HierarchyInformation=test_16|behave_1|0
+ShowHide=ShowTopLevel
+Selected=

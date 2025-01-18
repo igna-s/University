@@ -1,0 +1,456 @@
+Clase 4
+
+
+1) Muchas instrucciones comunes en procesadores con arquitectura CISC no forman parte del repertorio de instrucciones del
+MIPS64, pero pueden implementarse haciendo uso de una única instrucción. Evaluar las siguientes instrucciones, indicar qué
+tarea realizan y cuál sería su equivalente en lenguaje assembly del x86.
+
+a) dadd r1, r2, r0                     ;Le suma a r2,0 y lo guarda en r1 (MCX8088 = Mov Ax,r2)
+b) daddi r3, r0, 5                     ;Le suma a r0(0),un operando inmediato y lo guarda en r3 (MCX8088 = Mov Ax,5)
+c) dsub r4, r4, r4                     ;Le resta a r4, r4 y lo guarda en r4 (Pone r4 en 0) (MCX8088 = Mov Ax,0)
+d) daddi r5, r5, -1                    ;Le suma a r5, un operando inmediato y lo guarda en r5 (Dec Ax)
+e) xori r6, r6, 0xffffffffffffffff     ;Hace un xor entre r6 y ffffffff  y lo guarda en r6 (invierte bits)(MCX8088 = r6 xor fffffff) 
+
+
+2)El siguiente programa intercambia el contenido de dos palabras de la memoria de datos, etiquetadas A y B.
+.data
+A: .word 1
+B: .word 2
+.code
+ld r1, A(r0)
+ld r2, B(r0)
+sd r2, A(r0)
+sd r1, B(r0)
+halt
+
+a) Ejecutarlo en el simulador con la opción Configure/Enable Forwarding deshabilitada. Analizar paso a paso su
+funcionamiento, examinar las distintas ventanas que se muestran en el simulador y responder:
+- ¿Qué instrucción está generando atascos (stalls) en el cauce (ó pipeline) y por qué?                                      
+ ;La instruccion sd r2, A(r0), porque quiere acceder al registro r2 cuando no se cargo en la instruccion anterior 
+- ¿Qué tipo de ‘stall’ es el que aparece?
+ ;Es un stall por dependencia de datos raw (Lectura antes de Esccritura)
+- ¿Cuál es el promedio de Ciclos Por Instrucción (CPI) en la ejecución de este programa bajo esta configuración?
+ ;Es de 2.2 ciclos por instruccion
+
+b) Una forma de solucionar los atascos por dependencia de datos es utilizando el Adelantamiento de Operandos o Forwarding.
+Ejecutar nuevamente el programa anterior con la opción Enable Forwarding habilitada y responder:
+- ¿Por qué no se presenta ningún atasco en este caso? Explicar la mejora.
+ ;Porque se obtiene el valor del operando antes de guardarlo en r2 y se usa una vez realizada la instruccion ID en ld r2, B(r0)
+- ¿Qué indica el color de los registros en la ventana Register durante la ejecución?
+ ;Indica que el regitro ha sido modificado (Ya llego al paso final)
+- ¿Cuál es el promedio de Ciclos Por Instrucción (CPI) en este caso? Comparar con el anterior
+
+
+
+3) Analizar el siguiente programa con el simulador MIPS64:
+.data
+A: .word 1
+B: .word 6
+.code
+ld r1, A(r0)
+ld r2, B(r0)
+loop: dsll r1, r1, 1
+daddi r2, r2, -1
+bnez r2, loop
+halt
+
+a) Ejecutar el programa con Forwarding habilitado y responder:
+- ¿Por qué se presentan atascos tipo RAW?
+;Porque se intenta acceder al valor de r2 para saber si se salta, pero aun no fue calculado
+- Branch Taken es otro tipo de atasco que aparece. ¿Qué significa? ¿Por qué se produce?
+;Significa que se ejecuto un salto por lo que la instruccion que se estaba realizando (la siguiente, que no debia ejecutarse porque se salto) se aborta
+- ¿Cuántos CPI tiene la ejecución de este programa? Tomar nota del número de ciclos, cantidad de instrucciones y CPI.
+;36 ciclos, 21 Instrucciones y CPI:1,7
+
+
+b) Ejecutar ahora el programa deshabilitando el Forwarding y responder:
+- ¿Qué instrucciones generan los atascos tipo RAW y por qué? ¿En qué etapa del cauce se produce el atasco en cada caso y
+durante cuántos ciclos?
+;Los raw ahora son generados por la misma condicion, pero en vez de eperar a la salida de la alu, ahora se debe esperar a que termine la linea y guarde r2
+;Ademas, se tiene un raw extra de la primera vez que se corre a la izquierda, porque la etapa WB de la primera instruccion no se ejecuto
+;Siempre ocurre en el ID, y ahora son 13 ciclos de atasco
+- Los Branch Taken Stalls se siguen generando. ¿Qué cantidad de ciclos dura este atasco en cada vuelta del lazo ‘loop’?
+; 2 ciclos
+Comparar con la ejecución con Forwarding y explicar la diferencia.
+- ¿Cuántos CPI tiene la ejecución del programa en este caso? Comparar número de ciclos, cantidad de instrucciones y CPI
+con el caso con Forwarding.
+; Con Fordwarding 36 ciclos, 21 instrucciones, CPI:1,7
+; Sin Fordwarding 43 ciclos, 21 instrucciones, CPI:2.4
+;La diferencia consiste en que al adelantar el acceso al dato, sin esperar a que se guarde en el registro, se consigue saber si se salta antes
+;perdiendo menos ciclos y reduciendo el Branck Taken en 1
+
+c) Reordenar las instrucciones para que la cantidad de RAW sea ‘0’ en la ejecución del programa (Forwarding habilitado)
+
+.data
+A: .word 1
+B: .word 6
+.code
+ld r2, B(r0)
+ld r1, A(r0)
+loop: daddi r2, r2, -1
+dsll r1, r1, 1
+bnez r2, loop
+halt
+
+d) Modificar el programa para que almacene en un arreglo en memoria de datos los contenidos parciales del registro r1 ¿Qué
+significado tienen los elementos de la tabla que se genera?
+
+Multiplica los valoresx2
+
+
+.data
+A: .word 1
+B: .word 6
+TA: .word 1,1,1,1,1,1 
+
+
+.code
+ld r2, B(r0)
+ld r1, A(r0)
+;Nuevo
+dadd r4,r0,r0
+
+loop: daddi r2, r2, -1
+dsll r1, r1, 1
+;Nuevo
+sd r1, TA(r4)
+daddi r4,r4,8
+;
+bnez r2, loop
+halt
+
+
+
+4) Dado el siguiente programa:
+
+.data
+tabla: .word 20, 1, 14, 3, 2, 58, 18, 7, 12, 11
+num: .word 7
+long: .word 10
+.code
+ld r1, long(r0)
+ld r2, num(r0)
+dadd r3, r0, r0
+dadd r10, r0, r0
+loop: ld r4, tabla(r3)
+beq r4, r2, listo
+daddi r1, r1, -1
+daddi r3, r3, 8
+bnez r1, loop
+j fin
+listo: daddi r10, r0, 1
+fin: halt
+
+a) Ejecutar en simulador con Forwarding habilitado. ¿Qué tarea realiza? ¿Cuál es el resultado y dónde queda indicado?
+;Busca en la tabla las ocurrencias del numero indicado y guarda 1 en r10 si hay
+
+b) Re-Ejecutar el programa con la opción Configure/Enable Branch Target Buffer habilitada. Explicar la ventaja de usar este
+método y cómo trabaja.
+; La ventaja es que se evitan la mitad de los Branch Taken, ya que algunos se "Predicen"
+; Trabaja guardando si el salto anterior se ejecuto o no en un Buffer, y trata de aplicar el mismo salto (Si es igual, salta y no se pierde una instruccion, sino aborta lo ejecutado, hace lo de la instruccion y modifica el buffer de historial para hacer lo contrario en la proxima instruccion)
+
+c) Confeccionar una tabla que compare número de ciclos, CPI, RAWs y Branch Taken Stalls para los dos casos anteriores.
+
+
+
+Solo con Fordwarding habilitado
+71 ciclos
+1.6 Ciclos x instruccion (CPI)
+16 raw
+8 Branch Taken
+
+
+Con Fordwarding deshabilitado y Branch Target Buffer habilitado
+75 ciclos
+1.7 Ciclos x instruccion (CPI)
+24 raw
+4 Branch Taken
+
+Con Fordwarding y Branch Target Buffer habilitado
+67 ciclos
+1.5 Ciclos x instruccion (CPI)
+16 raw
+4 Branch Taken
+
+
+5) El siguiente programa multiplica por 2 los elementos de un arreglo llamado datos y genera un nuevo arreglo llamado res.
+Ejecutar el programa en el simulador winmips64 con la opción Delay Slot habilitada.
+
+.data
+cant: .word 8
+datos: .word 1, 2, 3, 4, 5, 6, 7, 8
+res: .word 0
+.code
+dadd r1, r0, r0
+ld r2, cant(r0)
+loop: ld r3, datos(r1)
+daddi r2, r2, -1
+dsll r3, r3, 1
+sd r3, res(r1)
+daddi r1, r1, 8
+bnez r2, loop
+nop
+halt
+
+a) ¿Qué efecto tiene habilitar la opción Delay Slot (salto retardado)?.
+;El efecto que tiene es que la siguiente instruccion (a bnez r2, loop) se ejeccuta siempre, salte o no salte.
+
+b) ¿Con qué fin se incluye la instrucción NOP? ¿Qué sucedería si no estuviera?.
+;Se incluye la instruccion NOP para que nada se ejecute (No se aprovecha la instruccion ganada al habilitar el Delay Slot
+;Si no estuviera (Con delay Slot Habilitado), se ejecutaria el halt antes del momento requerido.
+
+c) Tomar nota de la cantidad de ciclos, la cantidad de instrucciones y los CPI luego de ejecutar el programa.
+(Forwarding Habilitado)
+63 ciclos
+59 Instrucciones
+CPI : 1,07
+
+d) Modificar el programa para aprovechar el ‘Delay Slot’ ejecutando una instrucción útil. Simular y comparar número de
+ciclos, instrucciones y CPI obtenidos con los de la versión anterior
+
+.data
+cant: .word 8
+datos: .word 1, 2, 3, 4, 5, 6, 7, 8
+res: .word 0
+.code
+dadd r1, r0, r0
+ld r2, cant(r0)
+
+loop: ld r3, datos(r1)
+daddi r2, r2, -1
+dsll r3, r3, 1
+sd r3, res(r1)
+;daddi r1, r1, 8       Se corre
+bnez r2, loop
+daddi r1, r1, 8        ;Nuevo
+halt
+
+(Forwarding Habilitado)
+55 ciclos
+51 Instrucciones
+CPI : 1,08
+
+
+;6) Escribir un programa que lea tres números enteros A, B y C de la memoria de datos y determine cuántos de ellos son iguales
+;Entre sí (0, 2 o 3). El resultado debe quedar almacenado en la dirección de memoria D.
+
+.data
+A: .word 8
+B: .word 8
+C: .word 7
+
+D: .word 77
+
+
+.code
+ld r1, A(r0)
+ld r2, B(r0)
+ld r3, C(r0)
+dadd r4, r0, r0
+
+BNE r1, r2, Si
+daddi r4, r4, 1
+Si: BNE r1, r3, Si2
+daddi r4, r4, 1
+Si2: BNE r2, r3, Si3
+daddi r4, r4, 1
+
+Si3: daddi r5, r5, 1
+BNE r4, r5, Fin
+daddi r4, r4, 1
+
+Fin: sd r4, D(r0)
+halt
+
+
+
+
+;7)Escribir un programa que recorra una TABLA de diez números enteros y determine cuántos elementos son mayores que X. El
+;resultado debe almacenarse en una dirección etiquetada CANT. El programa debe generar además otro arreglo llamado RES
+;cuyos elementos sean ceros y unos. Un ‘1’ indicará que el entero correspondiente en el arreglo TABLA es mayor que X,
+;mientras que un ‘0’ indicará que es menor o igual
+
+
+
+
+.data
+
+TABLA: .word 1,2,3,4,5,6,7,8,9,10
+CANT: .word 9999
+RES: .word 999
+
+
+.code                   ;r1: desplazamiento, r2: Tabla, r3: Comp , r4:res mayor, r5:Cont mayor 
+
+daddi r1,r0,80          ;Recorro la tabla al revez para ahorrar 1 registro
+daddi r3,r0,7            ;Comparo con 7
+dadd r5, r0, r0
+
+loop: daddi r1,r1,-8
+ld r2,TABLA(r1)
+slt r4,r3,r2            ;Me fijo si r3(VALOR)<r2(TABLA)  true==1
+sd r4,RES(r1)
+
+beq r4,r0, Sigo
+daddi r5,r5,1
+
+Sigo: Bne r1,r0, loop
+
+Fin: sd r5,CANT(r0)
+halt
+
+
+
+;8)Escribir un programa que multiplique dos números enteros utilizando sumas repetidas (similar al Ejercicio 7 de la Práctica 1).
+;El programa debe estar optimizado para su ejecución con la opción Delay Slot habilitada.
+
+
+.data
+A: .word 8
+B: .word 4
+RES: .word 0
+
+
+.code
+ld r1, A(r0)
+ld r2, B(r0)
+
+
+beq r1,r0, Fin          ;Si los 2 son 0 saltaria 2 veces, y el dadd no afecta al resultado
+beq r2,r0, Fin
+dadd r3,r0,r0
+
+Lazo: daddi r2, r2, -1
+bne r2,r0, Lazo 
+dadd r3, r3, r1
+
+
+sd r3, RES(r0)
+Fin: halt
+
+;9)Escribir un programa que implemente el siguiente fragmento escrito en un lenguaje de alto nivel:
+;   while a > 0 do
+;   begin
+;   x := x + y;
+;   a := a - 1;
+;   end;
+;Ejecutar con la opción Delay Slot habilitada.
+
+
+
+.data
+A: .word 7
+X: .word 3
+Y: .word 2
+
+.code
+ld r1, A(r0)
+ld r2, X(r0)
+ld r3, Y(r0)
+
+Loop: beq r1,r0, Fin    ;While estricto
+nop
+daddi r1,r1,-1
+j Loop
+dadd r2,r2,r3
+
+Fin: halt
+
+
+////////V2 Eficiencia++///////
+
+
+;9)Escribir un programa que implemente el siguiente fragmento escrito en un lenguaje de alto nivel:
+;   while a > 0 do
+;   begin
+;   x := x + y;
+;   a := a - 1;
+;   end;
+;Ejecutar con la opción Delay Slot habilitada.
+
+
+
+.data
+A: .word 7
+X: .word 3
+Y: .word 2
+
+.code
+ld r1, A(r0)
+ld r2, X(r0)
+beq r1,r0, Fin                ;Cumple el enunciado, no es While estricto
+ld r3, Y(r0)
+
+Loop: daddi r1,r1,-1
+bne r1,r0, Loop
+dadd r2,r2,r3
+
+Fin: halt
+
+
+;10) Escribir un programa que cuente la cantidad de veces que un determinado caracter aparece en una cadena de texto. Observar
+;cómo se almacenan en memoria los códigos ASCII de los caracteres (código de la letra “a” es 61H). Utilizar la instrucción lbu
+;(load byte unsigned) para cargar códigos en registros. La inicialización de los datos es la siguiente:
+
+
+
+
+.data
+cadena: .asciiz "adbdcdedfdgdhdid"              ; cadena a analizar
+car: .asciiz "d"                                ; caracter buscado
+cant: .word 0                                   ; cantidad de veces que se repite el caracter car en cadena.
+
+.code
+
+lbu r2, car(r0)
+daddi r3,r0,0
+dadd r4,r0,r0
+daddi r5,r0,16
+
+Loop: lbu r1, cadena(r3)
+bne r1,r2, Sigo
+daddi r4,r4,1
+
+Sigo: daddi r3,r3,1
+bne r3,r5, Loop
+
+
+sd r4, cant(r0)
+halt
+
+
+
+/////Tabla al revez/////
+
+
+;10) Escribir un programa que cuente la cantidad de veces que un determinado caracter aparece en una cadena de texto. Observar
+;cómo se almacenan en memoria los códigos ASCII de los caracteres (código de la letra “a” es 61H). Utilizar la instrucción lbu
+;(load byte unsigned) para cargar códigos en registros. La inicialización de los datos es la siguiente:
+
+
+
+
+.data
+cadena: .asciiz "ddbdcdedfdgdhdid"              ; cadena a analizar
+car: .asciiz "d"                                ; caracter buscado
+cant: .word 0                                   ; cantidad de veces que se repite el caracter car en cadena.
+
+.code
+
+lbu r2, car(r0)
+daddi r3,r0,16     ;Cadena+1
+dadd r4,r0,r0
+
+Loop: daddi r3,r3,-1
+lbu r1, cadena(r3)
+bne r1,r2, Sigo
+daddi r4,r4,1
+
+Sigo: bne r3,r0, Loop
+
+
+sd r4, cant(r0)
+halt
+
+
+

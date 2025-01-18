@@ -1,0 +1,18 @@
+#BlueJ class context
+comment0.target=Auto
+comment0.text=\r\n\ Write\ a\ description\ of\ class\ Auto\ here.\r\n\ \r\n\ @author\ (your\ name)\ \r\n\ @version\ (a\ version\ number\ or\ a\ date)\r\n
+comment1.params=Adi\ unPatente\ unDes\ A\u00F1o\ Importe\ p
+comment1.target=Auto(double,\ java.lang.String,\ java.lang.String,\ int,\ double,\ Propietario)
+comment2.params=
+comment2.target=Auto()
+comment3.params=
+comment3.target=java.lang.String\ getDescripcion()
+comment4.params=
+comment4.target=java.lang.String\ getPatente()
+comment5.params=unDes
+comment5.target=void\ setDescripcion(java.lang.String)
+comment6.params=unPatente
+comment6.target=void\ setPatente(java.lang.String)
+comment7.params=
+comment7.target=double\ Calcular()
+numComments=8

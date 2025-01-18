@@ -1,0 +1,25 @@
+org 1000h
+  tabla1 db 1,2,3,4,5,6,7,8,9 ;
+  tabla2 db 9,8,7,6,5,4,3,2,1 ;
+  tabla3 db ?,?,?,?,?,?,?,? ;
+org 2000h
+;recorre la tabla de atras para adelante
+  mov dl, OFFSET tabla2 - OFFSET tabla1; resta los tamaños de la tabla para tener la dimension logica
+  repetir:   dec dl; decrementa la dimension logica
+ 
+     MOV BX, OFFSET tabla1; en bx guarda la ubicacion de memoria de tabla 1
+     add bx,dx  ; a la ubicacion le suma la dimension logica
+     mov Al,[BX] ; mueve el valor del lugar de la tabla donde esta parado y lo guarda en AL
+     
+     MOV BX, OFFSET tabla2; similar a t1
+     add bx,dx
+     add AX,[BX]; solo que aca añade ax,[bx]. ax es el elemento de la t1 y [bx] siendo el elemento de la tabla 2
+     
+     MOV BX, OFFSET tabla3; agrega en nueva tabla
+     add bx,dx;
+     mov [BX],AL
+     
+    cmp dl,0;
+  jnz repetir
+hlt
+end

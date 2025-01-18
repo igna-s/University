@@ -1,0 +1,35 @@
+;Escriba la subrutina ES_VOCAL, que determina si un caracter es vocal o no. 
+;La rutina debe recibir el caracter por valor, y debe retornar, vía registro,
+;el valor 0FFH si el caracter es una vocal, o 00H en caso contrario.
+
+
+
+
+
+ORG 1000H ; variables 
+
+STRING DB "AEIOUaeiou"
+DIM db "H"
+
+ORG 3000H
+  VOCAL:mov ax, offset DIM - Offset STRING
+   MOV CX,DIM
+   ADD DX,AX
+  COMPARAR: DEC DX
+  CMP DX, 0FFFH
+  JZ FLIN
+  MOV BX,DX
+  CMP Cl,[BX]
+  JNZ COMPARAR
+  MOV AX,0FFH
+  JMP FIN
+  FLIN: MOV AX, 0H
+  FIN: RET
+  
+ORG 2000H ; código
+mov cx, Offset DIM
+mov dx, OFFSET STRING
+CALL VOCAL 
+
+HLT
+END

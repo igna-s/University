@@ -1,0 +1,11 @@
+[Version]
+Version=15.0
+[Designs]
+sumador8=.\Sumador8\Sumador8.adf
+[Browser]
+sort=order
+mode=none
+[Order]
+order=1
+[Expand]
+sumador8=1

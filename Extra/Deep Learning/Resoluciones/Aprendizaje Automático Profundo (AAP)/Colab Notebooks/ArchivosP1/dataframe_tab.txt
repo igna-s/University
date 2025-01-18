@@ -1,0 +1,6 @@
+Nombre	Edad	Pais
+Juan	20	Argentina
+María	26	Perú
+José	22	Chile
+Pablo	30	Colombia
+Pablo	30	Colombia

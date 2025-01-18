@@ -1,0 +1,20 @@
+1111 12 Gorra
+Gorra ajustable de algodón en color negro
+2222 6 Chaqueta
+Chaqueta acolchada impermeable en color azul
+3333 3 Guantes
+Guantes de cuero sintético en color marrón
+4444 18 Vestido
+Vestido largo de fiesta en color verde esmeralda
+5555 7 Calcetines
+Calcetines deportivos de algodón en color blanco
+6666 9 Camisa
+Camisa de vestir de algodón en color celeste
+7777 11 Pantalones cortos
+Pantalones cortos de tela en color beige
+8888 14 Chaleco
+Chaleco acolchado reversible en color gris
+9999 5 Leggings
+Leggings elásticos de poliéster en color negro
+0000 20 Abrigo
+Abrigo de invierno largo en color marrón

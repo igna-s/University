@@ -1,0 +1,8 @@
+Datos: nro: 10 stock: -1 desc: Artículo 10
+       precio: 1000 talle: 10 color: Color
+Datos: nro: 9 stock: -1 desc: Artículo 9
+       precio: 900 talle: 10 color: Color
+Datos: nro: 3 stock: -1 desc: Artículo 3
+       precio: 300 talle: 10 color: Color
+Datos: nro: 1 stock: -1 desc: Artículo 1
+       precio: 100 talle: 10 color: Color

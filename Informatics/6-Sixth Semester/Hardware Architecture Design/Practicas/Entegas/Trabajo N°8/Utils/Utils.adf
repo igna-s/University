@@ -1,0 +1,28 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=4
+Current Config=compile
+[Configurations]
+compile=Utils
+[Library]
+Utils=.\Utils\Utils.lib
+[$LibMap$]
+Utils=.
+Active_lib=
+[Settings]
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+REFRESH_FLOW=1
+FLOWTOOLS=NONE
+FAMILY=
+[Files]
+/Utils.vhd=-1
+/Testbench.vhd=-1
+[Files.Data]
+.\src\Utils.vhd=VHDL Source Code
+.\src\Testbench.vhd=VHDL Source Code
+[HierarchyViewer]
+HierarchyInformation=
+ShowHide=ShowTopLevel
+Selected=

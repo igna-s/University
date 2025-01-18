@@ -1,0 +1,118 @@
+# Archivos y carpetas generados por Eclipse
+/.metadata/
+/.settings/
+/bin/
+/target/
+/tmp/
+/*.tmp
+/.recommenders/
+
+# Archivos de configuración de Eclipse
+.classpath
+.project
+.buildpath
+
+# Archivos de control de versiones locales
+*.swp
+*.swo
+*.bak
+*.log
+
+# Configuración de herramientas de construcción (Maven, Gradle)
+*.iml
+.idea/
+/*.ipr
+/*.iws
+/.vscode/
+/.gradle/
+/mvnw
+/mvnw.cmd
+/target/
+.gradle/
+out/
+
+# Archivos de conexión remota y credenciales
+*.env
+*.key
+*.pem
+*.crt
+*.cer
+*.p12
+*.keystore
+*.properties
+*.config
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Otros archivos temporales
+*.log
+*.tmp
+*.backup
+*.bak
+~$*
+
+# --- Exclusiones para Java ---
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*.log
+*.jfr
+
+# --- Exclusiones para VHDL (Altera/Intel Quartus) ---
+db/
+incremental_db/
+output_files/
+simulation/
+.cdb
+.stp
+.sdc
+*.sof
+*.pof
+*.rpt
+*.pin
+*.jdi
+*.jtag
+*.qpf
+*.qsf
+*.srf
+*.vho
+*.vhd~
+*.bak
+
+# --- Exclusiones para Pascal ---
+*.o
+*.ppu
+*.compiled
+*.dcu
+*.exe
+*.bak
+*.out
+*.~pas
+*.map
+*.lst
+*.tds
+*.link.res
+*.link.map
+*.link.script
+
+# Archivos específicos de Free Pascal/Lazarus
+lib/
+backup/
+*.lpi
+*.lpr
+*.compiled
+*.compiled~*
+
+# --- General ---
+# Archivos binarios generados
+*.hex
+*.bin
+*.elf
+*.obj
+*.map
+*.log
+*.mem

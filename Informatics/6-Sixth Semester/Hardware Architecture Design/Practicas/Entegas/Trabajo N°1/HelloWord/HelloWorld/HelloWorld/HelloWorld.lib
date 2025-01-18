@@ -1,0 +1,24 @@
+timestamp=1723919030901
+
+[~A]
+ModifyID=15
+Version=74
+
+[~MFT]
+0=8|0HelloWorld.mgf|7801|6837
+1=2|1HelloWorld.mgf|12537|12537
+3=2|3HelloWorld.mgf|0|0
+
+[simple]
+A/prueba=21|../src/simple.vhd|25|1*12537
+BinW64/prueba=3*0
+I=0*3353
+I/prueba=0*7801
+M=11|2|vf5|1723918719015|../src/simple.vhd|0*3139*0x3fd6f509dcad305a4f6931653d59513ca0b21559|0*3276*0x23b75c12e3e89f2ef000564498faa8c2
+M/prueba=21|2|vf5|1723919030886|../src/simple.vhd|0*7317*0x259e70a4e9d2c232077479ba77083b524a3cabaa|0*7714*0x20116f55b147878295aeff36dce7fc50
+R=../src/simple.vhd|22
+Version=15.0.261.9132 (Windows64)|00000003789cd3f5370600015b00b0|b487ab85f94f4fc480b401309846a4755823641999caed5be1cdfb10fdef66b7
+Version/prueba=15.0.261.9132 (Windows64)|00000003789cd3f5370600015b00b0|2cb6c86ad5f6bfc4548003dd9f43149469a1a24fa21eba2161bd95d10d9e4242
+
+[~U]
+simple=11|0*3021|

@@ -1,0 +1,631 @@
+1) Encendido/apagado de las luces (periférico de salida) mediante la barra de microconmutadores (periférico de entrada),
+ambos comunicados con el microprocesador a través de los puertos paralelos de la PIO. Implementar un programa en
+el lenguaje assembly del simulador MSX88 que configure la PIO para leer el estado de los microconmutadores y
+escribirlo en la barra de luces. El programa se debe ejecutar bajo la configuración P1 C0 del simulador. Los
+microconmutadores se manejan con las teclas 0-7.
+
+PA EQU 30H
+PB EQU 31H
+CA EQU 32H
+CB EQU 33H
+ORG 2000H
+MOV AL, 0FFH ; PA entradas (Microconmutadores)
+OUT CA, AL
+MOV AL, 0 ; PB salidas (Luces)
+OUT CB, AL
+POLL: IN AL, PA
+OUT PB, AL
+JMP POLL
+END
+
+2) Encendido/apagado sincronizado de las luces. Implementar un contador que incremente la cuenta en uno una vez por
+segundo y la visualice a través de las luces conectadas a uno de los puertos paralelos del simulador. Ejecutar en
+configuración P1 C0.
+
+PIC EQU 20H
+TIMER EQU 10H
+PIO EQU 30H
+N_CLK EQU 10
+
+ORG 40
+IP_CLK DW RUT_CLK
+
+ORG 1000H
+INICIO DB 0
+
+ORG 2000H                 
+CLI 
+MOV AL, 11111101B         ;Activo timer   
+OUT PIC+1, AL           
+MOV AL, N_CLK          ;Le mando N_CLK           
+OUT PIC+5, AL                 
+MOV AL, 1                   
+OUT TIMER+1, AL        ;Inicio timer
+MOV AL, 0FFH
+OUT PIO+2, AL
+MOV AL, 0                  
+OUT PIO+3, AL          ;Fuerzo CA Y CB EN SALIDA  
+OUT PIO+1, AL          ;Activo todas las interrupciones    
+OUT TIMER, AL          ; Pongo timer en 0         
+STI                            
+LAZO: JMP LAZO
+
+ORG 3000H
+RUT_CLK: INC INICIO
+CMP INICIO, 0FFH
+JNZ LUCES
+MOV INICIO, 0
+LUCES: MOV AL, INICIO
+OUT PIO+1, AL
+MOV AL,0
+OUT TIMER, AL
+MOV AL, 20H
+OUT PIC, AL
+IRET
+END
+
+3)Escribir un programa que encienda una luz a la vez, de las ocho conectadas al puerto paralelo del microprocesador a
+través de la PIO, en el siguiente orden: 0-1-2-3-4-5-6-7-6-5-4-3-2-1-0-1-2-3-4-5-6-7-6-5-4-3-2-1-0-1-... Cada luz debe
+estar encendida durante un segundo. Ejecutar en la configuración P1 C0 del simulador.
+
+PIC EQU 20H
+TIMER EQU 10H
+PIO EQU 30H
+IDA EQU 10
+SALIDA EQU 11
+
+
+ORG 40
+IP_IDA DW SUMA
+ORG 44
+IP_SALIDA DW RESTA
+
+ORG 1000H
+VALOR DB 1
+
+ORG 3000H
+
+SUMA: CMP AH,0
+      JNZ SEGIR
+      INC AH
+      JMP CONTI
+SEGIR:ADD AH,AH
+
+CONTI:MOV AL, AH
+      OUT PIO+1,AL
+      CMP AH, 80H
+      JNZ FIN
+      CLI
+      MOV AL, SALIDA   ; Ahora resta
+      OUT PIC+5, AL
+      STI
+      
+FIN:  MOV AL, 0      ;Timer y salida
+      OUT TIMER,AL
+      mov al, PIC
+      out PIC,al
+IRET
+
+RESTA:MOV DL,7
+      CMP AH,1
+      JNZ MULTI
+      MOV AH,0
+
+MULTI:ADD AH,AH
+      ADC AH,0
+      DEC DL
+      CMP DL,0
+      JNZ MULTI
+      
+      MOV AL,AH
+      OUT PIO+1,AL
+      
+      CMP AH,0
+      JNZ FINAL
+      
+      CLI
+      MOV AL, IDA    ; Ahora suma
+      OUT PIC+5, AL
+      STI
+      
+FINAL:MOV AL, 0      ;Timer y salida
+      OUT TIMER,AL
+      mov al, PIC
+      out PIC,al
+IRET
+
+ORG 2000H
+CLI
+
+MOV AL, 11111101B   ; PIC
+OUT PIC+1,AL
+MOV AL, IDA
+OUT PIC+5, AL
+
+MOV AL, 1      ; Timer
+OUT TIMER+1,AL
+MOV AL, 0
+OUT TIMER,AL
+
+             ; Pio
+MOV AL, 0
+OUT PIO+3,AL
+OUT PIO+1,AL
+
+MOV AH, 80H ; Controlador
+STI
+
+
+LAZO: NOP
+      NOP
+      JMP LAZO
+
+END
+
+;Uso de la impresora a través de la PIO
+;4) . Escribir un programa que envíe datos a la impresora a través de la PIO. 
+;La PIO debe cumplir las funciones de temporización que requiere la impresora para la comunicación. 
+;Ejecutar en configuración P1 C1 del simulador y presionar F5 para mostrar la salida en papel. 
+;El papel se puede blanquear ingresando el comando BI.
+PIO EQU 30H
+ ORG 1000H
+MSJ DB "CONCEPTOS DE "
+ DB "ARQUITECTURA DE "
+ DB "COMPUTADORAS"
+FIN DB ?
+ ORG 2000H
+ MOV AL, 0FDH ; INICIALIZACION PIO PARA IMPRESORA   ;PA 30H --- PB 31H --- CA 32H --- CB 33H
+ OUT PIO+2, AL
+ MOV AL, 0                                           ;PA:C6&FD  11000100
+ OUT PIO+3, AL                                       ;PB: Caracter
+ IN AL, PIO                                          ;CA: FD    111111(01) Strobe, Busy
+ AND AL, 0FDH                                        ;CB: 00    00000000
+ OUT PIO, AL ; FIN INICIALIZACION                    ; 
+ MOV BX, OFFSET MSJ
+ MOV CL, OFFSET FIN-OFFSET MSJ
+ 
+POLL: IN AL, PIO              ;Me fijo que bit busy =0, si es asi imprimo
+ AND AL, 1
+ JNZ POLL
+ 
+ MOV AL, [BX]                
+ OUT PIO+1, AL
+ 
+ IN AL, PIO ; PULSO 'STROBE'     ;Hago un pulso a strobe
+ OR AL, 02H
+ OUT PIO, AL
+ IN AL, PIO
+ AND AL, 0FDH
+ OUT PIO, AL ; FIN PULSO
+ 
+ INC BX                        ;Cambio el caracter y dectremento max
+ DEC CL
+ JNZ POLL
+ INT 0
+ END
+
+
+;5) Escribir un programa que solicite el ingreso de cinco caracteres por teclado y los envíe de a uno por vez
+;a la impresora a través de la PIO a medida que se van ingresando. 
+;No es necesario mostrar los caracteres en la pantalla. Ejecutar en configuración P1 C1.
+
+
+PIO EQU 30H
+
+ORG 1000H
+NUM_CAR DB 5
+CAR DB ?
+
+ORG 3000H
+INI_IMP: MOV AL, 0FDH   ; SUBRUTINA DE INICIALIZACION 
+OUT PIO+2, AL           ; PIO PARA IMPRESORA
+MOV AL, 0                                            ;PA:C6&FD  11000100
+OUT PIO+3, AL                                        ;PB: Caracter
+IN AL, PIO                                           ;CA: FD    111111(01) Strobe, Busy
+AND AL, 0FDH                                         ;CB: 00    00000000
+OUT PIO, AL 
+RET
+
+
+ORG 4000H
+PULSO: IN AL, PIO    ; SUBRUTINA DE GENERACIÓN
+       OR AL, 02H    ; DE PULSO 'STROBE'
+       OUT PIO, AL
+       IN AL, PIO
+       AND AL, 0FDH
+       OUT PIO, AL
+       RET
+
+
+; PROGRAMA PRINCIPAL
+ORG 2000H
+PUSH AX
+CALL INI_IMP
+POP AX
+
+MOV BX, OFFSET CAR
+MOV CL, NUM_CAR
+LAZO: INT 6
+POLL: IN AL, PIO
+AND AL, 1
+JNZ POLL                  ; Se fija que busy : 0
+MOV AL, [BX]
+OUT PIO+1, AL             ; Mando caracter
+PUSH AX
+CALL PULSO                 ;hago el pulso
+POP AX
+DEC CL
+JNZ LAZO                   ;Voy 5 veces a lazo
+INT 0
+END
+      
+
+
+
+6)
+;5) ) Escribir un programa que solicite ingresar caracteres por teclado y que recién al presionar 
+;la tecla F10 los envíe a la impresora a través de la PIO. No es necesario mostrar los caracteres en pantalla. 
+;Ejecutar en configuración P1 C1 del simulador.
+
+
+
+PIO EQU 30H
+PIC EQU 20H
+SUBRU EQU 10
+
+ORG 40
+IP_F10 DW F10
+
+ORG 1000H
+NUM_CAR DB 0
+CAR DB ?
+    DB ?
+ORG 1500H
+FI DB " "
+
+ORG 3000H
+
+F10:  MOV AX,AX
+      CLI
+      MOV AL, 0FFH          ; Apago el F_10
+      OUT PIC+1, AL
+      MOV AL, PIC
+      OUT PIC, AL
+     
+      PUSH AX
+      CALL INI_IMP       ;Inicio la impresora
+      POP AX
+      
+      MOV BX, OFFSET CAR
+      MOV CL, NUM_CAR
+      
+      LAZO: NOP
+      POLL: IN AL, PIO
+      AND AL, 1
+      JNZ POLL                  ; Se fija que busy : 0
+      MOV AL, [BX]
+      OUT PIO+1, AL             ; Mando caracter
+      PUSH AX
+      CALL PULSO                 ;hago el pulso
+      POP AX
+      INC BX
+      DEC CL
+      JNZ LAZO                   ;Voy X veces a lazo
+      MOV DL,0                    ; CONDICION DE CORTE
+
+STI
+IRET
+
+
+INI_IMP: MOV AL, 0FDH   ; SUBRUTINA DE INICIALIZACION 
+OUT PIO+2, AL           ; PIO PARA IMPRESORA
+MOV AL, 0                                            ;PA:C6&FD  11000100
+OUT PIO+3, AL                                        ;PB: Caracter
+IN AL, PIO                                           ;CA: FD    111111(01) Strobe, Busy
+AND AL, 0FDH                                         ;CB: 00    00000000
+OUT PIO, AL 
+RET
+
+PULSO: IN AL, PIO    ; SUBRUTINA DE GENERACIÓN
+       OR AL, 02H    ; DE PULSO 'STROBE'
+       OUT PIO, AL
+       IN AL, PIO
+       AND AL, 0FDH
+       OUT PIO, AL
+       RET
+
+
+; PROGRAMA PRINCIPAL
+ORG 2000H
+CLI
+mov AL, 11111110b ;F_10
+OUT PIC+1, AL
+MOV AL, SUBRU
+OUT PIC+4, AL
+STI
+
+MOV BX, OFFSET CAR
+MOV DL, 87
+
+SALTO:CMP DL,0
+      JZ FIN
+      INT 6
+      NOP
+      INC BX
+      INC NUM_CAR
+      JMP SALTO
+      
+FIN: hlt
+end
+
+;Uso de la impresora a través del dispositivo de hand-shaking por consulta de estado.
+;7) Escribir un programa que envíe datos a la impresora a través del HAND-SHAKE. 
+;La comunicación se debe establecer por consulta de estado (polling). Ejecutar en configuración P1 C2.
+
+HAND EQU 40H
+
+ORG 1000H
+MSJ DB "INGENIERIA"
+DB " E INFORMATICA"
+FIN DB ?
+ORG 2000H
+IN AL, HAND+1            
+AND AL, 7FH                     ;Pone int en 0, no activa la linea                    
+OUT HAND+1, AL                   
+MOV BX, OFFSET MSJ
+MOV CL, OFFSET FIN-OFFSET MSJ
+POLL: IN AL, HAND+1                
+AND AL, 1                      ;Hace un AND 1, SE FIJA si Busy :0
+JNZ POLL
+MOV AL, [BX]
+OUT HAND, AL                   ; Manda el operando a Handshake
+INC BX
+DEC CL                         ;Cambia hasta llegar a Fin
+JNZ POLL
+INT 0
+END
+
+
+;Uso de la impresora a través del dispositivo de hand-shaking por interrupción.
+;8) Escribir un programa que envíe datos a la impresora a través del HAND-SHAKE.
+;La comunicación se debe establecer por interrupciones emitidas desde el HAND-SHAKE cada vez que la impresora
+;se desocupa. Ejecutar en configuración P1 C2.
+
+
+
+
+PIC EQU 20H
+HAND EQU 40H
+N_HND EQU 10
+
+ORG 40 
+IP_HND DW RUT_HND 
+
+
+
+ORG 1000H
+MSJ DB "UNIVERSIDAD "
+DB "NACIONAL DE LA PLATA"
+FIN DB ?
+
+
+
+ORG 3000H 
+RUT_HND: PUSH AX
+MOV AL, [BX] 
+OUT HAND, AL           ; Mueve el operando para que el handshake lo imprima
+INC BX 
+DEC CL 
+MOV AL, 20H 
+OUT PIC, AL 
+POP AX 
+IRET 
+
+
+
+ORG 2000H
+MOV BX, OFFSET MSJ
+MOV CL, OFFSET FIN-OFFSET MSJ
+CLI
+MOV AL, 0FBH
+OUT PIC+1, AL       ; Habilita interrupciones con el handshake
+MOV AL, N_HND
+OUT PIC+6, AL        ;Le manda subrutINA AL hAND
+MOV AL, 80H
+OUT HAND+1, AL
+STI
+
+LAZO: CMP CL, 0
+JNZ LAZO
+IN AL, HAND+1
+AND AL, 7FH
+OUT HAND+1, AL
+INT 0
+
+END
+
+
+9)
+;Uso de la impresora a través del dispositivo de hand-shaking por interrupción.
+;) Escribir un programa que solicite el ingreso de cinco caracteres por teclado y los almacene en memoria.
+;Una vez ingresados, que los envíe a la impresora a través del HAND-SHAKE, en primer lugar tal cual fueron 
+;ingresados y a continuación en sentido inverso. 
+;Implementar dos versiones, una por consulta de estado y otra por interrupción, en lo
+;que se refiere a la comunicación entre el HAND-SHAKE y el microprocesador.
+
+PIC EQU 20H
+HAND EQU 40H
+N_HND EQU 10
+
+ORG 40 
+IP_HND DW RUT_HND
+
+
+
+ORG 1000H
+Tabla db "Ingrese Caracteres: "
+MSG DB ?
+ DB ?
+ DB ?
+ DB ?
+ DB ?
+FIN DB "-"
+
+
+
+ORG 3000H 
+RUT_HND: PUSH AX
+MOV AL, [BX] 
+OUT HAND, AL           ; Mueve el operando para que el handshake lo imprima
+
+CMP CH,0
+JNZ SALTITO2     ;ME FIJO QUE TIPO ES
+INC BX
+JMP CONTINUAR2
+SALTITO2: DEC BX
+
+CONTINUAR2:DEC CL
+MOV AL, 20H 
+OUT PIC, AL 
+POP AX 
+IRET 
+
+
+SUBRU: PUSH AX
+       PUSH BX
+MOV BX, Offset Tabla
+mov al, Offset MSG - Offset Tabla 
+int 7
+mov ah, 5 ;Fin
+mov bx, Offset MSG
+mov al,1
+CARGA: cMP ah,0
+      JZ FINAL
+      INT 6
+      INT 7
+      DEC Ah
+      INC BX
+      JMP CARGA
+      
+FINAL:POP BX
+POP AX
+RET
+
+
+POLLING: NOP
+IN AL, HAND+1                              
+AND AL, 7FH
+OUT HAND+1, AL
+POLL: IN AL, HAND+1
+AND AL, 1
+JNZ POLL
+MOV AL, [BX]
+OUT HAND, AL
+
+CMP CH,0
+JNZ SALTITO     ;ME FIJO QUE TIPO ES
+INC BX
+JMP CONTINUAR
+SALTITO: DEC BX
+
+CONTINUAR:DEC CL
+JNZ POLL
+RET
+
+
+; POLLING
+
+ORG 2000H
+
+CALL SUBRU
+
+MOV BX, OFFSET MSG
+MOV CL, 6
+MOV CH, 0
+CALL POLLING
+
+MOV BX, OFFSET FIN -1
+MOV CL, 5
+MOV CH,1   ;iNVERTIDO
+CALL POLLING
+
+MOV BX, OFFSET FIN
+MOV CL, 1
+MOV CH, 0
+CALL POLLING
+
+;INTERRUPCIONES
+CLI
+MOV BX, OFFSET MSG
+MOV CL, 6
+MOV CH,0
+
+MOV AL, 0FBH
+OUT PIC+1,AL
+MOV AL, N_HND
+OUT PIC+6,AL
+MOV AL, 80H
+OUT HAND+1, AL
+STI
+LAZO: CMP CL,0
+      JNZ  LAZO
+CLI
+MOV BX, OFFSET FIN-1
+MOV CL, 5;iNVERTIDO
+MOV CH, 1
+STI
+LAZO2: CMP CL,0
+      JNZ  LAZO2
+      
+IN AL, HAND+1
+AND AL, 7FH
+OUT HAND+1, AL
+      
+VUELTA:NOP
+       NOP
+JMP VUELTA      
+HLT
+END
+
+;Uso de la impresora a través del dispositivo USART con el protocolo DTR por consulta de estado.
+;10) Escribir un programa que envíe datos a la impresora a través de la USART usando el protocolo DTR. 
+;La comunicación es por consulta de estado. Ejecutar en configuración P1 C4.
+
+
+USART EQU 60H
+
+ORG 1000H
+SACADOS DW 0
+TABLA DB "Comunicación serie a"
+DB "través del protocolo"
+DB "DTR por consulta de estado"
+FIN DB ?
+
+; programa principal
+ORG 2000H
+
+INICIO: MOV BX, OFFSET TABLA
+MOV SACADOS, 0
+; programo la USART
+MOV AL, 51H ; binario=01010001
+OUT USART+2, AL
+TESTE: IN AL, USART+2
+AND AL, 81H
+CMP AL, 81H
+JNZ TESTE
+MOV AL, [BX]
+OUT USART+1, AL
+INC BX
+INC SACADOS
+CMP SACADOS, OFFSET FIN-OFFSET TABLA
+JNZ TESTE
+INT 0
+
+END
+
+11) Escribir un programa que envíe datos a la impresora a través de la USART usando el protocolo DTR pero realizando la
+comunicación por interrupción. Ejecutar en configuración P1 C4.
+
+
+
+Ver en descargas, ejemplos hechos. No terminado por imposibilidad de pruebas.

@@ -1,0 +1,74 @@
+programa Ejercicio31b
+   
+areas
+  area1 : AreaP(1,1,1,10)
+  area2 : AreaP(2,11,2,20)
+  
+robots 
+  robot tipo1
+  variables
+    Aux:numero
+    cont: numero
+  comenzar 
+    cont:=0
+    repetir 9
+      mientras (HayFlorEnLaEsquina)
+        tomarFlor
+        cont:= cont +1
+      mover  
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cont:= cont +1
+    EnviarMensaje(cont,robot2)
+    RecibirMensaje(Aux,robot2)
+    si Aux <= cont
+      Aux:= cont - Aux
+      Informar(1,1,1,1)
+      Informar (Aux)
+
+  fin 
+
+  robot tipo2
+  variables
+    Aux: numero
+    Cont: numero
+  comenzar 
+    Cont:=0
+    repetir 9
+      mientras (HayFlorEnLaEsquina)
+        tomarFlor
+        Cont:= Cont +1
+      mover  
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      Cont:= Cont +1
+    EnviarMensaje(Cont,robot1)
+    RecibirMensaje(Aux,robot1)
+    si Aux <= Cont
+      Aux:= Cont - Aux
+      Informar(2,2,2,2)
+      Informar (Aux)
+
+      
+  fin 
+
+
+  
+variables
+  robot1:tipo1
+  robot2:tipo2
+comenzar
+  AsignarArea(robot1,area1)
+  AsignarArea(robot2,area2)
+  Iniciar(robot1,1,1)
+  Iniciar(robot2,2,11)
+
+fin      
+
+
+
+
+
+
+
+

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="max_min_y_busqueda.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="180"/>
+        <CursorPos X="2" Y="201"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="7">
+      <Position>
+        <Filename Value="max_min_y_busqueda.lpr"/>
+        <Caret Line="210" Column="6" TopLine="182"/>
+      </Position>
+      <Position>
+        <Filename Value="max_min_y_busqueda.lpr"/>
+        <Caret Line="209" Column="4" TopLine="181"/>
+      </Position>
+      <Position>
+        <Filename Value="max_min_y_busqueda.lpr"/>
+        <Caret Line="185" Column="2" TopLine="175"/>
+      </Position>
+      <Position>
+        <Filename Value="max_min_y_busqueda.lpr"/>
+        <Caret Line="184" Column="32" TopLine="170"/>
+      </Position>
+      <Position>
+        <Filename Value="max_min_y_busqueda.lpr"/>
+        <Caret Line="175" Column="11" TopLine="166"/>
+      </Position>
+      <Position>
+        <Filename Value="max_min_y_busqueda.lpr"/>
+        <Caret Line="164" Column="48" TopLine="153"/>
+      </Position>
+      <Position>
+        <Filename Value="max_min_y_busqueda.lpr"/>
+        <Caret Line="167" Column="46" TopLine="153"/>
+      </Position>
+      <Position>
+        <Filename Value="max_min_y_busqueda.lpr"/>
+        <Caret Line="209" Column="9" TopLine="181"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>

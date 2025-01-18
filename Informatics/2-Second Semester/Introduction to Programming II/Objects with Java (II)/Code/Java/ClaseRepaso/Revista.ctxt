@@ -1,0 +1,24 @@
+#BlueJ class context
+comment0.target=Revista
+comment0.text=\ Revista\ que\ tambi\u00E9n\ tiene\ asociado\ un\ t\u00EDtulo,\r\n\ la\ cantidad\ de\ cap\u00EDtulos\ del\ mismo\ y\ si\ es\ o\ no\ una\ edici\u00F3n\ de\ bolsillo\u0000\r\n
+comment1.params=Nombre\ Volumen\ Articulos\ Identificacion\ Paginas\ Resumen\ A\u00F1o\ Resp
+comment1.target=Revista(java.lang.String,\ int,\ int,\ java.lang.String,\ int,\ java.lang.String,\ int,\ Responsable)
+comment10.params=
+comment10.target=int\ VolumenRandom()
+comment2.params=
+comment2.target=Revista()
+comment3.params=Nombre
+comment3.target=void\ setNombre(java.lang.String)
+comment4.params=
+comment4.target=java.lang.String\ getNombre()
+comment5.params=Volumen
+comment5.target=void\ setVolumen(int)
+comment6.params=
+comment6.target=int\ getVolumen()
+comment7.params=Articulos
+comment7.target=void\ setArticulos(int)
+comment8.params=
+comment8.target=int\ getArticulos()
+comment9.params=
+comment9.target=java.lang.String\ Imprimir()
+numComments=11
