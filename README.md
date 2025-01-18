@@ -53,8 +53,8 @@ Below is the **complete graff** (excluding elective subjects), written in Spanis
 
 ## 📜 **How to Use This Repository**  
 
-# 1. Navigate to the folder for the semester using this guide [guide](https://ic.info.unlp.edu.ar/plan-de-estudio-2011/) or subject you’re interested in.  
-# 2. Explore the  materials provided.  
+ 1. Navigate to the folder for the semester using this guide [guide](https://ic.info.unlp.edu.ar/plan-de-estudio-2011/) or subject you’re interested in.  
+ 2. Explore the  materials provided.  
 
 
  Note: Some of them where solved in paper (Mostly the Engineering part) and the content is mostly in Spanish
