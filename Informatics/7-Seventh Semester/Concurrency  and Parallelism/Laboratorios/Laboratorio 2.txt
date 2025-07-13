@@ -1,0 +1,181 @@
+Trabajo de Laboratorio: Pasaje de Mensajes (MPI)
+
+Consigna:
+1. Implementar la multiplicación de matrices cuadradas de NxN por medio de P procesos.
+   - Ejecutar con diferentes valores de N = 256, 512 y 1024.
+   - Para cada valor de N usar P = 2, 4 y 8.
+
+2. Realizar un algoritmo que dado un elemento X indique la cantidad de veces que aparece
+   dentro de un vector de enteros de N elementos. Se cuenta con una cantidad P de
+   procesos buscadores.
+   - Probar con los siguientes valores de P = 2, 4 y 8.
+
+Instrucciones de compilación y ejecución (Linux con OpenMPI):
+
+```bash
+# Compilar:
+mpicc -o multiplicacion_matrices multiplicacion_matrices.c
+mpicc -o conteo_vector conteo_vector.c
+
+# Ejecutar en una sola máquina:
+mpirun -np <P> ./multiplicacion_matrices <N>
+mpirun -np <P> ./conteo_vector <N> <X>
+
+# Ejecutar en un clúster de máquinas:
+mpirun -np <P> --machinefile archivoMaquinas ./multiplicacion_matrices <N>
+mpirun -np <P> --machinefile archivoMaquinas ./conteo_vector <N> <X>
+```
+
+Formato de archivo de máquinas (machinefile):
+```
+maquina1 slot=<cantidad_de_procesadores_maquina1>
+maquina2 slot=<cantidad_de_procesadores_maquina2>
+...
+```
+
+---
+Resolución:
+
+**1. Multiplicación de matrices NxN con P procesos**
+
+Archivo: `multiplicacion_matrices.c`
+```c
+#include <mpi.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[]) {
+    int rank, size;
+    int N;
+    double *A, *B, *C, *subA, *subC;
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (argc != 2) {
+        if (rank == 0) printf("Uso: %s <N>\n", argv[0]);
+        MPI_Finalize();
+        return 1;
+    }
+    N = atoi(argv[1]);
+    int rows_per_proc = N / size;
+
+    if (rank == 0) {
+        A = malloc(N * N * sizeof(double));
+        B = malloc(N * N * sizeof(double));
+        C = malloc(N * N * sizeof(double));
+        // Inicializar A y B
+        for (int i = 0; i < N * N; i++) {
+            A[i] = rand() % 10;
+            B[i] = rand() % 10;
+        }
+    }
+
+    subA = malloc(rows_per_proc * N * sizeof(double));
+    subC = malloc(rows_per_proc * N * sizeof(double));
+    // Scatter filas de A
+    MPI_Scatter(A, rows_per_proc * N, MPI_DOUBLE,
+                subA, rows_per_proc * N, MPI_DOUBLE,
+                0, MPI_COMM_WORLD);
+    // Broadcast B completa
+    MPI_Bcast(B, N * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    // Cálculo local de subC = subA * B
+    for (int i = 0; i < rows_per_proc; i++) {
+        for (int j = 0; j < N; j++) {
+            subC[i*N + j] = 0;
+            for (int k = 0; k < N; k++) {
+                subC[i*N + j] += subA[i*N + k] * B[k*N + j];
+            }
+        }
+    }
+
+    // Gather resultados en C
+    MPI_Gather(subC, rows_per_proc * N, MPI_DOUBLE,
+               C, rows_per_proc * N, MPI_DOUBLE,
+               0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        printf("Multiplicación de matrices de tamaño %dx%d completada.\n", N, N);
+        free(A); free(B); free(C);
+    }
+    free(subA); free(subC);
+
+    MPI_Finalize();
+    return 0;
+}
+```
+
+**Pruebas recomendadas:**
+```
+mpirun -np 2 ./multiplicacion_matrices 256
+mpirun -np 4 ./multiplicacion_matrices 256
+mpirun -np 8 ./multiplicacion_matrices 256
+# Repetir para N=512 y N=1024
+```
+
+---
+**2. Conteo de ocurrencias de X en un vector de N enteros**
+
+Archivo: `conteo_vector.c`
+```c
+#include <mpi.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[]) {
+    int rank, size;
+    int N, X;
+    int *vector, *subvector;
+    int local_count = 0, total_count = 0;
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (argc != 3) {
+        if (rank == 0) printf("Uso: %s <N> <X>\n", argv[0]);
+        MPI_Finalize();
+        return 1;
+    }
+    N = atoi(argv[1]);
+    X = atoi(argv[2]);
+    int chunk = N / size;
+
+    if (rank == 0) {
+        vector = malloc(N * sizeof(int));
+        for (int i = 0; i < N; i++) vector[i] = rand() % 10; // valores 0..9
+    }
+    subvector = malloc(chunk * sizeof(int));
+
+    MPI_Scatter(vector, chunk, MPI_INT,
+                subvector, chunk, MPI_INT,
+                0, MPI_COMM_WORLD);
+
+    // Conteo local
+    for (int i = 0; i < chunk; i++) {
+        if (subvector[i] == X) local_count++;
+    }
+
+    // Reducción para sumar todos los conteos
+    MPI_Reduce(&local_count, &total_count, 1, MPI_INT,
+               MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        printf("El elemento %d aparece %d veces en el vector de %d elementos.\n", X, total_count, N);
+        free(vector);
+    }
+    free(subvector);
+
+    MPI_Finalize();
+    return 0;
+}
+```
+
+**Pruebas recomendadas:**
+```
+mpirun -np 2 ./conteo_vector 1000000 5
+mpirun -np 4 ./conteo_vector 1000000 5
+mpirun -np 8 ./conteo_vector 1000000 5
+```
