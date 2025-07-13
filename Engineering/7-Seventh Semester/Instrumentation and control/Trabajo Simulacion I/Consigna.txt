@@ -1,0 +1,41 @@
+Buenas tardes, le adjunto las propuestas solicitadas para el T.P
+
+Integrantes= Ignacio A. Schwindt, Valentín Ventos, Tiago Restucha
+Grupo G13-SEMÁFOROS b
+
+Propuestas
+
+
+1°. MODO PEATONAL ACTIVADO POR BOTÓN:
+
+En situaciones urbanas donde los peatones necesitan cruzar, se utiliza un botón externo que permite al peatón activar la secuencia del semáforo.
+La programación consiste en un pulsador que, al ser presionado y luego de finalizado el verde de el carril actual, activa el semáforo en el siguiente orden:
+ • Se apaga la luz verde para autos.
+ • Se enciende la luz roja durante 10 segundos.
+ • Luego se enciende una luz verde peatonal durante 10 segundos.
+ • Pasado este tiempo, el sistema vuelve al estado siguiente.
+Este sistema permite un cruce seguro para el peaton donde hay muchas carriles de giro y siempre hay autos donde transita el mismo
+
+⸻
+
+2°. MODO AUTOMÁTICO CON SELECTOR NOCTURNO:
+
+Este modo simula el comportamiento de un semáforo real según el horario.
+Durante el día, se activa un ciclo clásico de semáforo:
+15 segundos luz verde, 4 segundos luz amarilla, 30 segundos luz roja (repetitivo).
+Durante la noche, desde la 01:00 AM hasta las 05:00 AM, se pasa al modo nocturno: luz amarilla intermitente (1 segundo encendida, 1 segundo apagada).
+Adicionalmente, se puede seleccionar este modo manualmente a través de un selector, lo cual es útil para forzar el modo nocturno independientemente del horario, cómo es usado actualmente en Plaza Rocha con los semáforos alrededor de la obra.
+
+⸻
+
+3°. MODO VEHÍCULO PRIORITARIO:
+
+Este modo permite el paso inmediato de vehículos prioritarios como ambulancias, patrulleros o colectivos.
+Cuando se detecta un vehículo especial (representado mediante un pulsador o sensor), el semáforo interrumpe su secuencia y enciende directamente la luz verde durante 10 segundos, sin importar en qué parte del ciclo se encontraba.
+Luego de ese tiempo, el sistema vuelve automáticamente a la fase que correspondía.
+Este sistema simula los semáforos inteligentes que detectan demanda y prioridad en entornos urbanos modernos.
+
+
+Quedamos a su disposición 
+Saluda Atte 
+Grupo 13
