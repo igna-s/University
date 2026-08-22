@@ -41,7 +41,7 @@ Official curriculum: [UNLP Study Plan (2011)](https://ic.info.unlp.edu.ar/plan-d
   - [Physics II](Engineering/4-Fourth%20Semester/Physics%20II)
   - [Probability](Engineering/4-Fourth%20Semester/Probability)
 - **5th Semester**
-  - [Electronics and More](Engineering/5-Fifth%20Semester/Electronics%20and%20More)
+  - [Electronics I](Engineering/5-Fifth%20Semester/Electronics%20I)
   - [Introduction to Logic Design](Engineering/5-Fifth%20Semester/Introduction%20to%20Logic%20Design)
   - [Math (D1)](Engineering/5-Fifth%20Semester/Math%20%28D1%29)
   - [Statistics](Engineering/5-Fifth%20Semester/Stadistics)
@@ -66,12 +66,12 @@ Official curriculum: [UNLP Study Plan (2011)](https://ic.info.unlp.edu.ar/plan-d
 - **Admission**
   - [Introduction to Informatics (IAI)](Informatics/Admission)
 - **1st Semester**
-  - [Introduction to Programming I (EPA)](Informatics/1-First%20Semester/Introduction%20to%20Programming%20I)
+  - [Programming I](Informatics/1-First%20Semester/Programming%20I)
 - **2nd Semester**
-  - [Introduction to Programming II (CADP / Workshop)](Informatics/2-Second%20Semester/Introduction%20to%20Programming%20II)
+  - [Programming II](Informatics/2-Second%20Semester/Programming%20II)
 - **3rd Semester**
   - [Computer Architecture Introduction](Informatics/3-Third%20Semester/Computer%20Architecture%20Introduction)
-  - [Introduction to Programming III (FOD / Algorithms)](Informatics/3-Third%20Semester/Introduction%20to%20Programming%20III)
+  - [Programming III](Informatics/3-Third%20Semester/Programming%20III)
   - [Languages Workshop I (C)](Informatics/3-Third%20Semester/Languages%20Workshop%20I%20%28C%29)
 - **4th Semester**
   - [Languages Workshop II (Java)](Informatics/4-Fourth%20Semester/Languages%20Workshop%20II)
