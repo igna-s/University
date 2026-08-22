@@ -1,0 +1,194 @@
+RESULTADOS PR�CTICA 2
+=====================
+
+Pthreads mm_naive N=1024 T=1 Tiempo=2.441906
+Validacion OK
+
+Pthreads mm_naive N=1024 T=2 Tiempo=2.121144
+Validacion OK
+
+Pthreads mm_naive N=1024 T=4 Tiempo=1.805306
+Validacion OK
+
+Pthreads mm_naive N=1024 T=8 Tiempo=1.491511
+Validacion OK
+
+OpenMP mm_naive N=1024 T=1 Tiempo=4.348609
+Validacion OK
+
+OpenMP mm_naive N=1024 T=2 Tiempo=1.983619
+Validacion OK
+
+OpenMP mm_naive N=1024 T=4 Tiempo=1.118898
+Validacion OK
+
+OpenMP mm_naive N=1024 T=8 Tiempo=1.507105
+Validacion OK
+
+Pthreads mm_sq N=1024 T=1 Tiempo=1.259868
+Validacion OK
+
+Pthreads mm_sq N=1024 T=2 Tiempo=0.635247
+Validacion OK
+
+Pthreads mm_sq N=1024 T=4 Tiempo=0.317669
+Validacion OK
+
+Pthreads mm_sq N=1024 T=8 Tiempo=0.158717
+Validacion OK
+
+OpenMP mm_sq N=1024 T=1 Tiempo=1.287527
+Validacion OK
+
+OpenMP mm_sq N=1024 T=2 Tiempo=0.625469
+Validacion OK
+
+OpenMP mm_sq N=1024 T=4 Tiempo=0.314187
+Validacion OK
+
+OpenMP mm_sq N=1024 T=8 Tiempo=0.162237
+Validacion OK
+
+Pthreads mmblk N=1024 T=1 BS=64 Tiempo=0.875967
+Validacion OK
+
+Pthreads mmblk N=1024 T=2 BS=64 Tiempo=0.450111
+Validacion OK
+
+Pthreads mmblk N=1024 T=4 BS=64 Tiempo=0.237221
+Validacion OK
+
+Pthreads mmblk N=1024 T=8 BS=64 Tiempo=0.146061
+Validacion OK
+
+OpenMP mmblk N=1024 T=1 BS=64 Tiempo=0.876015
+Validacion OK
+
+OpenMP mmblk N=1024 T=2 BS=64 Tiempo=0.445941
+Validacion OK
+
+OpenMP mmblk N=1024 T=4 BS=64 Tiempo=0.233229
+Validacion OK
+
+OpenMP mmblk N=1024 T=8 BS=64 Tiempo=0.150131
+Validacion OK
+
+Pthreads mmblk_blas N=1024 T=1 BS=64 Tiempo=0.789354
+Validacion OK
+
+Pthreads mmblk_blas N=1024 T=2 BS=64 Tiempo=0.403606
+Validacion OK
+
+Pthreads mmblk_blas N=1024 T=4 BS=64 Tiempo=0.205633
+Validacion OK
+
+Pthreads mmblk_blas N=1024 T=8 BS=64 Tiempo=0.128652
+Validacion OK
+
+OpenMP mmblk_blas N=1024 T=1 BS=64 Tiempo=0.780858
+Validacion OK
+
+OpenMP mmblk_blas N=1024 T=2 BS=64 Tiempo=0.397840
+Validacion OK
+
+OpenMP mmblk_blas N=1024 T=4 BS=64 Tiempo=0.210468
+Validacion OK
+
+OpenMP mmblk_blas N=1024 T=8 BS=64 Tiempo=0.137662
+Validacion OK
+
+Pthreads Stats N=1024 T=1 Tiempo=0.002027
+Min: 0.000000, Max: 1.000000, Avg: 0.500017
+
+Pthreads Stats N=1024 T=2 Tiempo=0.001274
+Min: 0.000000, Max: 1.000000, Avg: 0.500017
+
+Pthreads Stats N=1024 T=4 Tiempo=0.001448
+Min: 0.000000, Max: 1.000000, Avg: 0.500017
+
+Pthreads Stats N=1024 T=8 Tiempo=0.001688
+Min: 0.000000, Max: 1.000000, Avg: 0.500017
+
+OpenMP Stats N=1024 T=1 Tiempo=0.001785
+Min: 0.000000, Max: 1.000000, Avg: 0.500017
+
+OpenMP Stats N=1024 T=2 Tiempo=0.001279
+Min: 0.000000, Max: 1.000000, Avg: 0.500017
+
+OpenMP Stats N=1024 T=4 Tiempo=0.001210
+Min: 0.000000, Max: 1.000000, Avg: 0.500017
+
+OpenMP Stats N=1024 T=8 Tiempo=0.001772
+Min: 0.000000, Max: 1.000000, Avg: 0.500017
+
+Pthreads Transpose N=1024 T=1 Tiempo=0.006319
+
+Pthreads Transpose N=1024 T=2 Tiempo=0.003779
+
+Pthreads Transpose N=1024 T=4 Tiempo=0.002762
+
+Pthreads Transpose N=1024 T=8 Tiempo=0.002777
+
+Thread 0 terminó en 0.006082 segs
+OpenMP Transpose N=1024 T=1 Tiempo Total=0.006147
+
+Thread 1 terminó en 0.003503 segs
+Thread 0 terminó en 0.003552 segs
+OpenMP Transpose N=1024 T=2 Tiempo Total=0.004069
+
+Thread 1 terminó en 0.002417 segs
+Thread 2 terminó en 0.002425 segs
+Thread 0 terminó en 0.002448 segs
+Thread 3 terminó en 0.002358 segs
+OpenMP Transpose N=1024 T=4 Tiempo Total=0.003096
+
+Thread 4 terminó en 0.001570 segs
+Thread 1 terminó en 0.001627 segs
+Thread 3 terminó en 0.001627 segs
+Thread 5 terminó en 0.001649 segs
+Thread 0 terminó en 0.001690 segs
+Thread 6 terminó en 0.001654 segs
+Thread 7 terminó en 0.001628 segs
+Thread 2 terminó en 0.001630 segs
+OpenMP Transpose N=1024 T=8 Tiempo Total=0.003025
+
+Pthreads N-Queens N=13 T=1 Tiempo=0.035772 Resultados=73712
+
+Pthreads N-Queens N=13 T=2 Tiempo=0.019314 Resultados=73712
+
+Pthreads N-Queens N=13 T=4 Tiempo=0.010790 Resultados=73712
+
+Pthreads N-Queens N=13 T=8 Tiempo=0.009445 Resultados=73712
+
+OpenMP N-Queens N=13 T=1 Tiempo=0.035454 Resultados=73712
+
+OpenMP N-Queens N=13 T=2 Tiempo=0.019717 Resultados=73712
+
+OpenMP N-Queens N=13 T=4 Tiempo=0.011231 Resultados=73712
+
+OpenMP N-Queens N=13 T=8 Tiempo=0.008726 Resultados=73712
+
+Pthreads MergeSort N=1000000 T=1 Tiempo=0.113418
+Validacion OK
+
+Pthreads MergeSort N=1000000 T=2 Tiempo=0.063210
+Validacion OK
+
+Pthreads MergeSort N=1000000 T=4 Tiempo=0.035852
+Validacion OK
+
+Pthreads MergeSort N=1000000 T=8 Tiempo=0.024562
+Validacion OK
+
+OpenMP MergeSort N=1000000 T=1 Tiempo=0.112664
+Validacion OK
+
+OpenMP MergeSort N=1000000 T=2 Tiempo=0.059598
+Validacion OK
+
+OpenMP MergeSort N=1000000 T=4 Tiempo=0.051286
+Validacion OK
+
+OpenMP MergeSort N=1000000 T=8 Tiempo=0.029714
+Validacion OK
+

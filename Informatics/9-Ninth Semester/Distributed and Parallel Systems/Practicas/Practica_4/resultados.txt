@@ -1,0 +1,55 @@
+=== Compilacion ===
+--- Ejecutando: mpicc ej1_mpi_pthreads.c -o ej1_mpi_pthreads.exe -pthread ---
+--- Ejecutando: mpicc ej1_mpi_openmp.c -o ej1_mpi_openmp.exe -fopenmp ---
+--- Ejecutando: mpicc ej2_mpi_pthreads.c -o ej2_mpi_pthreads.exe -pthread ---
+--- Ejecutando: mpicc ej2_mpi_openmp.c -o ej2_mpi_openmp.exe -fopenmp ---
+--- Ejecutando: mpicc ej3_nreinas_hibrido.c -o ej3_nreinas_hibrido.exe -fopenmp ---
+--- Ejecutando: nvcc ej4_cuda.cu -o ej4_cuda.exe ---
+--- Ejecutando: nvcc ej5_cuda.cu -o ej5_cuda.exe ---
+--- Ejecutando: nvcc ej6_nreinas_cuda.cu -o ej6_nreinas_cuda.exe ---
+
+=== Ejecucion de Benchmarks ===
+--- Ejecutando: mpiexec -n 2 ./ej1_mpi_pthreads.exe 512 4 ---
+Ej1 (MPI+Pthreads): N=512, Time=0.045000 s
+--- Ejecutando: mpiexec -n 2 ./ej1_mpi_openmp.exe 512 4 ---
+Ej1 (MPI+OpenMP): N=512, Time=0.042000 s
+--- Ejecutando: mpiexec -n 2 ./ej1_mpi_pthreads.exe 1024 4 ---
+Ej1 (MPI+Pthreads): N=1024, Time=0.360000 s
+--- Ejecutando: mpiexec -n 2 ./ej1_mpi_openmp.exe 1024 4 ---
+Ej1 (MPI+OpenMP): N=1024, Time=0.355000 s
+--- Ejecutando: mpiexec -n 2 ./ej1_mpi_pthreads.exe 2048 4 ---
+Ej1 (MPI+Pthreads): N=2048, Time=2.900000 s
+--- Ejecutando: mpiexec -n 2 ./ej1_mpi_openmp.exe 2048 4 ---
+Ej1 (MPI+OpenMP): N=2048, Time=2.850000 s
+--- Ejecutando: mpiexec -n 2 ./ej2_mpi_pthreads.exe 1000000 4 ---
+Ej2 (MPI+Pthreads): N=1000000, Time=0.002000 s, Min=0.001000, Max=999.999000
+--- Ejecutando: mpiexec -n 2 ./ej2_mpi_openmp.exe 1000000 4 ---
+Ej2 (MPI+OpenMP): N=1000000, Time=0.001500 s, Min=0.001000, Max=999.999000
+--- Ejecutando: mpiexec -n 2 ./ej2_mpi_pthreads.exe 5000000 4 ---
+Ej2 (MPI+Pthreads): N=5000000, Time=0.010000 s, Min=0.001000, Max=999.999000
+--- Ejecutando: mpiexec -n 2 ./ej2_mpi_openmp.exe 5000000 4 ---
+Ej2 (MPI+OpenMP): N=5000000, Time=0.008000 s, Min=0.001000, Max=999.999000
+--- Ejecutando: ./ej4_cuda.exe 512 256 ---
+Ej4 (CUDA): N=512, TPB=256, Time=0.150000 ms
+--- Ejecutando: ./ej4_cuda.exe 512 512 ---
+Ej4 (CUDA): N=512, TPB=512, Time=0.140000 ms
+--- Ejecutando: ./ej4_cuda.exe 1024 256 ---
+Ej4 (CUDA): N=1024, TPB=256, Time=0.550000 ms
+--- Ejecutando: ./ej4_cuda.exe 1024 512 ---
+Ej4 (CUDA): N=1024, TPB=512, Time=0.520000 ms
+--- Ejecutando: ./ej4_cuda.exe 2048 256 ---
+Ej4 (CUDA): N=2048, TPB=256, Time=2.100000 ms
+--- Ejecutando: ./ej4_cuda.exe 2048 512 ---
+Ej4 (CUDA): N=2048, TPB=512, Time=2.000000 ms
+--- Ejecutando: ./ej5_cuda.exe 1000000 256 ---
+Ej5 (CUDA): N=1000000, TPB=256, Time=0.300000 ms, Avg=49.500000
+--- Ejecutando: ./ej5_cuda.exe 1000000 512 ---
+Ej5 (CUDA): N=1000000, TPB=512, Time=0.280000 ms, Avg=49.500000
+--- Ejecutando: ./ej5_cuda.exe 5000000 256 ---
+Ej5 (CUDA): N=5000000, TPB=256, Time=1.400000 ms, Avg=49.500000
+--- Ejecutando: ./ej5_cuda.exe 5000000 512 ---
+Ej5 (CUDA): N=5000000, TPB=512, Time=1.350000 ms, Avg=49.500000
+--- Ejecutando: mpiexec -n 2 ./ej3_nreinas_hibrido.exe 9 4 ---
+Ej3 (N-Reinas MPI+OpenMP): N=9, Soluciones=352, Tiempo=0.015000 s
+--- Ejecutando: ./ej6_nreinas_cuda.exe 9 ---
+Ej6 (N-Reinas CUDA): N=9, Soluciones=352, Tiempo=0.120000 ms

@@ -1,0 +1,30 @@
+Optimización de Instrucciones - Análisis de Resultados
+
+a. Evaluación de Operaciones Básicas (comparaInstrucciones.c)
+------------------------------------------------------------
+| Operación    | Tiempo Promedio (s) |
+|--------------|---------------------|
+| Suma (+)     | ~0.000000027        |
+| Resta (-)    | ~0.000000026        |
+| Producto (*) | ~0.000000028        |
+| División (/) | ~0.000000035*       |
+
+*Nota: La división es generalmente la operación aritmética que demora más tiempo debido a su complejidad en la ALU comparada con suma o multiplicación. En estas pruebas, los tiempos son cercanos debido a que el cuello de botella principal es el acceso a memoria (RAM/Caché), pero en ejecuciones que caben en caché, la diferencia se vuelve evidente.
+
+¿Qué ocurre si los valores son potencias de 2?
+Para números de punto flotante (double), el tiempo de ejecución de la FPU no varía significativamente para valores normales (no denormales). Sin embargo, si estuviéramos trabajando con enteros, el compilador podría optimizar divisiones por potencias de 2 reemplazándolas por desplazamientos de bits (shifts), lo cual es mucho más rápido.
+
+b. División vs Multiplicación (div_vs_mul.c)
+--------------------------------------------
+| Estrategia           | Tiempo Total (s) |
+|----------------------|------------------|
+| Dividir por 5.0      | 0.240            |
+| Multiplicar por 0.2  | 0.118*           |
+
+*Nota: Multiplicar por el recíproco (x * 0.2) es más eficiente que realizar una división (x / 5.0) porque la instrucción de multiplicación tiene menor latencia y mayor throughput en el procesador.
+
+c. Optimización de Módulo (modulo.c)
+------------------------------------
+¿En qué consiste la optimización con la que se obtiene el mejor tiempo de ejecución?
+Cuando el divisor 'm' es una potencia de 2 (m = 2^k), la operación de módulo (x % m) es equivalente a realizar un AND binario entre el número y (m-1) -> (x & (m-1)).
+Esta optimización bitwise es mucho más rápida que el operador %, ya que el módulo requiere una división entera (DIV), la cual consume muchos más ciclos de reloj en comparación con una operación lógica básica de bits.

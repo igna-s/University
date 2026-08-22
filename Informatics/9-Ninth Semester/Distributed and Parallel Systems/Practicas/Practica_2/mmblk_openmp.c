@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+#include <sys/time.h>
+#include <math.h>
+
+double* leerMatriz(double *m, int n, char *fullpath) {
+    FILE* archivo = fopen(fullpath, "rb");
+    if (!archivo) return NULL;
+    fread(m, sizeof(double), n * n, archivo);
+    fclose(archivo);
+    return m;
+}
+
+int validar(int n, double *c, char* fileR) {
+    double* r = (double *) malloc(n * n * sizeof(double));
+    leerMatriz(r, n, fileR);
+    int ok = 1;
+    for (int i = 0; i < n * n; i++) {
+        if (fabs(c[i] - r[i]) > 1e-6 * fabs(r[i]) + 1e-10) { ok = 0; break; }
+    }
+    free(r);
+    return ok ? 0 : -1;
+}
+
+double dwalltime() {
+    double sec;
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    sec = tv.tv_sec + tv.tv_usec / 1000000.0;
+    return sec;
+}
+
+void blkmul(double *ablk, double *bblk, double *cblk, int n, int bs) {
+    int i, j, k;
+    for (i = 0; i < bs; i++) {
+        for (j = 0; j < bs; j++) {
+            double sum = 0;
+            for (k = 0; k < bs; k++) {
+                sum += ablk[i * n + k] * bblk[j * n + k];
+            }
+            cblk[i * n + j] += sum;
+        }
+    }
+}
+
+int main(int argc, char* argv[]) {
+    if (argc < 7) {
+        printf("Uso: %s N T BS <matA> <matBcol> <matR>\n", argv[0]);
+        exit(1);
+    }
+
+    int N = atoi(argv[1]);
+    int T = atoi(argv[2]);
+    int BS = atoi(argv[3]);
+    char* fileA = argv[4];
+    char* fileB = argv[5];
+    char* fileR = argv[6];
+
+    double *A = (double*)malloc(sizeof(double) * N * N);
+    double *B = (double*)malloc(sizeof(double) * N * N);
+    double *C = (double*)calloc(N * N, sizeof(double));
+
+    leerMatriz(A, N, fileA);
+    leerMatriz(B, N, fileB);
+
+    omp_set_num_threads(T);
+    int num_blocks = N / BS;
+
+    double timetick = dwalltime();
+
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < num_blocks; i++) {
+        for (int j = 0; j < num_blocks; j++) {
+            int iN = i * BS * N;
+            int jN = j * BS * N;
+            int iNj = iN + j * BS;
+            for (int k = 0; k < num_blocks; k++) {
+                blkmul(&A[iN + k * BS], &B[jN + k * BS], &C[iNj], N, BS);
+            }
+        }
+    }
+
+    double workTime = dwalltime() - timetick;
+    printf("OpenMP mmblk N=%d T=%d BS=%d Tiempo=%f\n", N, T, BS, workTime);
+
+    if (validar(N, C, fileR) == 0) printf("Validacion OK\n");
+    else printf("Validacion ERROR\n");
+
+    free(A); free(B); free(C);
+    return 0;
+}

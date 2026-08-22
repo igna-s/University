@@ -1,0 +1,84 @@
+{
+  "experiment": {
+    "timestamp": "2025-10-16_16-07-00",
+    "model": "gpt-oss-20b",
+    "version": "1.0.0",
+    "execution_id": "2025-10-16_16-07-00",
+    "workflow_name": "Workflow Final"
+  },
+  "configuration": {
+    "rag_chatbot_step": true,
+    "only_qrn_for_data_ingestion": "true",
+    "validation_stage": false,
+    "selected_ai_agent": "ollama"
+  },
+  "github": {
+    "owner": "jose-manuel-suarez",
+    "repository": "qiskit_rag",
+    "target_repo_url": "https://github.com/",
+    "paths": {
+      "data_ingestion": "data-ingestion/",
+      "data_rag_chatbot": "data-rag-chatbot/",
+      "snippets": "data-rag-chatbot/snippets/",
+      "prompts": "data-rag-chatbot/prompts/",
+      "answers": "answers/"
+    }
+  },
+  "models": {
+    "chat_model": "gpt-oss-20b",
+    "embedding_model": "nomic-embed-text:v1.5",
+    "qdrant_collection": "qrn_notax_ddbb",
+    "available_agents": [
+      "ollama",
+      "gemini",
+      "openai"
+    ]
+  },
+  "files": {
+    "user_prompt_file": "user_prompt.md",
+    "system_prompt_file": "system_prompt_free_mode.md",
+    "taxonomy_filename": "tax_gpt_1.0.0.md"
+  },
+  "execution_parameters": {
+    "target_version": "1.0.0",
+    "embedding_batch_size": 50,
+    "breakpoint_threshold": 0.65,
+    "chunk_overlap": 100,
+    "validation_enabled": false,
+    "selected_agent": "ollama"
+  },
+  "processing_settings": {
+    "text_splitting": {
+      "method": "semantic_and_recursive",
+      "semantic_threshold": 0.65,
+      "chunk_overlap": 100
+    },
+    "file_processing": {
+      "convert_md_to_txt": true,
+      "filter_by_version": true,
+      "filter_qrn_only": "true"
+    },
+    "validation": {
+      "enabled": false,
+      "method": "python_ast",
+      "generate_error_files": true
+    }
+  },
+  "agent_configuration": {
+    "current_agent": "ollama",
+    "ollama_model": "gpt-oss:20b",
+    "openai_model": "gpt-4.1",
+    "gemini_model": "gemini-2.5-flash-lite",
+    "rag_tool": {
+      "enabled": true,
+      "collection": "rag_ddbb",
+      "top_k": 10
+    }
+  },
+  "workflow_structure": {
+    "data_ingestion": false,
+    "chatbot_processing": true,
+    "file_output": true,
+    "github_integration": true
+  }
+}

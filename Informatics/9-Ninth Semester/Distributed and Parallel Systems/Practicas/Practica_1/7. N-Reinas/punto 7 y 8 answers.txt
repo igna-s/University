@@ -1,0 +1,39 @@
+Análisis de N-Reinas y Gestión de Memoria en Merge Sort
+
+Ejecución de N-Reinas (nreinas.c)
+---------------------------------
+| N  | Número de Soluciones | Tiempo (s)   | Relación T(N)/T(N-1) |
+|----|----------------------|--------------|----------------------|
+|  4 | 2                    | 0.000001     | -                    |
+|  5 | 10                   | 0.000001     | ~1.0                 |
+|  6 | 4                    | 0.000001     | ~1.0                 |
+|  7 | 40                   | 0.000003     | ~3.0                 |
+|  8 | 92                   | 0.000008     | ~2.7                 |
+|  9 | 352                  | 0.000030     | ~3.8                 |
+| 10 | 724                  | 0.000108     | ~3.6                 |
+| 11 | 2,680                | 0.000495     | ~4.6                 |
+| 12 | 14,200               | 0.002423     | ~4.9                 |
+| 13 | 73,712               | 0.013        | ~5.4                 |
+| 14 | 365,596              | 0.074        | ~5.7                 |
+| 15 | 2,279,184            | 0.462        | ~6.2                 |
+| 16 | 14,772,512           | 3.024        | ~6.5                 |
+| 17 | 95,815,104           | 20.885       | ~6.9                 |
+| 18 | 666,090,624          | ~149 (est.)  | ~7.1                 |
+| 19 | 4,968,057,848        | ~1100 (est.) | ~7.4                 |
+| 20 | 39,029,188,884       | ~8100 (est.) | ~7.4                 |
+
+¿Cuál es el orden asintótico de ejecución?
+El orden asintótico es exponencial, típicamente denotado como O(c^N). Aunque el algoritmo de Takaken está altamente optimizado mediante bitmasks y simetrías, la naturaleza del problema (combinatoria) implica que el espacio de búsqueda crece de forma explosiva. Para valores de N pequeños el crecimiento es irregular (la dificultad del problema no crece uniformemente), pero a partir de N~12 la relación T(N)/T(N-1) se estabiliza en torno a 6-7, evidenciando el carácter exponencial.
+
+Análisis de Merge Sort (8)
+-------------------------
+| Estrategia                  | exp=22 (s) | exp=24 (s) |
+|-----------------------------|------------|------------|
+| mergeSimpleMalloc (Punteros)| 0.525      | 2.336      |
+| mergeMultiplesMalloc (Copia)| 0.576      | 2.516      |
+
+¿A qué se deben las diferencias en el tiempo obtenido?
+La diferencia radica fundamentalmente en el manejo de los datos auxiliares en cada nivel del árbol de mezcla (merge tree):
+
+1. mergeSimpleMalloc (Optimizado): Utiliza dos arreglos pre-asignados y, al finalizar cada nivel de la mezcla, simplemente realiza un intercambio de punteros (`intercambio(&arreglo, &arregloAuxiliar)`). Cambiar la dirección a la que apunta una variable es una operación de costo O(1).
+2. mergeMultiplesMalloc (Ineficiente): En cada paso de la mezcla, el algoritmo realiza una copia física de todos los elementos del arreglo temporal al arreglo original (`for (i = left; i <= right; i++) arr[i] = temp[i];`). Esta copia de datos en memoria es una operación O(N) que se repite en cada uno de los log(N) niveles, sumando un overhead significativo en comparación con el simple intercambio de punteros.

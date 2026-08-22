@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario: Complejos, Hilbert y Qubits</title>
+
+    <!-- Inclusión de MathJax para renderizar LaTeX -->
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['\\(', '\\)'], ['$', '$']],
+            displayMath: [['\\[', '\\]'], ['$$', '$$']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+
+    <!-- Estilos CSS para la aplicación -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            box-sizing: border-box;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #0056b3;
+            margin: 0;
+        }
+
+        .quiz-header p {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-top: 8px;
+        }
+
+        #question-counter {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        #question-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            min-height: 80px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        @media (min-width: 640px) {
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+
+        .option-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #0056b3;
+            background-color: #f7fafc;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background-color: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .hint-section {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .hint-btn {
+            background: none;
+            border: none;
+            color: #0056b3;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        #hint-text {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            color: #475569;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        #feedback-panel {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #feedback-panel.correct-feedback {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00BCD4;
+        }
+
+        #feedback-panel.incorrect-feedback {
+            background-color: #fff1f2;
+            border-left: 5px solid #f43f5e;
+        }
+
+        .theory-btn {
+            background-color: transparent;
+            color: #0056b3;
+            border: 2px solid #0056b3;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .theory-btn:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .navigation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 30px;
+        }
+
+        .nav-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #004494;
+        }
+
+        .nav-btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        #score-container {
+            text-align: center;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 16px;
+            text-align: left;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            color: #0056b3;
+            margin-top: 0;
+        }
+
+        .modal-close-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Cuestionario</h1>
+            <p>Basado en la Teoría 3</p>
+        </div>
+
+        <div id="quiz-content">
+            <div id="question-counter"></div>
+            <div id="question-text"></div>
+            <div class="options-grid" id="options-container"></div>
+            <div class="hint-section" id="hint-section"></div>
+            <div id="feedback-panel"></div>
+        </div>
+
+        <div id="score-container" style="display: none;">
+             <h2>Cuestionario Finalizado</h2>
+             <p id="score-text" style="font-size: 1.2rem;"></p>
+             <button class="nav-btn" onclick="restartQuiz()">Volver a Intentar</button>
+        </div>
+
+
+        <div class="navigation-controls">
+            <button class="nav-btn" id="prev-btn" onclick="prevQuestion()">Anterior</button>
+            <button class="nav-btn" id="next-btn" onclick="nextQuestion()">Siguiente</button>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="theory-modal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modal-text"></div>
+            <button class="modal-close-btn" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Dado \\( z_1 = (a,b) \\) y \\( z_2 = (c,d) \\), ¿cuál es la definición correcta del producto complejo \\( z_1 \\cdot z_2 \\)?",
+                options: [
+                    "\\( (ac+bd, ad+bc) \\)",
+                    "\\( (ac-bd, ad+bc) \\)",
+                    "\\( (ac-bd, ad-bc) \\)",
+                    "\\( (a+c, b+d) \\)"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esta fórmula confunde los signos en la parte real.",
+                    "¡Correcto! Esta es la definición formal del producto de números complejos como pares ordenados, de la cual se deriva toda su aritmética.",
+                    "Incorrecto. El signo del segundo término de la parte imaginaria es incorrecto.",
+                    "Incorrecto. Esta es la definición de la suma de números complejos, no del producto."
+                ],
+                hint: "La regla del producto involucra una resta en la parte real y una suma en la parte imaginaria.",
+                theoryHTML: `<h2>Definición Formal de los Números Complejos</h2>
+                    <p>Definimos el conjunto de los números complejos, \\(\\mathbb{C}\\), como el conjunto de pares ordenados \\(\\mathbb{R}^2 = \\{(a,b) \\mid a,b \\in \\mathbb{R}\\}\\) junto con dos operaciones especiales:</p>
+                    <ol>
+                        <li><b>Suma:</b> \\( (a,b) + (c,d) = (a+c, b+d) \\)</li>
+                        <li><b>Producto:</b> \\( (a,b) \\cdot (c,d) = (ac-bd, ad+bc) \\)</li>
+                    </ol>`
+            },
+            {
+                question: "La identidad \\( i^2 = -1 \\) se demuestra rigurosamente a partir de la definición formal de \\( i \\) como:",
+                options: [
+                    "\\( i \\equiv (1,0) \\), y aplicando la regla del producto.",
+                    "\\( i \\equiv (0,1) \\), y aplicando la regla de la suma.",
+                    "\\( i \\equiv (0,1) \\), y aplicando la regla del producto.",
+                    "Una suposición fundamental que no se puede demostrar."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. El par \\((1,0)\\) representa el número real 1.",
+                    "Incorrecto. La identidad \\(i^2 = -1\\) surge de la operación de producto, no de la suma.",
+                    "¡Correcto! Al calcular \\((0,1) \\cdot (0,1)\\) usando la regla del producto \\((ac-bd, ad+bc)\\), obtenemos \\((-1,0)\\), que es equivalente al número real -1.",
+                    "Incorrecto. Una de las bellezas del formalismo es que \\(i^2=-1\\) no es un postulado, sino una consecuencia directa de la definición del producto complejo."
+                ],
+                hint: "Recuerda que 'i' es la unidad imaginaria, que corresponde a un punto específico en el plano complejo.",
+                theoryHTML: `<h2>Demostración de \\(i^2 = -1\\)</h2>
+                    <p>Recordemos que \\(i \\equiv (0,1)\\). Calculemos \\(i \\cdot i\\):</p>
+                    <p>\\( i \\cdot i = (0,1) \\cdot (0,1) \\)</p>
+                    <p>Usamos la regla \\((a,b)\\cdot(c,d) = (ac-bd, ad+bc)\\), con \\(a=0, b=1, c=0, d=1\\):</p>
+                    <p>\\( i \\cdot i = ( 0 \\cdot 0 - 1 \\cdot 1, 0 \\cdot 1 + 1 \\cdot 0 ) = (-1, 0) \\)</p>
+                    <p>Y como habíamos identificado que los pares de la forma \\((x,0)\\) se corresponden con el número real \\(x\\), tenemos que:</p>
+                    <p>\\( (-1,0) \\equiv -1 \\). Por lo tanto, \\(i^2 = -1\\).</p>`
+            },
+            {
+                question: "Si \\( z = a + bi \\), su conjugado complejo \\( z^* \\) es:",
+                options: [ "\\( -a - bi \\)", "\\( a - bi \\)", "\\( -a + bi \\)", "\\( b + ai \\)" ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esto corresponde a \\(-z\\).",
+                    "¡Correcto! El conjugado se obtiene simplemente cambiando el signo de la parte imaginaria. Es una operación fundamental para pasar de kets a bras.",
+                    "Incorrecto. Solo se cambia el signo de la parte imaginaria, no la real.",
+                    "Incorrecto. Esto es intercambiar las partes real e imaginaria."
+                ],
+                hint: "La conjugación es una reflexión a través del eje real en el plano complejo.",
+                theoryHTML: `<h2>El Conjugado Complejo</h2>
+                    <p>Dado un número complejo \\( z = a+bi \\), su <b>conjugado</b>, denotado \\(z^*\\), se obtiene cambiando el signo de su parte imaginaria:</p>
+                    <p style="text-align:center;">\\( z^* = a - bi \\)</p>
+                    <p>En forma de par ordenado: Si \\(z=(a,b)\\), entonces \\(z^*=(a,-b)\\).</p>`
+            },
+            {
+                question: "El módulo de un número complejo \\( z = 3 - 4i \\) es:",
+                options: [ "7", "25", "-1", "5" ],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. El módulo no es la suma de las partes real e imaginaria.",
+                    "Incorrecto. 25 es el módulo al cuadrado, no el módulo.",
+                    "Incorrecto. El módulo es siempre un número real no negativo, ya que representa una distancia.",
+                    "¡Correcto! El módulo \\(|z|\\) se calcula como \\( \\sqrt{a^2+b^2} \\). En este caso, \\( \\sqrt{3^2 + (-4)^2} = \\sqrt{9+16} = \\sqrt{25} = 5 \\)."
+                ],
+                hint: "Usa el Teorema de Pitágoras para encontrar la distancia desde el origen al punto (3, -4) en el plano complejo.",
+                theoryHTML: `<h2>Módulo: El "Tamaño" de un Número Complejo</h2>
+                    <p>El módulo de \\( z = a+bi \\), denotado \\(|z|\\), es la distancia desde el origen hasta el punto \\((a,b)\\) en el plano. Por Pitágoras:</p>
+                    <p style="text-align:center;">\\( |z| = \\sqrt{a^2+b^2} \\)</p>`
+            },
+            {
+                question: "Para cualquier número complejo \\( z \\), ¿cuál de las siguientes identidades es fundamental para calcular probabilidades en computación cuántica?",
+                options: [ "\\( z \\cdot z^* = |z| \\)", "\\( z + z^* = 2 \\text{Re}(z) \\)", "\\( |z|^2 = z \\cdot z^* \\)", "\\( z - z^* = 0 \\)" ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. El producto de un complejo por su conjugado da como resultado el módulo *al cuadrado*.",
+                    "Incorrecto. Aunque esta identidad es correcta y útil, no es la base directa para el cálculo de probabilidades.",
+                    "¡Correcto! Esta identidad es la base de la regla de Born. La probabilidad de un evento cuántico asociado a una amplitud \\(\\alpha\\) se calcula como \\(|\\alpha|^2 = \\alpha^* \\alpha\\).",
+                    "Incorrecto. Esta identidad solo es cierta si \\(z\\) es un número real."
+                ],
+                hint: "La probabilidad se relaciona con el módulo al cuadrado de la amplitud. ¿Cómo se expresa este valor usando el conjugado?",
+                theoryHTML: `<h2>La Propiedad Más Importante</h2>
+                    <p>Consideremos el producto de un número por su conjugado:</p>
+                    <p>\\( z \\cdot z^* = (a+bi)(a-bi) = a^2 - (bi)^2 = a^2 - b^2i^2 = a^2+b^2 \\)</p>
+                    <p>Pero, por definición, \\(|z|^2 = (\\sqrt{a^2+b^2})^2 = a^2+b^2\\).</p>
+                    <p>Por lo tanto, la identidad fundamental es:</p>
+                    <p style="text-align:center;">\\( |z|^2 = z \\cdot z^* \\)</p>`
+            },
+            {
+                question: "La Fórmula de Euler establece que \\( e^{i\\theta} \\) es igual a:",
+                options: [ "\\( \\cos(\\theta) - i \\sin(\\theta) \\)", "\\( \\sin(\\theta) + i \\cos(\\theta) \\)", "\\( r(\\cos(\\theta) + i \\sin(\\theta)) \\)", "\\( \\cos(\\theta) + i \\sin(\\theta) \\)" ],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. El signo de la parte imaginaria es incorrecto.",
+                    "Incorrecto. Las funciones trigonométricas están intercambiadas.",
+                    "Incorrecto. La fórmula de Euler define la parte angular; el radio \\(r\\) no forma parte de la definición de \\( e^{i\\theta} \\).",
+                    "¡Correcto! Esta es una de las fórmulas más importantes de las matemáticas, conectando la función exponencial con la trigonometría y permitiendo la forma exponencial de los números complejos."
+                ],
+                hint: "Relaciona la exponencial compleja con las funciones seno y coseno.",
+                theoryHTML: `<h2>La Fórmula de Euler</h2>
+                    <p>Esta fórmula conecta la exponencial con la trigonometría:</p>
+                    <p style="text-align:center;">\\( e^{i\\theta} = \\cos(\\theta) + i \\sin(\\theta) \\)</p>
+                    <p>Nos permite escribir la forma polar de un número complejo de una manera increíblemente compacta: \\( z = r e^{i\\theta} \\).</p>`
+            },
+            {
+                question: "Geométricamente, multiplicar dos números complejos en forma exponencial \\( z_1 = r_1 e^{i\\theta_1} \\) y \\( z_2 = r_2 e^{i\\theta_2} \\) implica:",
+                options: [ "Sumar sus módulos y sumar sus ángulos.", "Multiplicar sus módulos y sumar sus ángulos.", "Multiplicar sus módulos y multiplicar sus ángulos.", "Sumar sus módulos y multiplicar sus ángulos." ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Los módulos se multiplican, no se suman.",
+                    "¡Correcto! El producto es \\((r_1 r_2) e^{i(\\theta_1+\\theta_2)}\\). Esto significa que la operación de multiplicación compleja equivale a una operación de escalar la longitud y rotar el ángulo en el plano complejo.",
+                    "Incorrecto. Los ángulos (fases) se suman, no se multiplican.",
+                    "Incorrecto. Los módulos se multiplican y los ángulos se suman."
+                ],
+                hint: "Recuerda las reglas de los exponentes: \\(e^a \\cdot e^b = e^{a+b}\\).",
+                theoryHTML: `<h2>La Potencia de la Forma Exponencial</h2>
+                    <p>Si tenemos \\(z_1 = r_1 e^{i\\theta_1}\\) y \\(z_2 = r_2 e^{i\\theta_2}\\), su producto es:</p>
+                    <p style="text-align:center;">\\( z_1 \\cdot z_2 = (r_1 r_2) e^{i(\\theta_1+\\theta_2)} \\)</p>
+                    <p><b>Interpretación Geométrica:</b> Para multiplicar dos números complejos:</p>
+                    <ol>
+                        <li><b>Se multiplican sus módulos</b> (se escala la longitud).</li>
+                        <li><b>Se suman sus argumentos</b> (se rota el ángulo).</li>
+                    </ol>`
+            },
+            {
+                question: "En la notación de Dirac, un 'bra' \\( \\langle\\psi| \\) se obtiene a partir del 'ket' \\( |\\psi\\rangle \\) mediante la operación 'daga' (\\( \\dagger \\)), que consiste en:",
+                options: [ "Solo trasponer.", "Conjugar y trasponer.", "Solo conjugar.", "Invertir la matriz." ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. La trasposición por sí sola no es suficiente; también se debe conjugar cada componente compleja.",
+                    "¡Correcto! La operación daga o adjunto hermitiano implica tomar el conjugado de cada componente y luego trasponer el vector columna a un vector fila.",
+                    "Incorrecto. La conjugación por sí sola no es suficiente; también se debe trasponer el vector.",
+                    "Incorrecto. La inversión es una operación para matrices cuadradas, no para vectores de estado."
+                ],
+                hint: "La daga es una operación de dos pasos que convierte un vector columna en uno fila.",
+                theoryHTML: `<h2>Bra - \\(\\langle \\psi |\\)</h2>
+                    <p>Para cada ket \\(|\\psi\\rangle\\), existe un objeto correspondiente llamado <b>bra</b>, denotado \\(\\langle \\psi |\\).</p>
+                    <p>El bra es el <b>vector fila conjugado y traspuesto</b> del ket. Esta operación se llama <b>daga</b> (\\(\\dagger\\)) o "adjunto hermitiano".</p>
+                    <p style="text-align:center;">\\( \\langle \\psi | = (|\\psi\\rangle)^\\dagger \\)</p>
+                    <p><b>Ejemplo:</b> Si \\(|\\psi\\rangle = \\begin{pmatrix} \\alpha \\\\ \\beta \\end{pmatrix}\\), entonces su bra es: \\( \\langle\\psi| = \\begin{pmatrix} \\alpha^* & \\beta^* \\end{pmatrix} \\).</p>`
+            },
+            {
+                question: "Si \\( k \\) es un escalar complejo y \\( |v\\rangle \\) es un ket, ¿a qué es igual \\( (k|v\\rangle)^\\dagger \\)?",
+                options: [ "\\( k \\langle v| \\)", "\\( k^* |v\\rangle \\)", "\\( k^* \\langle v| \\)", "\\( k |v\\rangle \\)" ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Al aplicar la operación daga, el escalar que multiplica al ket sale, pero debe ser conjugado.",
+                    "Incorrecto. La daga convierte el ket en un bra.",
+                    "¡Correcto! Esta es una propiedad fundamental del adjunto hermitiano. El escalar sale conjugado (\\(k^*\\)) y el ket se convierte en su bra correspondiente (\\(\\langle v|\\)).",
+                    "Incorrecto. La operación daga convierte el ket en un bra y conjuga el escalar."
+                ],
+                hint: "La daga es antilineal con los escalares.",
+                theoryHTML: `<h2>Propiedades del Adjunto Hermitiano (\\(\\dagger\\))</h2>
+                    <p>Sean \\(|v\\rangle\\) un ket y \\(k \\in \\mathbb{C}\\) un escalar. La interacción con escalares es:</p>
+                    <p style="text-align:center;">\\( (k|v\\rangle)^\\dagger = k^*\\langle v| \\)</p>
+                    <p>Al aplicar la daga, el escalar "sale fuera" pero se <b>conjuga</b>, y el ket se convierte en su bra.</p>`
+            },
+            {
+                question: "El producto interior \\( \\langle\\phi|\\psi\\rangle \\) en un espacio de Hilbert complejo se calcula como:",
+                options: [ "\\( \\sum_i \\phi_i \\psi_i \\)", "\\( \\sum_i \\phi_i^* \\psi_i^* \\)", "\\( \\sum_i \\phi_i \\psi_i^* \\)", "\\( \\sum_i \\phi_i^* \\psi_i \\)" ],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. Esta es la fórmula para el producto punto en espacios reales y no garantiza una norma real y positiva en espacios complejos.",
+                    "Incorrecto. Conjugar ambas componentes no define correctamente el producto interior.",
+                    "Incorrecto. Esta es la convención usada en matemáticas puras, pero en física y computación cuántica, se conjuga el primer vector (el bra).",
+                    "¡Correcto! Esta es la definición estándar en física. Se multiplica cada componente del segundo vector (ket) por el conjugado de la componente correspondiente del primer vector (bra)."
+                ],
+                hint: "Recuerda que el bra \\(\\langle\\phi|\\) es el vector fila conjugado.",
+                theoryHTML: `<h2>El Producto Interior</h2>
+                    <p>Sean \\(|\\phi\\rangle = \\begin{pmatrix} \\phi_1 \\\\ \\vdots \\end{pmatrix}\\) y \\(|\\psi\\rangle = \\begin{pmatrix} \\psi_1 \\\\ \\vdots \\end{pmatrix}\\).</p>
+                    <p>El producto interior se define como la multiplicación matricial del bra \\(\\langle\\phi|\\) por el ket \\(|\\psi\\rangle\\):</p>
+                    <p style="text-align:center;">\\( \\langle\\phi|\\psi\\rangle = \\begin{pmatrix} \\phi_1^* & \\phi_2^* & \\dots \\end{pmatrix} \\begin{pmatrix} \\psi_1 \\\\ \\psi_2 \\\\ \\vdots \\end{pmatrix} = \\phi_1^*\\psi_1 + \\phi_2^*\\psi_2 + \\dots \\)</p>`
+            },
+            {
+                question: "¿Cuál es la propiedad de simetría del producto interior en espacios complejos?",
+                options: [ "\\( \\langle\\phi|\\psi\\rangle = \\langle\\psi|\\phi\\rangle \\) (Simetría)", "\\( \\langle\\phi|\\psi\\rangle = (\\langle\\psi|\\phi\\rangle)^* \\) (Simetría Conjugada)", "\\( \\langle\\phi|\\psi\\rangle = -\\langle\\psi|\\phi\\rangle \\) (Antisimetría)", "No tiene ninguna propiedad de simetría." ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. La simetría simple solo se cumple en espacios vectoriales reales.",
+                    "¡Correcto! Al intercambiar el orden de los vectores en el producto interior, el resultado es el conjugado complejo. Esta propiedad es crucial para asegurar que \\(\\langle\\psi|\\psi\\rangle\\) sea siempre un número real.",
+                    "Incorrecto. Esto define la antisimetría, que no es una propiedad del producto interior.",
+                    "Incorrecto. Sí tiene una propiedad de simetría, pero es una simetría conjugada."
+                ],
+                hint: "Intercambiar el orden de los vectores en el producto interior no da el mismo resultado, pero sí uno muy relacionado.",
+                theoryHTML: `<h2>Propiedades del Producto Interior Complejo</h2>
+                    <p><b>1. Simetría Conjugada:</b> El orden ahora importa, introduciendo un conjugado.</p>
+                    <p style="text-align:center;">\\( \\langle \\phi | \\psi \\rangle = (\\langle \\psi | \\phi \\rangle)^* \\)</p>
+                    <p>Esta propiedad asegura que \\(\\langle \\psi | \\psi \\rangle\\) sea siempre un número real.</p>`
+            },
+            {
+                question: "La base computacional \\( \\{|0\\rangle, |1\\rangle\\} \\) es ortonormal. Esto significa que:",
+                options: [ "\\( \\langle 0|0\\rangle = 0 \\) y \\( \\langle 0|1\\rangle = 1 \\)", "\\( \\langle 0|0\\rangle = 1 \\), \\( \\langle 1|1\\rangle = 1 \\) y \\( \\langle 0|1\\rangle = 0 \\)", "\\( \\langle 0|0\\rangle + \\langle 1|1\\rangle = 1 \\)", "Los vectores son linealmente dependientes." ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. El producto de un vector consigo mismo da su norma al cuadrado, que debe ser 1 (normal), no 0.",
+                    "¡Correcto! 'Orto' viene de ortogonal (\\(\\langle 0|1\\rangle = 0\\)), y 'normal' viene de que los vectores tienen norma 1 (\\(\\langle 0|0\\rangle = 1\\) y \\(\\langle 1|1\\rangle = 1\\)).",
+                    "Incorrecto. Esta no es la definición de ortonormalidad.",
+                    "Incorrecto. La ortogonalidad implica que los vectores son linealmente independientes."
+                ],
+                hint: "La palabra 'ortonormal' combina dos conceptos: ortogonalidad y normalización.",
+                theoryHTML: `<h2>El Qubit: Base Ortonormal</h2>
+                    <p>La base estándar del espacio de un qubit está formada por los vectores \\(|0\\rangle = \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}\\) y \\(|1\\rangle = \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}\\).</p>
+                    <p>Esta base es <b>ortonormal</b>:</p>
+                    <ul>
+                        <li><b>Normal:</b> Los vectores tienen norma 1. \\( \\langle 0|0\\rangle = 1 \\) y \\( \\langle 1|1\\rangle = 1 \\).</li>
+                        <li><b>Ortogonal:</b> El producto interior entre ellos es cero. \\( \\langle 0|1\\rangle = 0 \\).</li>
+                    </ul>`
+            },
+            {
+                question: "El estado más general de un qubit, \\( |\\psi\\rangle \\), se escribe como:",
+                options: [ "\\( \\alpha|0\\rangle - \\beta|1\\rangle \\), donde \\( \\alpha, \\beta \\in \\mathbb{R} \\)", "Solo puede ser \\( |0\\rangle \\) o \\( |1\\rangle \\)", "\\( \\alpha|0\\rangle + \\beta|1\\rangle \\), donde \\( \\alpha, \\beta \\in \\mathbb{C} \\)", "\\( \\begin{pmatrix} \\alpha \\\\ \\beta \\end{pmatrix} \\), donde \\( \\alpha + \\beta = 1 \\)" ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Las amplitudes pueden ser complejas, no solo reales, y la forma general usa una suma.",
+                    "Incorrecto. Esta es la característica de un bit clásico. Un qubit puede existir en una superposición de ambos estados.",
+                    "¡Correcto! Un qubit es una superposición lineal de los estados base, y sus amplitudes de probabilidad, \\(\\alpha\\) y \\(\\beta\\), son números complejos.",
+                    "Incorrecto. La condición que deben cumplir las amplitudes no es \\(\\alpha + \\beta = 1\\), sino la condición de normalización."
+                ],
+                hint: "Un qubit puede estar en una 'mezcla' de los estados base, y las 'cantidades' de esa mezcla pueden tener fase.",
+                theoryHTML: `<h2>La Superposición</h2>
+                    <p>Un bit clásico es 0 o 1. Un qubit puede estar en el estado \\(|0\\rangle\\), en el estado \\(|1\\rangle\\), o en una <b>superposición lineal</b> de ambos.</p>
+                    <p>El estado más general de un qubit, \\(|\\psi\\rangle\\), se escribe como:</p>
+                    <p style="text-align:center;">\\( |\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle \\)</p>
+                    <p>Los números \\(\\alpha\\) y \\(\\beta\\) se llaman <b>amplitudes de probabilidad</b> y son números complejos (\\(\\alpha, \\beta \\in \\mathbb{C}\\)).</p>`
+            },
+            {
+                question: "El postulado de normalización establece que para cualquier estado de qubit \\( |\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle \\), se debe cumplir que:",
+                options: [ "\\( \\alpha + \\beta = 1 \\)", "\\( |\\alpha| + |\\beta| = 1 \\)", "\\( \\alpha^2 + \\beta^2 = 1 \\)", "\\( |\\alpha|^2 + |\\beta|^2 = 1 \\)" ],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. La suma de las amplitudes no tiene por qué ser 1.",
+                    "Incorrecto. La suma de los módulos no tiene por qué ser 1.",
+                    "Incorrecto. Se deben usar los módulos al cuadrado, especialmente porque las amplitudes pueden ser complejas.",
+                    "¡Correcto! Esto se deduce de la condición de que la norma del vector de estado debe ser 1 (\\(\\langle\\psi|\\psi\\rangle = 1\\)). Físicamente, significa que la suma de las probabilidades de medir 0 o 1 es del 100%."
+                ],
+                hint: "La suma de las probabilidades debe ser 1. ¿Cómo se calcula la probabilidad a partir de la amplitud?",
+                theoryHTML: `<h2>El Postulado de la Normalización</h2>
+                    <p>Cualquier vector que represente un estado cuántico debe tener <b>norma 1</b>: \\( \\| \\psi \\|^2 = \\langle \\psi | \\psi \\rangle = 1 \\).</p>
+                    <p>Para un estado \\(|\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle\\), esto implica:</p>
+                    <p>\\( \\| \\psi \\|^2 = \\langle \\psi | \\psi \\rangle = (\\alpha^* \\langle 0 | + \\beta^* \\langle 1 |) (\\alpha|0\\rangle + \\beta|1\\rangle) = \\alpha^*\\alpha + \\beta^*\\beta = |\\alpha|^2 + |\\beta|^2 \\)</p>
+                    <p>Por lo tanto, la condición que deben cumplir las amplitudes es:</p>
+                    <p style="text-align:center;">\\( |\\alpha|^2 + |\\beta|^2 = 1 \\)</p>`
+            },
+            {
+                question: "Según la Regla de Born, la probabilidad de medir el estado \\( |\\phi\\rangle \\) si el sistema está en el estado \\( |\\psi\\rangle \\) es:",
+                options: [ "\\( \\langle\\phi|\\psi\\rangle \\)", "\\( |\\langle\\phi|\\psi\\rangle| \\)", "\\( |\\langle\\phi|\\psi\\rangle|^2 \\)", "\\( (\\langle\\phi|\\psi\\rangle)^* \\)" ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. \\(\\langle\\phi|\\psi\\rangle\\) es la amplitud de probabilidad, un número complejo. La probabilidad debe ser un número real.",
+                    "Incorrecto. El módulo de la amplitud es una medida de solapamiento, pero no es la probabilidad en sí.",
+                    "¡Correcto! La probabilidad es el módulo al cuadrado de la amplitud de probabilidad. Este es uno de los postulados más importantes de la mecánica cuántica.",
+                    "Incorrecto. El conjugado de la amplitud no es la probabilidad."
+                ],
+                hint: "La probabilidad es una cantidad real y positiva, relacionada con la 'amplitud de probabilidad'.",
+                theoryHTML: `<h2>La Regla de Born</h2>
+                    <p>La probabilidad de que un sistema en el estado \\(|\\psi\\rangle\\) colapse al estado \\(|\\phi\\rangle\\) tras una medición se calcula como el <b>módulo al cuadrado de la amplitud de probabilidad</b> (el producto interno):</p>
+                    <p style="text-align:center;">\\( P(\\text{medir } |\\phi\\rangle) = |\\langle \\phi | \\psi \\rangle|^2 \\)</p>`
+            },
+            {
+                question: "Dado \\( |\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle \\), la amplitud \\( \\alpha \\) se puede obtener calculando:",
+                options: [ "\\( \\langle\\psi|0\\rangle \\)", "\\( \\langle 0|\\psi\\rangle \\)", "\\( \\langle\\psi|\\psi\\rangle \\)", "\\( \\langle 1|\\psi\\rangle \\)" ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esto daría como resultado \\(\\alpha^*\\), el conjugado de la amplitud.",
+                    "¡Correcto! La amplitud de una componente es la proyección del estado sobre el vector base correspondiente. \\(\\langle 0|\\psi\\rangle = \\alpha\\).",
+                    "Incorrecto. Esto calcula la norma al cuadrado del estado, que es 1.",
+                    "Incorrecto. Esto calcula la amplitud \\(\\beta\\)."
+                ],
+                hint: "La amplitud es la proyección (producto interno) del estado sobre el vector base deseado.",
+                theoryHTML: `<h2>Las Amplitudes son Proyecciones</h2>
+                    <p>Dado el estado general de un qubit: \\( |\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle \\).</p>
+                    <p>Calculamos \\( \\langle 0 | \\psi \\rangle \\):</p>
+                    <p>\\( \\langle 0 | \\psi \\rangle = \\langle 0 | (\\alpha|0\\rangle + \\beta|1\\rangle) = \\alpha\\langle 0|0 \\rangle + \\beta\\langle 0|1 \\rangle = \\alpha \\cdot 1 + \\beta \\cdot 0 = \\alpha \\)</p>
+                    <p>De forma similar, \\( \\langle 1 | \\psi \\rangle = \\beta \\). Las amplitudes son los productos interiores (proyecciones) del estado sobre los vectores de la base.</p>`
+            },
+            {
+                question: "Si dos estados \\( |\\psi\\rangle \\) y \\( |\\phi\\rangle \\) son ortogonales (\\( \\langle\\psi|\\phi\\rangle = 0 \\)), esto significa físicamente que son:",
+                options: [ "Idénticos", "Indistinguibles", "Perfectamente distinguibles", "Estados con la misma fase" ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Si fueran idénticos (y normalizados), su producto interior sería 1.",
+                    "Incorrecto. La ortogonalidad es la condición para la máxima distinción.",
+                    "¡Correcto! Si el sistema está en el estado \\(|\\psi\\rangle\\), la probabilidad de medirlo en el estado ortogonal \\(|\\phi\\rangle\\) es \\(|\\langle\\phi|\\psi\\rangle|^2 = |0|^2 = 0\\). Son mutuamente excluyentes en una medición.",
+                    "Incorrecto. La fase no está directamente relacionada con la ortogonalidad."
+                ],
+                hint: "¿Cuál es la probabilidad de medir un estado si es ortogonal al estado actual del sistema?",
+                theoryHTML: `<h2>Ortogonalidad: De la Perpendicularidad a la Distinción</h2>
+                    <p>Dos estados \\(|\\psi\\rangle\\) y \\(|\\phi\\rangle\\) son <b>ortogonales</b> si \\( \\langle \\psi | \\phi \\rangle = 0 \\).</p>
+                    <p>En mecánica cuántica, si dos estados son ortogonales, son <b>perfectamente distinguibles</b>. Si un sistema está en el estado \\(|\\psi\\rangle\\), la probabilidad de medirlo en un estado ortogonal \\(|\\phi\\rangle\\) es <b>cero</b>.</p>`
+            },
+            {
+                question: "Un qubit se encuentra en el estado \\( |\\psi\\rangle = \\frac{1}{\\sqrt{5}}|0\\rangle + \\frac{2i}{\\sqrt{5}}|1\\rangle \\). ¿Cuál es la probabilidad de medirlo en el estado \\(|0\\rangle\\)?",
+                options: [ "1/5", "1/\\(\\sqrt{5}\\)", "4/5", "2/5" ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! La probabilidad de medir \\(|0\\rangle\\) es \\(|\\alpha|^2\\). Aquí, \\(\\alpha = \\frac{1}{\\sqrt{5}}\\), por lo que \\(|\\alpha|^2 = (\\frac{1}{\\sqrt{5}})^2 = \\frac{1}{5}\\).",
+                    "Incorrecto. Este es el valor de la amplitud \\(\\alpha\\), no de la probabilidad.",
+                    "Incorrecto. Esta es la probabilidad de medir \\(|1\\rangle\\), que es \\(|\\beta|^2 = |\\frac{2i}{\\sqrt{5}}|^2 = \\frac{4}{5}\\).",
+                    "Incorrecto. Revisa el cálculo del módulo al cuadrado."
+                ],
+                hint: "La probabilidad es el módulo al cuadrado de la amplitud correspondiente.",
+                theoryHTML: `<h2>Probabilidad de Medición</h2>
+                    <p>Para un estado \\( |\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle \\), la condición de normalización es \\( |\\alpha|^2 + |\\beta|^2 = 1 \\).</p>
+                    <p>Esto se interpreta como que la suma de las probabilidades de medir cada resultado es 100%.</p>
+                    <ul>
+                        <li>Probabilidad de medir \\(|0\\rangle = |\\alpha|^2\\)</li>
+                        <li>Probabilidad de medir \\(|1\\rangle = |\\beta|^2\\)</li>
+                    </ul>`
+            },
+            {
+                question: "La desigualdad de Cauchy-Schwarz, \\( |\\langle u | v \\rangle| \\le \\|u\\| \\cdot \\|v\\| \\), es la generalización a espacios complejos del concepto de:",
+                options: [ "Distancia", "Ángulo", "Norma", "Ortogonalidad" ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. La distancia está más relacionada con la norma de la diferencia de vectores.",
+                    "¡Correcto! En espacios reales, esta desigualdad se deriva de la fórmula del producto escalar que involucra \\(\\cos(\\theta)\\). En espacios complejos, donde no podemos visualizar un ángulo simple, la desigualdad captura la idea de 'cuánto se alinean' dos vectores.",
+                    "Incorrecto. La norma es la longitud de un vector, y aparece en la desigualdad, pero no es lo que se generaliza.",
+                    "Incorrecto. La ortogonalidad es un caso límite de esta desigualdad, cuando \\( |\\langle u | v \\rangle| = 0 \\)."
+                ],
+                hint: "En espacios reales, el producto escalar se relaciona con el coseno de algo. ¿Qué es ese algo?",
+                theoryHTML: `<h2>La Desigualdad de Cauchy-Schwarz</h2>
+                    <p>En espacios reales, la fórmula del ángulo es \\( \\langle u, v \\rangle = \\|u\\| \\|v\\| \\cos(\\theta) \\). Como \\(|\\cos(\\theta)| \\le 1\\), esto implica \\(|\\langle u, v \\rangle| \\le \\|u\\| \\|v\\|\\).</p>
+                    <p>Esta idea sobrevive en los espacios complejos y se convierte en un pilar fundamental:</p>
+                    <p>Para <b>cualesquiera</b> dos vectores \\(|u\\rangle\\) y \\(|v\\rangle\\) en un Espacio de Hilbert, se cumple:</p>
+                    <p style="text-align:center;">\\( |\\langle u | v \\rangle| \\le \\|u\\| \\cdot \\|v\\| \\)</p>
+                    <p>Es la generalización de la idea de ángulo para espacios donde no podemos 'visualizar' un ángulo \\(\\theta\\) fácilmente.</p>`
+            },
+            {
+                question: "La antilinealidad del producto interior complejo se manifiesta cuando un escalar \\(k\\) está en el primer argumento (el bra). ¿A qué es igual \\( \\langle k\\phi | \\psi \\rangle \\)?",
+                options: [ "\\( k \\langle \\phi | \\psi \\rangle \\)", "\\( k^* \\langle \\phi | \\psi \\rangle \\)", "\\( k \\langle \\psi | \\phi \\rangle \\)", "\\( \\langle \\phi | k^*\\psi \\rangle \\)" ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. El escalar sale sin conjugar cuando está en el segundo argumento (el ket).",
+                    "¡Correcto! El producto interior es 'casi' lineal en el primer argumento, pero el escalar sale conjugado. A esto se le llama antilinealidad o conjugado-linealidad.",
+                    "Incorrecto. Además de no conjugar el escalar, se ha invertido el orden de los vectores.",
+                    "Incorrecto. El escalar no se mueve al otro lado del producto interior de esta manera."
+                ],
+                hint: "El producto interior es lineal en el ket, pero 'conjugado-lineal' en el bra.",
+                theoryHTML: `<h2>Propiedades del Producto Interior Complejo</h2>
+                    <p><b>3. Anti-Linealidad (en el Bra):</b> Es "casi" lineal en el <b>primer</b> argumento, pero el escalar sale <b>conjugado</b>.</p>
+                    <p style="text-align:center;">\\( \\langle k\\phi | \\psi \\rangle = k^* \\langle \\phi | \\psi \\rangle \\)</p>`
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let score = 0;
+
+        const questionCounterEl = document.getElementById('question-counter');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const feedbackPanelEl = document.getElementById('feedback-panel');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const quizContentEl = document.getElementById('quiz-content');
+        const scoreContainerEl = document.getElementById('score-container');
+        const scoreTextEl = document.getElementById('score-text');
+        const hintSectionEl = document.getElementById('hint-section');
+        const modalEl = document.getElementById('theory-modal');
+        const modalTextEl = document.getElementById('modal-text');
+
+
+        function displayQuestion() {
+            feedbackPanelEl.style.display = 'none';
+            optionsContainerEl.innerHTML = '';
+            hintSectionEl.innerHTML = '';
+
+            if (currentQuestionIndex >= quizData.length) {
+                showScore();
+                return;
+            }
+
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            questionCounterEl.textContent = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+            questionTextEl.innerHTML = currentQuestion.question;
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerHTML = option;
+                button.className = 'option-btn';
+                button.onclick = () => checkAnswer(index);
+                optionsContainerEl.appendChild(button);
+            });
+
+            // Add Hint functionality
+            const hintBtn = document.createElement('button');
+            hintBtn.textContent = 'Necesito una pista';
+            hintBtn.className = 'hint-btn';
+            const hintText = document.createElement('div');
+            hintText.id = 'hint-text';
+            hintText.innerHTML = currentQuestion.hint;
+            hintBtn.onclick = () => {
+                hintText.style.display = 'block';
+                hintBtn.style.display = 'none';
+            };
+            hintSectionEl.appendChild(hintBtn);
+            hintSectionEl.appendChild(hintText);
+
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset();
+            }
+
+            updateNavButtons();
+
+            if(userAnswers[currentQuestionIndex] !== null){
+                showPreviousAnswer();
+            }
+        }
+
+        function showPreviousAnswer(){
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const currentQuestion = quizData[currentQuestionIndex];
+            const correctIndex = currentQuestion.correctAnswer;
+            const optionButtons = optionsContainerEl.querySelectorAll('.option-btn');
+            const hintBtn = hintSectionEl.querySelector('.hint-btn');
+            if(hintBtn) hintBtn.style.display = 'none';
+
+
+            optionButtons.forEach((btn, i) => {
+                if (i === correctIndex) {
+                    btn.classList.add('correct');
+                } else if (i === userAnswer.selectedIndex) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+
+            feedbackPanelEl.innerHTML = `<p>${currentQuestion.feedback[userAnswer.selectedIndex]}</p>`;
+
+            const theoryBtn = document.createElement('button');
+            theoryBtn.textContent = 'Ver Teoría';
+            theoryBtn.className = 'theory-btn';
+            theoryBtn.onclick = () => showTheory(currentQuestion.theoryHTML);
+            feedbackPanelEl.appendChild(theoryBtn);
+
+            feedbackPanelEl.className = userAnswer.isCorrect ? 'correct-feedback' : 'incorrect-feedback';
+            feedbackPanelEl.style.display = 'block';
+
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset();
+            }
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(userAnswers[currentQuestionIndex] !== null) return;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedIndex === currentQuestion.correctAnswer;
+
+            userAnswers[currentQuestionIndex] = { selectedIndex, isCorrect };
+
+            if(isCorrect) {
+                score++;
+            }
+
+            showPreviousAnswer();
+        }
+
+        function showTheory(htmlContent) {
+            modalTextEl.innerHTML = htmlContent;
+            modalEl.style.display = 'flex';
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset([modalTextEl]);
+            }
+        }
+
+        function closeModal() {
+            modalEl.style.display = 'none';
+        }
+
+        function updateNavButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === quizData.length -1) {
+                nextBtn.textContent = 'Finalizar';
+            } else {
+                 nextBtn.textContent = 'Siguiente';
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function showScore(){
+            quizContentEl.style.display = 'none';
+            document.querySelector('.navigation-controls').style.display = 'none';
+            scoreContainerEl.style.display = 'block';
+
+            scoreTextEl.textContent = `Tu puntuación es ${score} de ${quizData.length}.`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            score = 0;
+
+            scoreContainerEl.style.display = 'none';
+            quizContentEl.style.display = 'block';
+            document.querySelector('.navigation-controls').style.display = 'flex';
+
+            displayQuestion();
+        }
+
+        // Iniciar el cuestionario
+        displayQuestion();
+    </script>
+
+</body>
+</html>

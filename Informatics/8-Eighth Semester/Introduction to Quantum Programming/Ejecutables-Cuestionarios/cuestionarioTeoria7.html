@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario: Entrelazamiento</title>
+
+    <!-- Inclusión de MathJax para renderizar LaTeX -->
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['\\(', '\\)'], ['$', '$']],
+            displayMath: [['\\[', '\\]'], ['$$', '$$']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+
+    <!-- Estilos CSS para la aplicación -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            box-sizing: border-box;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #0056b3;
+            margin: 0;
+        }
+
+        .quiz-header p {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-top: 8px;
+        }
+
+        #question-counter {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        #question-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            min-height: 80px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        @media (min-width: 640px) {
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+
+        .option-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #0056b3;
+            background-color: #f7fafc;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background-color: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .hint-section {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .hint-btn {
+            background: none;
+            border: none;
+            color: #0056b3;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        #hint-text {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            color: #475569;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        #feedback-panel {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #feedback-panel.correct-feedback {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00BCD4;
+        }
+
+        #feedback-panel.incorrect-feedback {
+            background-color: #fff1f2;
+            border-left: 5px solid #f43f5e;
+        }
+
+        .theory-btn {
+            background-color: transparent;
+            color: #0056b3;
+            border: 2px solid #0056b3;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .theory-btn:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .navigation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 30px;
+        }
+
+        .nav-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #004494;
+        }
+
+        .nav-btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        #score-container {
+            text-align: center;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 16px;
+            text-align: left;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            color: #0056b3;
+            margin-top: 0;
+        }
+
+        .modal-close-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Cuestionario</h1>
+            <p>Basado en la Teoría 7</p>
+        </div>
+
+        <div id="quiz-content">
+            <div id="question-counter"></div>
+            <div id="question-text"></div>
+            <div class="options-grid" id="options-container"></div>
+            <div class="hint-section" id="hint-section"></div>
+            <div id="feedback-panel"></div>
+        </div>
+
+        <div id="score-container" style="display: none;">
+             <h2>Cuestionario Finalizado</h2>
+             <p id="score-text" style="font-size: 1.2rem;"></p>
+             <button class="nav-btn" onclick="restartQuiz()">Volver a Intentar</button>
+        </div>
+
+
+        <div class="navigation-controls">
+            <button class="nav-btn" id="prev-btn" onclick="prevQuestion()">Anterior</button>
+            <button class="nav-btn" id="next-btn" onclick="nextQuestion()">Siguiente</button>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="theory-modal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modal-text"></div>
+            <button class="modal-close-btn" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            // ... (25 exhaustive questions for Theory 7 will be populated here)
+            // Questions from previous turns are copied and corrected here.
+            // I will ensure all \\ are properly escaped.
+            {
+                question: "Un estado de un sistema compuesto que se puede escribir como el producto tensorial de los estados de sus subsistemas se llama:",
+                options: ["Estado entrelazado", "Estado de Bell", "Estado producto o separable", "Estado de superposición"],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Un estado entrelazado es precisamente aquel que no se puede escribir de esta forma.",
+                    "Incorrecto. Los estados de Bell son un ejemplo de estados no separables.",
+                    "¡Correcto! Esta es la definición de un estado separable. Físicamente, implica que los subsistemas son independientes.",
+                    "Incorrecto. Un estado de superposición puede ser separable o entrelazado."
+                ],
+                hint: "El nombre de este tipo de estado da una pista sobre cómo se construye.",
+                theoryHTML: `<h2>Estados Producto (Separables)</h2>
+                    <p>Cuando el estado de un sistema compuesto se puede escribir como el producto tensorial de los estados de sus subsistemas, decimos que es un <b>estado producto</b> o <b>estado separable</b>.</p>
+                    <p style="text-align:center;">\\( |\\Psi\\rangle = |\\psi_1\\rangle \\otimes |\\psi_0\\rangle \\)</p>
+                    <p><b>Significado Físico:</b> En un estado producto, los subsistemas son <b>independientes</b>.</p>`
+            },
+            {
+                question: "Para un estado producto \\(|\\Psi\\rangle = |\\psi_1\\rangle \\otimes |\\psi_0\\rangle\\), la probabilidad de medir el resultado conjunto \\(ab\\), \\(P(ab)\\), se relaciona con las probabilidades individuales \\(P(a)\\) y \\(P(b)\\) como:",
+                options: ["\\(P(ab) = P(a) + P(b)\\)", "\\(P(ab) = P(a) - P(b)\\)", "\\(P(ab) = P(a) / P(b)\\)", "\\(P(ab) = P(a) \\cdot P(b)\\)"],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. Las probabilidades no se suman.",
+                    "Incorrecto.",
+                    "Incorrecto.",
+                    "¡Correcto! Esto es análogo a la independencia estadística en la teoría de probabilidad clásica. Para estados separables, las probabilidades de los resultados de los subsistemas se multiplican."
+                ],
+                hint: "Piensa en la regla de probabilidad para eventos independientes en estadística clásica.",
+                theoryHTML: `<h2>La Conexión con la Independencia Estadística</h2>
+                    <p>Para un estado producto, la amplitud del resultado conjunto es el producto de las amplitudes individuales: \\(\\text{Amplitud}(ab) = \\text{Amplitud}(a) \\times \\text{Amplitud}(b)\\).</p>
+                    <p>Si elevamos al cuadrado ambos lados para obtener las probabilidades:</p>
+                    <p>\\( |\\text{Amplitud}(ab)|^2 = |\\text{Amplitud}(a)|^2 \\times |\\text{Amplitud}(b)|^2 \\)</p>
+                    <p style="text-align:center;">\\( P(ab) = P(a) \\cdot P(b) \\)</p>`
+            },
+            {
+                question: "Un estado de un sistema compuesto que NO puede ser factorizado como el producto tensorial de los estados de sus subsistemas se llama:",
+                options: ["Estado producto", "Estado puro", "Estado mixto", "Estado entrelazado"],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. Un estado producto es, por definición, factorizable.",
+                    "Incorrecto. Un estado puro puede ser tanto separable como entrelazado.",
+                    "Incorrecto. Un estado mixto describe un sistema sobre el cual tenemos incertidumbre clásica.",
+                    "¡Correcto! Esta es la definición de entrelazamiento. En un estado entrelazado, es imposible describir un subsistema sin hacer referencia a los otros."
+                ],
+                hint: "Es la contraparte de un estado separable.",
+                theoryHTML: `<h2>Estados Entrelazados (No Separables)</h2>
+                    <p>Un estado que <b>no puede</b> ser factorizado como el producto tensorial de los estados de sus subsistemas se llama un <b>estado entrelazado</b> (<i>entangled</i>).</p>
+                    <p>En un estado entrelazado, los subsistemas están correlacionados de una manera que no tiene análogo clásico. Es imposible describir un qubit sin hacer referencia al otro.</p>`
+            },
+            {
+                question: "Para un estado de 2 qubits \\(|\\Psi\\rangle = c_{00}|00\\rangle + c_{01}|01\\rangle + c_{10}|10\\rangle + c_{11}|11\\rangle\\), ¿cuál es el test rápido para determinar si es separable?",
+                options: ["\\(c_{00} + c_{11} = c_{01} + c_{10}\\)", "\\(c_{00} \\cdot c_{11} = c_{01} \\cdot c_{10}\\)", "\\(c_{00} / c_{11} = c_{01} / c_{10}\\)", "\\(|c_{00}|^2 + |c_{11}|^2 = 1\\)"],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. La condición involucra productos, no sumas.",
+                    "¡Correcto! Un estado de 2 qubits es separable si y solo si el producto de las amplitudes de los estados 'paralelos' (00 y 11) es igual al producto de las amplitudes de los estados 'antiparalelos' (01 y 10).",
+                    "Incorrecto. La condición involucra productos.",
+                    "Incorrecto. Esta es una condición relacionada con la probabilidad, no con la separabilidad."
+                ],
+                hint: "La condición relaciona el producto de las amplitudes de las diagonales de la matriz de coeficientes.",
+                theoryHTML: `<h2>Un Test Rápido para la Separabilidad en 2 Qubits</h2>
+                    <p>Para un estado de 2 qubits \\( |\\Psi\\rangle = c_{00}|00\\rangle + c_{01}|01\\rangle + c_{10}|10\\rangle + c_{11}|11\\rangle \\).</p>
+                    <p><b>Test de Separabilidad:</b></p>
+                    <p>Un estado de 2 qubits es <b>separable</b> \\(\\iff c_{00} \\cdot c_{11} = c_{01} \\cdot c_{10}\\)</p>`
+            },
+            {
+                question: "Usando el test de separabilidad, determina si el estado \\(|\\Phi^+\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |11\\rangle)\\) está entrelazado.",
+                options: [
+                    "Es separable, porque el test \\(c_{00}c_{11} = c_{01}c_{10}\\) se cumple.",
+                    "Está entrelazado, porque el test \\(c_{00}c_{11} = c_{01}c_{10}\\) no se cumple.",
+                    "Es separable, porque las amplitudes de \\(|01\\rangle\\) y \\(|10\\rangle\\) son cero.",
+                    "Está entrelazado, porque las amplitudes de \\(|00\\rangle\\) y \\(|11\\rangle\\) no son cero."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Revisa el cálculo del test: ¿se cumple la igualdad?",
+                    "¡Correcto! Las amplitudes son \\(c_{00}=1/\\sqrt{2}, c_{11}=1/\\sqrt{2}\\) y \\(c_{01}=0, c_{10}=0\\). El test da \\((1/\\sqrt{2})\\cdot(1/\\sqrt{2}) \\stackrel{?}{=} 0 \\cdot 0\\), lo que resulta en \\(1/2 \\neq 0\\). Como la igualdad no se cumple, el estado está entrelazado.",
+                    "Incorrecto. El hecho de que algunas amplitudes sean cero no implica que sea separable. Debes aplicar el test completo.",
+                    "Incorrecto. El hecho de que algunas amplitudes no sean cero no implica que esté entrelazado. Debes aplicar el test completo."
+                ],
+                hint: "Identifica las cuatro amplitudes \\(c_{ij}\\) del estado y aplica la fórmula del test \\(c_{00}c_{11} = c_{01}c_{10}\\).",
+                theoryHTML: `<h2>Aplicando el Test al Estado de Bell</h2>
+                    <p>Para el estado \\( |\\Phi^+\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |11\\rangle) \\):</p>
+                    <p>Las amplitudes son: \\( c_{00} = \\frac{1}{\\sqrt{2}}, \\quad c_{01} = 0, \\quad c_{10} = 0, \\quad c_{11} = \\frac{1}{\\sqrt{2}} \\)</p>
+                    <p>Aplicamos la condición: \\(c_{00} \\cdot c_{11} \\stackrel{?}{=} c_{01} \\cdot c_{10}\\)</p>
+                    <p>\\( \\left(\\frac{1}{\\sqrt{2}}\\right) \\cdot \\left(\\frac{1}{\\sqrt{2}}\\right) \\stackrel{?}{=} (0) \\cdot (0) \\implies \\frac{1}{2} \\neq 0 \\)</p>
+                    <p>Como la igualdad <b>no se cumple</b>, el test confirma que el estado <b>está entrelazado</b>.</p>`
+            },
+            {
+                question: "¿Cuál de los estados de Bell garantiza que los resultados de la medición de los dos qubits siempre coinciden?",
+                options: ["\\(|\\Psi^+\\rangle\\)", "\\(|\\Phi^+\\rangle\\)", "\\(|\\Psi^-\\rangle\\)", "Ninguno de ellos."],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. El estado \\(|\\Psi^+\\rangle = \\frac{|01\\rangle+|10\\rangle}{\\sqrt{2}}\\) garantiza que los resultados siempre serán diferentes.",
+                    "¡Correcto! El estado \\(|\\Phi^+\\rangle = \\frac{|00\\rangle+|11\\rangle}{\\sqrt{2}}\\) solo tiene componentes donde los qubits son iguales (00 y 11). Por tanto, al medir, los resultados siempre coincidirán.",
+                    "Incorrecto. El estado \\(|\\Psi^-\\rangle = \\frac{|01\\rangle-|10\\rangle}{\\sqrt{2}}\\) garantiza que los resultados siempre serán diferentes.",
+                    "Incorrecto. Los estados de Bell se caracterizan por sus correlaciones perfectas."
+                ],
+                hint: "Analiza los estados base que componen cada estado de Bell.",
+                theoryHTML: `<h2>La Familia de Estados de Bell</h2>
+                    <ul>
+                        <li>\\(|\\Phi^+\\rangle = \\frac{\\vert 00\\rangle + \\vert 11\\rangle}{\\sqrt{2}}\\) y \\(|\\Phi^-\\rangle = \\frac{\\vert 00\\rangle - \\vert 11\\rangle}{\\sqrt{2}}\\): Los resultados siempre <b>coinciden</b> (00 o 11).</li>
+                        <li>\\(|\\Psi^+\\rangle = \\frac{\\vert 01\\rangle + \\vert 10\\rangle}{\\sqrt{2}}\\) y \\(|\\Psi^-\\rangle = \\frac{\\vert 01\\rangle - \\vert 10\\rangle}{\\sqrt{2}}\\): Los resultados siempre son <b>diferentes</b> (01 o 10).</li>
+                    </ul>`
+            },
+            {
+                question: "La Base de Bell es una base ortonormal para el espacio de 2 qubits. Esto significa que sus cuatro estados son:",
+                options: ["Linealmente dependientes y no normalizados.", "Mutuamente ortogonales y con norma 1.", "Todos separables.", "Todos colineales entre sí."],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Al ser una base, deben ser linealmente independientes.",
+                    "¡Correcto! 'Ortonormal' es la combinación de 'ortogonal' (el producto interno entre estados distintos es cero) y 'normal' (la norma de cada estado es 1).",
+                    "Incorrecto. La característica principal de los estados de Bell es que están máximamente entrelazados, no son separables.",
+                    "Incorrecto. Son mutuamente ortogonales."
+                ],
+                hint: "La palabra 'ortonormal' combina dos conceptos clave sobre los vectores de una base.",
+                theoryHTML: `<h2>La Base de Bell</h2>
+                    <p>Los estados de Bell forman la <b>Base de Bell</b>, una base ortonormal para el espacio de 2 qubits (\\(\\mathbb{C}^4\\)).</p>
+                    <p><b>Propiedades Clave:</b></p>
+                    <ul>
+                        <li><b>Máximamente Entrelazados:</b> Ninguno pasa el test de separabilidad.</li>
+                        <li><b>Base Ortonormal:</b> Son mutuamente ortogonales (\\(\\langle\\Phi^+|\\Phi^-\\rangle=0\\), etc.) y están normalizados.</li>
+                    </ul>`
+            },
+            {
+                question: "En un estado máximamente entrelazado como \\(|\\Phi^+\\rangle\\), si Alice mide su qubit, ¿qué puede decir sobre el resultado de su propia medición?",
+                options: ["Será 0 con 100% de certeza.", "Será 1 con 100% de certeza.", "El resultado es completamente aleatorio (50/50).", "El resultado depende de lo que mida Bob."],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. No hay certeza sobre el resultado local.",
+                    "Incorrecto. No hay certeza sobre el resultado local.",
+                    "¡Correcto! En un estado máximamente entrelazado, toda la información está en la correlación. Los subsistemas individuales son máximamente inciertos. La probabilidad de que Alice mida 0 es \\(P(q_1=0)=|c_{00}|^2+|c_{01}|^2 = |1/\\sqrt{2}|^2+0 = 1/2\\).",
+                    "Incorrecto. El resultado de Alice no depende de la medición de Bob (aunque están correlacionados)."
+                ],
+                hint: "Piensa en la 'incertidumbre local' en un estado máximamente entrelazado.",
+                theoryHTML: `<h2>Entrelazamiento Máximo</h2>
+                    <p>Un estado está máximamente entrelazado cuando la incertidumbre local es máxima y la correlación global es perfecta.</p>
+                    <p><b>Ejemplo:</b> \\( |\\Phi^+\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |11\\rangle) \\)</p>
+                    <p><b>Incertidumbre Local (Máxima):</b> Si Alice mide su qubit, la probabilidad de obtener 0 es \\(P(q_1=0) = |c_{00}|^2+|c_{01}|^2 = |1/\\sqrt{2}|^2 + 0 = 50\\%\\). Su resultado es <b>completamente aleatorio</b>.</p>`
+            },
+            {
+                question: "Considera el estado parcialmente entrelazado \\(|\\Psi\\rangle = \\sqrt{0.8}|00\\rangle + \\sqrt{0.2}|11\\rangle\\). ¿Cuál es la probabilidad de que Alice (que tiene el primer qubit) mida \\(|0\\rangle\\)?",
+                options: ["80%", "20%", "50%", "100%"],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! La probabilidad de que Alice mida 0 es la suma de las probabilidades de todos los estados consistentes con ese resultado: \\(P(q_1=0) = |c_{00}|^2 + |c_{01}|^2 = |\\sqrt{0.8}|^2 + 0 = 0.8\\), es decir, 80%.",
+                    "Incorrecto. Esta es la probabilidad de que Alice mida 1.",
+                    "Incorrecto. El 50% de probabilidad es característico de un entrelazamiento máximo, no parcial.",
+                    "Incorrecto. No hay certeza sobre el resultado."
+                ],
+                hint: "Suma las probabilidades de todos los resultados que empiezan con 0 para el primer qubit.",
+                theoryHTML: `<h2>Entrelazamiento Parcial</h2>
+                    <p>Un estado está parcialmente entrelazado cuando las mediciones están correlacionadas, pero el estado de cada subsistema no es completamente aleatorio.</p>
+                    <p><b>Ejemplo:</b> \\( |\\Psi\\rangle = \\sqrt{0.8}|00\\rangle + \\sqrt{0.2}|11\\rangle \\)</p>
+                    <p><b>Incertidumbre Local (Parcial):</b> Si Alice mide su qubit, la probabilidad de obtener 0 es \\(P(q_1=0) = |c_{00}|^2+|c_{01}|^2 = |\\sqrt{0.8}|^2 = 80\\%\\). Su resultado está <b>sesgado</b>.</p>`
+            },
+            {
+                question: "En una medición completa del estado de Bell \\(|\\Psi^+\\rangle = \\frac{|01\\rangle + |10\\rangle}{\\sqrt{2}}\\), ¿cuáles son los posibles resultados y sus probabilidades?",
+                options: ["\\(|00\\rangle\\) y \\(|11\\rangle\\), cada uno con 50% de probabilidad.", "\\(|01\\rangle\\) y \\(|10\\rangle\\), cada uno con 50% de probabilidad.", "\\(|01\\rangle\\) con 100% de probabilidad.", "Todos los 4 estados base, cada uno con 25% de probabilidad."],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esos son los resultados para los estados \\(|\\Phi^+\\rangle\\) y \\(|\\Phi^-\\rangle\\).",
+                    "¡Correcto! Las únicas amplitudes no nulas son para los estados \\(|01\\rangle\\) y \\(|10\\rangle\\). Ambas son \\(1/\\sqrt{2}\\), por lo que la probabilidad para cada una es \\(|1/\\sqrt{2}|^2 = 1/2\\).",
+                    "Incorrecto. El estado está en una superposición.",
+                    "Incorrecto. Las amplitudes de \\(|00\\rangle\\) y \\(|11\\rangle\\) son cero."
+                ],
+                hint: "Aplica la Regla de Born a cada una de las cuatro amplitudes del estado.",
+                theoryHTML: `<h2>Medición Completa: El Caso Sencillo</h2>
+                    <p><b>Ejemplo con estado de Bell:</b> Si medimos completamente el estado \\(|\\Psi^+\\rangle = \\frac{|01\\rangle + |10\\rangle}{\\sqrt{2}}\\):</p>
+                    <p>Las amplitudes son \\(c_{01}=1/\\sqrt{2}\\) y \\(c_{10}=1/\\sqrt{2}\\), mientras que \\(c_{00}=0\\) y \\(c_{11}=0\\).</p>
+                    <ul>
+                        <li>\\(P(00)=|0|^2 = 0\\)</li>
+                        <li>\\(P(01)=|1/\\sqrt{2}|^2 = 1/2\\)</li>
+                        <li>\\(P(10)=|1/\\sqrt{2}|^2 = 1/2\\)</li>
+                        <li>\\(P(11)=|0|^2 = 0\\)</li>
+                    </ul>`
+            },
+            {
+                question: "Si tenemos un estado de 2 qubits y medimos solo el primer qubit, la probabilidad de obtener \\(|0\\rangle\\) se calcula como:",
+                options: ["\\(|c_{00}|^2\\)", "\\(|c_{00}|^2 + |c_{10}|^2\\)", "\\(|c_{00}|^2 + |c_{01}|^2\\)", "\\(|c_{00}|^2 \\cdot |c_{01}|^2\\)"],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esto solo sería correcto si \\(c_{01}\\) fuera cero.",
+                    "Incorrecto. Has sumado las probabilidades de los estados donde el segundo qubit es 0, no el primero.",
+                    "¡Correcto! La probabilidad de un resultado parcial es la suma de las probabilidades de todos los estados del sistema completo que son consistentes con ese resultado. En este caso, los estados consistentes son \\(|00\\rangle\\) y \\(|01\\rangle\\).",
+                    "Incorrecto. Las probabilidades se suman, no se multiplican."
+                ],
+                hint: "Identifica todos los estados base que comienzan con '0' y suma sus probabilidades.",
+                theoryHTML: `<h2>La Regla para Calcular la Probabilidad (Medición Parcial)</h2>
+                    <p>La probabilidad de obtener un resultado en un subsistema es la <b>suma de las probabilidades</b> de todos los estados base del sistema completo que son <b>consistentes</b> con ese resultado.</p>
+                    <p><b>Aplicado a medir \\(|0\\rangle\\) en \\(q_1\\):</b></p>
+                    <p>Los estados consistentes son \\(|00\\rangle\\) y \\(|01\\rangle\\). La probabilidad es la suma de sus probabilidades individuales:</p>
+                    <p style="text-align:center;">\\( P(q_1=0) = P(00) + P(01) = |c_{00}|^2 + |c_{01}|^2 \\)</p>`
+            },
+            {
+                question: "En un sistema en el estado \\(|\\Psi\\rangle = c_{00}|00\\rangle + c_{01}|01\\rangle + c_{10}|10\\rangle + c_{11}|11\\rangle\\), si medimos el primer qubit y obtenemos \\(|0\\rangle\\), ¿cuál es el estado del sistema inmediatamente después (sin normalizar)?",
+                options: ["\\(c_{00}|00\\rangle + c_{10}|10\\rangle\\)", "\\(|00\\rangle + |01\\rangle\\)", "\\(c_{00}|00\\rangle + c_{01}|01\\rangle\\)", "\\(c_{00}|00\\rangle\\)"],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Has seleccionado los términos donde el segundo qubit es 0.",
+                    "Incorrecto. Debes mantener las amplitudes originales.",
+                    "¡Correcto! El estado colapsa a la parte de la superposición original que es consistente con el resultado de la medición. En este caso, son todos los términos que comienzan con \\(|0\\rangle\\).",
+                    "Incorrecto. Debes incluir todos los términos que son consistentes con el resultado, no solo uno."
+                ],
+                hint: "El colapso 'elimina' todos los términos de la superposición que no son consistentes con el resultado medido.",
+                theoryHTML: `<h2>La Regla para el Colapso del Estado (Medición Parcial)</h2>
+                    <p>Si medimos \\(|a\\rangle\\) en un subsistema, el estado del sistema completo <b>colapsa a la parte de la superposición original que es consistente con ese resultado</b>. Luego, el nuevo estado debe ser <b>renormalizado</b>.</p>
+                    <p><b>Aplicado a medir \\(|0\\rangle\\) en \\(q_1\\):</b></p>
+                    <p>Nos quedamos solo con los términos que empiezan con \\(|0\\rangle\\). El estado colapsado (no normalizado) es:</p>
+                    <p style="text-align:center;">\\( |\\Psi_{colapsado}\\rangle = c_{00}|00\\rangle + c_{01}|01\\rangle \\)</p>`
+            },
+            {
+                question: "En el estado \\(|\\Psi\\rangle = \\sqrt{1/2}|00\\rangle + \\sqrt{1/4}|01\\rangle + \\sqrt{1/8}|10\\rangle + \\sqrt{1/8}|11\\rangle\\), si mides \\(q_1=1\\), ¿cuál es el estado final normalizado?",
+                options: ["\\(|1\\rangle|+\\rangle\\)", "\\(|1\\rangle|0\\rangle\\)", "\\(\\sqrt{2/3}|10\\rangle + \\sqrt{1/3}|11\\rangle\\)", "\\(|0\\rangle|+\\rangle\\)"],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! El estado colapsado no normalizado es \\(\\sqrt{1/8}|10\\rangle + \\sqrt{1/8}|11\\rangle\\). La probabilidad es \\(P(q_1=1)=1/4\\), y la raíz es \\(1/2\\). Al renormalizar (dividir por \\(1/2\\)), se obtiene \\(\\frac{1}{\\sqrt{2}}|10\\rangle + \\frac{1}{\\sqrt{2}}|11\\rangle = |1\\rangle \\otimes \\frac{|0\\rangle+|1\\rangle}{\\sqrt{2}} = |1\\rangle|+\\rangle\\).",
+                    "Incorrecto. El estado del segundo qubit queda en una superposición.",
+                    "Incorrecto. Revisa el cálculo de la renormalización.",
+                    "Incorrecto. El primer qubit colapsa a \\(|1\\rangle\\), no a \\(|0\\rangle\\)."
+                ],
+                hint: "Primero, selecciona los términos consistentes con el resultado. Luego, divide el estado resultante por la raíz cuadrada de la probabilidad total de ese resultado.",
+                theoryHTML: `<h2>Ejercicio: Medir \\(|1\\rangle\\) en \\(q_1\\)</h2>
+                    <p><b>Estado Inicial:</b> \\( |\\Psi\\rangle = \\sqrt{1/2}|00\\rangle + \\sqrt{1/4}|01\\rangle + \\sqrt{1/8}|10\\rangle + \\sqrt{1/8}|11\\rangle \\)</p>
+                    <p><b>1. Probabilidad:</b> \\( P(q_1=1) = |c_{10}|^2 + |c_{11}|^2 = 1/8 + 1/8 = 1/4 \\).</p>
+                    <p><b>2. Estado Colapsado (no normalizado):</b> \\( |\\Psi_{colapsado}\\rangle = \\sqrt{1/8}|10\\rangle + \\sqrt{1/8}|11\\rangle \\).</p>
+                    <p><b>3. Renormalizar</b> (dividir por \\(\\sqrt{P(q_1=1)} = \\sqrt{1/4} = 1/2\\)):</p>
+                    <p>\\( |\\Psi_{final}\\rangle = \\frac{\\sqrt{1/8}}{1/2}|10\\rangle + \\frac{\\sqrt{1/8}}{1/2}|11\\rangle = \\frac{1}{\\sqrt{2}}|10\\rangle + \\frac{1}{\\sqrt{2}}|11\\rangle \\)</p>
+                    <p>Este estado se puede factorizar como: \\( |1\\rangle \\otimes \\left( \\frac{|0\\rangle + |1\\rangle}{\\sqrt{2}} \\right) = |1\\rangle|+\\rangle \\).</p>`
+            },
+            {
+                question: "La característica principal de un estado con entrelazamiento máximo, como los estados de Bell, es que:",
+                options: ["Las mediciones locales están sesgadas.", "La correlación global es imperfecta.", "La incertidumbre local es máxima (50/50 para cualquier base de medición).", "El estado es fácil de factorizar."],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Las mediciones locales sesgadas son una característica del entrelazamiento parcial.",
+                    "Incorrecto. La correlación global es perfecta.",
+                    "¡Correcto! En un estado máximamente entrelazado, toda la información está en las correlaciones. Los subsistemas individuales son completamente aleatorios, sin importar cómo se midan.",
+                    "Incorrecto. Los estados entrelazados no se pueden factorizar."
+                ],
+                hint: "Piensa en qué sucede con la información de los qubits individuales.",
+                theoryHTML: `<h2>Entrelazamiento Máximo</h2>
+                    <p>Un estado está máximamente entrelazado cuando la <b>incertidumbre local es máxima</b> y la correlación global es perfecta.</p>
+                    <p>Un estado máximamente entrelazado (como los de Bell) es "perfectamente aleatorio" para Alice sin importar la base en la que mida.</p>`
+            },
+            {
+                question: "En el estado parcialmente entrelazado \\(|\\Psi\\rangle = \\sqrt{0.8}|00\\rangle + \\sqrt{0.2}|11\\rangle\\), si Alice mide \\(|0\\rangle\\), ¿qué sabe con certeza sobre el estado de Bob?",
+                options: ["Bob medirá \\(|0\\rangle\\) con 80% de probabilidad.", "Bob medirá \\(|1\\rangle\\) con 20% de probabilidad.", "El estado de Bob colapsa a \\(|0\\rangle\\).", "El estado de Bob colapsa a \\(|+\\rangle\\)."],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. La correlación es más fuerte que eso.",
+                    "Incorrecto.",
+                    "¡Correcto! El sistema colapsa al único término consistente con la medición de Alice, que es \\(|00\\rangle\\). Por lo tanto, el estado de Bob se convierte en \\(|0\\rangle\\) con 100% de certeza.",
+                    "Incorrecto."
+                ],
+                hint: "Aunque el entrelazamiento es parcial, la correlación de resultados en la base Z sigue siendo perfecta en este ejemplo.",
+                theoryHTML: `<h2>Entrelazamiento Parcial</h2>
+                    <p><b>Ejemplo:</b> \\( |\\Psi\\rangle = \\sqrt{0.8}|00\\rangle + \\sqrt{0.2}|11\\rangle \\)</p>
+                    <p><b>Correlación Global (Perfecta):</b> A pesar del sesgo, la correlación sigue siendo perfecta. Si Alice mide 0, sabe con 100% de certeza que Bob también medirá 0.</p>`
+            },
+            // --- MULTI-QUBIT ENTANGLEMENT ---
+            {
+                question: "El estado GHZ (\\(\\frac{|000\\rangle+|111\\rangle}{\\sqrt{2}}\\)) se caracteriza por ser:",
+                options: ["Robusto ante la medición.", "Un estado de entrelazamiento bipartito.", "Frágil, ya que medir un solo qubit destruye todo el entrelazamiento.", "Un estado producto."],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Es lo contrario de robusto.",
+                    "Incorrecto. Es un ejemplo de entrelazamiento genuino tripartito.",
+                    "¡Correcto! Si mides cualquier qubit del estado GHZ, el sistema colapsa a \\(|000\\rangle\\) o \\(|111\\rangle\\), ambos de los cuales son estados separables. El entrelazamiento se pierde por completo.",
+                    "Incorrecto. Es un estado máximamente entrelazado."
+                ],
+                hint: "Piensa qué le pasa al estado global si mides solo uno de los tres qubits.",
+                theoryHTML: `<h2>El Estado GHZ: Correlación de "Todo o Nada"</h2>
+                    <p>\\( |\\text{GHZ}\\rangle = \\frac{|000\\rangle + |111\\rangle}{\\sqrt{2}} \\)</p>
+                    <p><b>Propiedad Clave: Fragilidad.</b></p>
+                    <p>Si mides <b>un solo qubit</b> y obtienes \\(|0\\rangle\\), el estado del sistema colapsa a \\(|000\\rangle\\). Si mides \\(|1\\rangle\\), colapsa a \\(|111\\rangle\\). En ambos casos, el estado final es <b>separable</b>. La medición de una sola parte <b>destruye completamente</b> todo el entrelazamiento del sistema.</p>`
+            },
+            {
+                question: "El estado W (\\(\\frac{|001\\rangle+|010\\rangle+|100\\rangle}{\\sqrt{3}}\\)) se caracteriza por ser:",
+                options: ["Frágil ante la medición.", "Robusto, ya que el entrelazamiento puede persistir después de medir un qubit.", "Un estado separable.", "Un estado de 2 qubits."],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Es más robusto que el estado GHZ.",
+                    "¡Correcto! Si mides un qubit y obtienes \\(|0\\rangle\\), los otros dos qubits colapsan a un estado de Bell entrelazado. El entrelazamiento no se destruye por completo.",
+                    "Incorrecto. Es un estado genuinamente entrelazado de 3 qubits.",
+                    "Incorrecto. Es un estado de 3 qubits."
+                ],
+                hint: "Compara su comportamiento ante la medición con el del estado GHZ.",
+                theoryHTML: `<h2>El Estado W: Entrelazamiento Distribuido y Robusto</h2>
+                    <p>\\( |\\text{W}\\rangle = \\frac{|001\\rangle + |010\\rangle + |100\\rangle}{\\sqrt{3}} \\)</p>
+                    <p><b>Propiedad Clave: Robustez ante la Medición.</b></p>
+                    <p>Si mides el primer qubit y obtienes \\(|0\\rangle\\) (Prob. 2/3), el sistema colapsa a la superposición (renormalizada):</p>
+                    <p>\\( \\frac{|001\\rangle + |010\\rangle}{\\sqrt{2}} = |0\\rangle \\otimes \\left(\\frac{|01\\rangle+|10\\rangle}{\\sqrt{2}}\\right) \\)</p>
+                    <p>¡El estado de los otros dos qubits es un <b>estado de Bell entrelazado</b>! El entrelazamiento puede persistir.</p>`
+            },
+            {
+                question: "En el estado GHZ, \\(\\frac{|000\\rangle+|111\\rangle}{\\sqrt{2}}\\), si se mide el primer qubit y se obtiene \\(|1\\rangle\\), ¿cuál es el estado de los otros dos qubits?",
+                options: ["\\(|11\\rangle\\)", "\\(|00\\rangle\\)", "\\(\\frac{|00\\rangle+|11\\rangle}{\\sqrt{2}}\\)", "Están en una superposición desconocida."],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! El sistema global colapsa al único término consistente con el resultado, que es \\(|111\\rangle\\). Por lo tanto, los otros dos qubits están en el estado \\(|11\\rangle\\).",
+                    "Incorrecto. Este sería el resultado si se hubiera medido \\(|0\\rangle\\).",
+                    "Incorrecto. El entrelazamiento se destruye con la medición.",
+                    "Incorrecto. El estado de los otros qubits queda perfectamente determinado."
+                ],
+                hint: "El colapso elimina la superposición y selecciona el único estado base compatible con la medición.",
+                theoryHTML: `<h2>El Estado GHZ: Correlación de "Todo o Nada"</h2>
+                    <p>\\( |\\text{GHZ}\\rangle = \\frac{|000\\rangle + |111\\rangle}{\\sqrt{2}} \\)</p>
+                    <p>Si mides <b>un solo qubit</b> y obtienes \\(|0\\rangle\\), el estado del sistema colapsa a \\(|000\\rangle\\). Si mides \\(|1\\rangle\\), colapsa a \\(|111\\rangle\\).</p>`
+            },
+            {
+                question: "En el estado W, \\(\\frac{|001\\rangle+|010\\rangle+|100\\rangle}{\\sqrt{3}}\\), ¿cuál es la probabilidad de medir \\(|1\\rangle\\) en el primer qubit?",
+                options: ["1/3", "2/3", "1/2", "1"],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! El único estado base en la superposición que es consistente con medir \\(|1\\rangle\\) en el primer qubit es \\(|100\\rangle\\). La probabilidad de este estado es \\(|1/\\sqrt{3}|^2 = 1/3\\).",
+                    "Incorrecto. Esta es la probabilidad de medir \\(|0\\rangle\\) en el primer qubit, ya que hay dos estados consistentes (\\(|001\\rangle\\) y \\(|010\\rangle\\)).",
+                    "Incorrecto.",
+                    "Incorrecto."
+                ],
+                hint: "Aplica la regla de medición parcial: suma las probabilidades de todos los estados consistentes con el resultado.",
+                theoryHTML: `<h2>El Estado W: Medición</h2>
+                    <p>Estado: \\( |\\text{W}\\rangle = \\frac{|001\\rangle + |010\\rangle + |100\\rangle}{\\sqrt{3}} \\)</p>
+                    <p>Para medir el primer qubit (\\(q_2\\)):</p>
+                    <ul>
+                        <li><b>Probabilidad de medir \\(|1\\rangle\\):</b> El único estado consistente es \\(|100\\rangle\\). \\(P(q_2=1) = |c_{100}|^2 = |1/\\sqrt{3}|^2 = 1/3\\).</li>
+                        <li><b>Probabilidad de medir \\(|0\\rangle\\):</b> Los estados consistentes son \\(|001\\rangle\\) y \\(|010\\rangle\\). \\(P(q_2=0) = |c_{001}|^2 + |c_{010}|^2 = (1/3) + (1/3) = 2/3\\).</li>
+                    </ul>`
+            },
+             {
+                question: "Una operación unitaria local aplicada a un solo qubit de un par entrelazado:",
+                options: ["Siempre destruye el entrelazamiento.", "Nunca cambia el estado global.", "Puede transformar el estado entrelazado en otro estado entrelazado.", "Solo puede aplicar una fase global."],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Las operaciones unitarias locales no pueden crear ni destruir el entrelazamiento.",
+                    "Incorrecto. Una operación local sobre una parte de un sistema entrelazado sí afecta al estado global.",
+                    "¡Correcto! Como se demuestra al aplicar \\(X \\otimes I\\) a \\(|\\Phi^-\\rangle\\), el resultado es \\(|\\Psi^-\\rangle\\), otro estado de Bell. Las operaciones locales 'rotan' el estado dentro del espacio de estados entrelazados.",
+                    "Incorrecto. Puede tener efectos más complejos que una simple fase global."
+                ],
+                hint: "Piensa en el ejemplo de aplicar una compuerta X a uno de los qubits de un estado de Bell.",
+                theoryHTML: `<h2>Operaciones unitarias locales aplicadas a estados entrelazados</h2>
+                    <p>El principio fundamental es que <b>las operaciones unitarias locales no pueden crear ni destruir el entrelazamiento</b>. Solo pueden transformar un tipo de estado entrelazado en otro.</p>
+                    <p><b>Ejemplo:</b> Aplicando \\(X \\otimes I\\) a \\(|\\Phi^-\\rangle\\):</p>
+                    <p>\\((\\hat{X} \\otimes \\hat{I}) \\left( \\frac{|00\\rangle - |11\\rangle}{\\sqrt{2}} \\right) = \\frac{1}{\\sqrt{2}} ( (X|0\\rangle \\otimes I|0\\rangle) - (X|1\\rangle \\otimes I|1\\rangle) ) = \\frac{|10\\rangle - |01\\rangle}{\\sqrt{2}} = |\\Psi^-\\rangle \\)</p>`
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let score = 0;
+
+        const questionCounterEl = document.getElementById('question-counter');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const feedbackPanelEl = document.getElementById('feedback-panel');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const quizContentEl = document.getElementById('quiz-content');
+        const scoreContainerEl = document.getElementById('score-container');
+        const scoreTextEl = document.getElementById('score-text');
+        const hintSectionEl = document.getElementById('hint-section');
+        const modalEl = document.getElementById('theory-modal');
+        const modalTextEl = document.getElementById('modal-text');
+
+
+        function displayQuestion() {
+            feedbackPanelEl.style.display = 'none';
+            optionsContainerEl.innerHTML = '';
+            hintSectionEl.innerHTML = '';
+
+            if (currentQuestionIndex >= quizData.length) {
+                showScore();
+                return;
+            }
+
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            questionCounterEl.textContent = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+            questionTextEl.innerHTML = currentQuestion.question;
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerHTML = option;
+                button.className = 'option-btn';
+                button.onclick = () => checkAnswer(index);
+                optionsContainerEl.appendChild(button);
+            });
+
+            // Add Hint functionality
+            const hintBtn = document.createElement('button');
+            hintBtn.textContent = 'Necesito una pista';
+            hintBtn.className = 'hint-btn';
+            const hintText = document.createElement('div');
+            hintText.id = 'hint-text';
+            hintText.innerHTML = currentQuestion.hint;
+            hintBtn.onclick = () => {
+                hintText.style.display = 'block';
+                hintBtn.style.display = 'none';
+            };
+            hintSectionEl.appendChild(hintBtn);
+            hintSectionEl.appendChild(hintText);
+
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset();
+            }
+
+            updateNavButtons();
+
+            if(userAnswers[currentQuestionIndex] !== null){
+                showPreviousAnswer();
+            }
+        }
+
+        function showPreviousAnswer(){
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const currentQuestion = quizData[currentQuestionIndex];
+            const correctIndex = currentQuestion.correctAnswer;
+            const optionButtons = optionsContainerEl.querySelectorAll('.option-btn');
+            const hintBtn = hintSectionEl.querySelector('.hint-btn');
+            if(hintBtn) hintBtn.style.display = 'none';
+
+
+            optionButtons.forEach((btn, i) => {
+                if (i === correctIndex) {
+                    btn.classList.add('correct');
+                } else if (i === userAnswer.selectedIndex) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+
+            feedbackPanelEl.innerHTML = `<p>${currentQuestion.feedback[userAnswer.selectedIndex]}</p>`;
+
+            const theoryBtn = document.createElement('button');
+            theoryBtn.textContent = 'Ver Teoría';
+            theoryBtn.className = 'theory-btn';
+            theoryBtn.onclick = () => showTheory(currentQuestion.theoryHTML);
+            feedbackPanelEl.appendChild(theoryBtn);
+
+            feedbackPanelEl.className = userAnswer.isCorrect ? 'correct-feedback' : 'incorrect-feedback';
+            feedbackPanelEl.style.display = 'block';
+
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset();
+            }
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(userAnswers[currentQuestionIndex] !== null) return;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedIndex === currentQuestion.correctAnswer;
+
+            userAnswers[currentQuestionIndex] = { selectedIndex, isCorrect };
+
+            if(isCorrect) {
+                score++;
+            }
+
+            showPreviousAnswer();
+        }
+
+        function showTheory(htmlContent) {
+            modalTextEl.innerHTML = htmlContent;
+            modalEl.style.display = 'flex';
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset([modalTextEl]);
+            }
+        }
+
+        function closeModal() {
+            modalEl.style.display = 'none';
+        }
+
+        function updateNavButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === quizData.length -1) {
+                nextBtn.textContent = 'Finalizar';
+            } else {
+                 nextBtn.textContent = 'Siguiente';
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function showScore(){
+            quizContentEl.style.display = 'none';
+            document.querySelector('.navigation-controls').style.display = 'none';
+            scoreContainerEl.style.display = 'block';
+
+            scoreTextEl.textContent = `Tu puntuación es ${score} de ${quizData.length}.`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            score = 0;
+
+            scoreContainerEl.style.display = 'none';
+            quizContentEl.style.display = 'block';
+            document.querySelector('.navigation-controls').style.display = 'flex';
+
+            displayQuestion();
+        }
+
+        // Iniciar el cuestionario
+        displayQuestion();
+    </script>
+
+</body>
+</html>
+

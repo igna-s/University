@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Producto Escalar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        canvas {
+            cursor: move;
+            touch-action: none;
+            display: block;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #3b82f6;
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        .dark .slider {
+            background-color: #4a4a50;
+        }
+        .dark input:checked + .slider {
+            background-color: #60a5fa;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+        }
+        .dark button:disabled {
+            background-color: #4a4a50;
+        }
+        .light button:disabled {
+             background-color: #9ca3af;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
+
+    <div class="flex flex-col md:flex-row h-full w-full">
+        <!-- Panel de Controles -->
+        <div class="control-panel bg-white dark:bg-gray-800 p-4 md:p-6 md:w-[28rem] order-2 md:order-1 flex-shrink-0 flex flex-col h-1/2 md:h-full">
+            <h1 class="text-xl font-bold mb-3 text-center">Producto Escalar</h1>
+            <div class="flex-grow overflow-y-auto pr-2 space-y-4">
+                <!-- Vector u -->
+                <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg shadow-md">
+                    <h2 class="text-base font-semibold mb-2 text-center text-blue-600 dark:text-blue-400">Vector u</h2>
+                    <div class="flex justify-around items-center">
+                        <div class="flex flex-col items-center"><label for="u-x" class="mb-1 text-sm">x</label><input type="number" id="u-x" value="4" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                        <div class="flex flex-col items-center"><label for="u-y" class="mb-1 text-sm">y</label><input type="number" id="u-y" value="1" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                    </div>
+                </div>
+                <!-- Vector v -->
+                <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg shadow-md">
+                    <h2 class="text-base font-semibold mb-2 text-center text-yellow-600 dark:text-yellow-400">Vector v</h2>
+                    <div class="flex justify-around items-center">
+                        <div class="flex flex-col items-center"><label for="v-x" class="mb-1 text-sm">x</label><input type="number" id="v-x" value="2" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                        <div class="flex flex-col items-center"><label for="v-y" class="mb-1 text-sm">y</label><input type="number" id="v-y" value="3" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                    </div>
+                </div>
+                <!-- Resultado -->
+                <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg shadow-md">
+                    <h2 class="text-base font-semibold mb-2 text-center">Producto Escalar (u · v)</h2>
+                    <div id="dot-product-output" class="bg-gray-200 dark:bg-gray-700 p-3 rounded-lg text-lg font-mono text-center font-bold"></div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center italic">
+                        El área del rectángulo representa la magnitud del producto escalar.
+                    </p>
+                </div>
+                <!-- Opciones de Proyección -->
+                <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg shadow-md">
+                    <h2 class="text-base font-semibold mb-2 text-center">Visualizar Proyección</h2>
+                    <div class="flex justify-around">
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" name="projection" value="u_on_v" checked class="text-indigo-600 focus:ring-indigo-500">
+                            <span>Proyectar <strong>u</strong> sobre <strong>v</strong></span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" name="projection" value="v_on_u" class="text-indigo-600 focus:ring-indigo-500">
+                            <span>Proyectar <strong>v</strong> sobre <strong>u</strong></span>
+                        </label>
+                    </div>
+                     <button id="animate-btn" class="w-full mt-3 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                        Explicar Altura del Rectángulo
+                    </button>
+                </div>
+                <!-- Opciones de Visualización -->
+                <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg shadow-md">
+                    <div class="flex justify-between items-center">
+                        <span class="text-base font-semibold">Mostrar Etiquetas de Ejes</span>
+                        <label class="switch">
+                            <input type="checkbox" id="show-axis-labels-toggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                 <div class="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg shadow-md">
+                    <div class="flex justify-between items-center">
+                        <span class="text-base font-semibold">Modo Claro</span>
+                        <label class="switch">
+                            <input type="checkbox" id="theme-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas para la Visualización -->
+        <div class="flex-grow w-full h-1/2 md:h-full order-1 md:order-2 relative">
+            <canvas id="canvas" class="absolute top-0 left-0 w-full h-full"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // --- Referencias a elementos del DOM ---
+        const inputs = {
+            u: { x: document.getElementById('u-x'), y: document.getElementById('u-y') },
+            v: { x: document.getElementById('v-x'), y: document.getElementById('v-y') },
+        };
+        const dotProductOutput = document.getElementById('dot-product-output');
+        const projectionRadios = document.querySelectorAll('input[name="projection"]');
+        const showAxisLabelsToggle = document.getElementById('show-axis-labels-toggle');
+        const animateBtn = document.getElementById('animate-btn');
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // --- Estado de la Aplicación ---
+        let scale = 40;
+        let origin = { x: 0, y: 0 };
+        let panOffset = { x: 0, y: 0 };
+        let isPanning = false;
+        let draggedVector = null;
+        let panStart = { x: 0, y: 0 };
+        let animationState = {
+            isActive: false, vector: null, startAngle: 0, endAngle: 0,
+            startTime: 0, duration: 800, pause: 500
+        };
+        const DRAG_RADIUS = 0.5;
+
+        // --- Paletas de Colores ---
+        const darkThemeColors = {
+            background: '#111827', grid: '#374151', axes: '#6b7280',
+            u: '#60a5fa', v: '#facc15', projection: '#ffffff',
+            dotProductPositive: 'rgba(74, 222, 128, 0.3)',
+            dotProductNegative: 'rgba(248, 113, 113, 0.3)',
+            axisLabel: '#9ca3af'
+        };
+        const lightThemeColors = {
+            background: '#f3f4f6', grid: '#d1d5db', axes: '#4b5563',
+            u: '#2563eb', v: '#d97706', projection: '#000000',
+            dotProductPositive: 'rgba(22, 163, 74, 0.3)',
+            dotProductNegative: 'rgba(185, 28, 28, 0.3)',
+            axisLabel: '#374151'
+        };
+        let currentColors = darkThemeColors;
+
+        function worldToCanvas(x, y) { return { x: origin.x + panOffset.x + x * scale, y: origin.y + panOffset.y - y * scale }; }
+        function canvasToWorld(x, y) { return { x: (x - origin.x - panOffset.x) / scale, y: (origin.y + panOffset.y - y) / scale }; }
+
+        function updateAll() {
+            const u = { x: parseFloat(inputs.u.x.value), y: parseFloat(inputs.u.y.value) };
+            const v = { x: parseFloat(inputs.v.x.value), y: parseFloat(inputs.v.y.value) };
+            const dotProduct = u.x * v.x + u.y * v.y;
+            dotProductOutput.textContent = dotProduct.toFixed(2);
+            if (!animationState.isActive) {
+                drawScene();
+            }
+        }
+
+        function drawScene(animatedVector = null) {
+            ctx.fillStyle = currentColors.background;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            drawGrid();
+            const u = { x: parseFloat(inputs.u.x.value), y: parseFloat(inputs.u.y.value) };
+            const v = { x: parseFloat(inputs.v.x.value), y: parseFloat(inputs.v.y.value) };
+
+            const projectionChoice = document.querySelector('input[name="projection"]:checked').value;
+            const projectVec = projectionChoice === 'u_on_v' ? u : v;
+            const ontoVec = projectionChoice === 'u_on_v' ? v : u;
+
+            drawDotProductArea(projectVec, ontoVec);
+            if (!animationState.isActive) {
+                 drawProjection(projectVec, ontoVec);
+            }
+
+            drawVector(u, currentColors.u, 'u');
+            drawVector(v, currentColors.v, 'v');
+
+            if (animatedVector) {
+                drawSegment(animatedVector, currentColors.projection, 5);
+            }
+        }
+
+        function drawGrid() {
+            const view_tl = canvasToWorld(0, 0), view_br = canvasToWorld(canvas.width, canvas.height);
+            const startX = Math.floor(view_tl.x) - 1, endX = Math.ceil(view_br.x) + 1;
+            const startY = Math.floor(view_br.y) - 1, endY = Math.ceil(view_tl.y) + 1;
+
+            ctx.strokeStyle = currentColors.grid; ctx.lineWidth = 1;
+            for (let i = startX; i <= endX; i++) { if (i === 0) continue; const p1 = worldToCanvas(i, startY), p2 = worldToCanvas(i, endY); ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); }
+            for (let j = startY; j <= endY; j++) { if (j === 0) continue; const p1 = worldToCanvas(startX, j), p2 = worldToCanvas(endX, j); ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); }
+
+            ctx.strokeStyle = currentColors.axes; ctx.lineWidth = 2;
+            const p1x = worldToCanvas(startX, 0), p2x = worldToCanvas(endX, 0); ctx.beginPath(); ctx.moveTo(p1x.x, p1x.y); ctx.lineTo(p2x.x, p2x.y); ctx.stroke();
+            const p1y = worldToCanvas(0, startY), p2y = worldToCanvas(0, endY); ctx.beginPath(); ctx.moveTo(p1y.x, p1y.y); ctx.lineTo(p2y.x, p2y.y); ctx.stroke();
+
+            if (showAxisLabelsToggle.checked) {
+                drawAxisLabels(startX, endX, startY, endY);
+            }
+        }
+        function drawAxisLabels(startX, endX, startY, endY) {
+            ctx.fillStyle = currentColors.axisLabel;
+            ctx.font = `${Math.min(14, scale / 2.5)}px Inter`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            for (let i = startX; i <= endX; i++) { if (i === 0 || Math.abs(i * scale) < 20) continue; const pos = worldToCanvas(i, 0); ctx.fillText(i, pos.x, pos.y + 8); }
+            ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+            for (let j = startY; j <= endY; j++) { if (j === 0 || Math.abs(j * scale) < 20) continue; const pos = worldToCanvas(0, j); ctx.fillText(j, pos.x - 8, pos.y); }
+        }
+        function drawVector(vec, color, label) {
+            const end = worldToCanvas(vec.x, vec.y), start = worldToCanvas(0, 0);
+            ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(start.x, start.y); ctx.lineTo(end.x, end.y); ctx.stroke();
+            const angle = Math.atan2(end.y - start.y, end.x - start.x), headlen = 10;
+            ctx.beginPath(); ctx.moveTo(end.x, end.y);
+            ctx.lineTo(end.x - headlen * Math.cos(angle - Math.PI / 6), end.y - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(end.x - headlen * Math.cos(angle + Math.PI / 6), end.y - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath(); ctx.fill();
+
+            if(label) {
+                ctx.font = '16px Inter'; ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                const linearOffset = 18, perpOffset = 10;
+                let labelX = end.x + linearOffset * Math.cos(angle);
+                let labelY = end.y + linearOffset * Math.sin(angle);
+                const perpAngle = angle + Math.PI / 2;
+                labelX += perpOffset * Math.cos(perpAngle);
+                labelY += perpOffset * Math.sin(perpAngle);
+                ctx.fillText(label, labelX, labelY);
+            }
+        }
+        function drawSegment(vec, color, lineWidth) {
+            const start = worldToCanvas(0, 0), end = worldToCanvas(vec.x, vec.y);
+            ctx.strokeStyle = color; ctx.lineWidth = lineWidth; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(start.x, start.y); ctx.lineTo(end.x, end.y); ctx.stroke();
+            ctx.lineCap = 'butt';
+        }
+        function drawProjection(projectVec, ontoVec) {
+            const ontoVecMagSq = ontoVec.x * ontoVec.x + ontoVec.y * ontoVec.y;
+            if (ontoVecMagSq < 1e-9) return;
+
+            const dotProduct = projectVec.x * ontoVec.x + projectVec.y * ontoVec.y;
+            const scalarProjection = dotProduct / ontoVecMagSq;
+            const projVec = { x: ontoVec.x * scalarProjection, y: ontoVec.y * scalarProjection };
+            drawSegment(projVec, currentColors.projection, 5);
+            const p1 = worldToCanvas(projectVec.x, projectVec.y), p2 = worldToCanvas(projVec.x, projVec.y);
+            ctx.strokeStyle = currentColors.axes; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+            ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+            ctx.setLineDash([]);
+        }
+        function drawDotProductArea(projectVec, ontoVec) {
+            const ontoVecMag = Math.hypot(ontoVec.x, ontoVec.y);
+            if (ontoVecMag < 1e-9) return;
+            const dotProduct = projectVec.x * ontoVec.x + projectVec.y * ontoVec.y;
+            const scalarProjectionLength = dotProduct / ontoVecMag;
+            const perpVec = { x: -ontoVec.y / ontoVecMag, y: ontoVec.x / ontoVecMag };
+            const p1 = {x: 0, y: 0}, p2 = {x: ontoVec.x, y: ontoVec.y};
+            const p3 = {x: p2.x + perpVec.x * scalarProjectionLength, y: p2.y + perpVec.y * scalarProjectionLength};
+            const p4 = {x: perpVec.x * scalarProjectionLength, y: perpVec.y * scalarProjectionLength};
+            const p1_c = worldToCanvas(p1.x, p1.y), p2_c = worldToCanvas(p2.x, p2.y);
+            const p3_c = worldToCanvas(p3.x, p3.y), p4_c = worldToCanvas(p4.x, p4.y);
+            ctx.fillStyle = dotProduct >= 0 ? currentColors.dotProductPositive : currentColors.dotProductNegative;
+            ctx.beginPath();
+            ctx.moveTo(p1_c.x, p1_c.y); ctx.lineTo(p2_c.x, p2_c.y);
+            ctx.lineTo(p3_c.x, p3_c.y); ctx.lineTo(p4_c.x, p4_c.y);
+            ctx.closePath(); ctx.fill();
+        }
+
+        // --- Animación ---
+        function startAnimation() {
+            if (animationState.isActive) return;
+            const u = { x: parseFloat(inputs.u.x.value), y: parseFloat(inputs.u.y.value) };
+            const v = { x: parseFloat(inputs.v.x.value), y: parseFloat(inputs.v.y.value) };
+            const projectionChoice = document.querySelector('input[name="projection"]:checked').value;
+            const projectVec = projectionChoice === 'u_on_v' ? u : v;
+            const ontoVec = projectionChoice === 'u_on_v' ? v : u;
+            const ontoVecMag = Math.hypot(ontoVec.x, ontoVec.y);
+            if (ontoVecMag < 1e-9) return;
+            const dotProduct = projectVec.x * ontoVec.x + projectVec.y * ontoVec.y;
+            const scalarProjection = dotProduct / (ontoVecMag * ontoVecMag);
+            const projVec = { x: ontoVec.x * scalarProjection, y: ontoVec.y * scalarProjection };
+            const scalarProjectionLength = dotProduct / ontoVecMag;
+            const perpVec = { x: -ontoVec.y / ontoVecMag, y: ontoVec.x / ontoVecMag };
+            const sideVec = { x: perpVec.x * scalarProjectionLength, y: perpVec.y * scalarProjectionLength };
+
+            animationState.isActive = true;
+            animationState.vector = projVec;
+            animationState.startAngle = Math.atan2(projVec.y, projVec.x);
+            animationState.endAngle = Math.atan2(sideVec.y, sideVec.x);
+            animationState.startTime = performance.now();
+            animateBtn.disabled = true;
+            requestAnimationFrame(animationLoop);
+        }
+
+        function animationLoop(currentTime) {
+            const elapsedTime = currentTime - animationState.startTime;
+            let currentAngle, angleDiff = animationState.endAngle - animationState.startAngle;
+            if (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+            if (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
+            if (elapsedTime < animationState.duration) {
+                let progress = 0.5 - 0.5 * Math.cos(Math.PI * (elapsedTime / animationState.duration));
+                currentAngle = animationState.startAngle + angleDiff * progress;
+            } else if (elapsedTime < animationState.duration + animationState.pause) {
+                currentAngle = animationState.startAngle + angleDiff;
+            } else if (elapsedTime < animationState.duration * 2 + animationState.pause) {
+                let progress = 0.5 - 0.5 * Math.cos(Math.PI * ((elapsedTime - animationState.duration - animationState.pause) / animationState.duration));
+                currentAngle = (animationState.startAngle + angleDiff) - angleDiff * progress;
+            } else {
+                animationState.isActive = false;
+                animateBtn.disabled = false;
+                drawScene();
+                return;
+            }
+            const mag = Math.hypot(animationState.vector.x, animationState.vector.y);
+            const animatedVector = { x: mag * Math.cos(currentAngle), y: mag * Math.sin(currentAngle) };
+            drawScene(animatedVector);
+            requestAnimationFrame(animationLoop);
+        }
+
+        // --- Manejo de Eventos ---
+        function handleResize() {
+            const parent = canvas.parentElement;
+            canvas.width = parent.clientWidth; canvas.height = parent.clientHeight;
+            origin.x = canvas.width / 2; origin.y = canvas.height / 2;
+            updateAll();
+        }
+        function getEventCoords(event) {
+            const rect = canvas.getBoundingClientRect();
+            if (event.touches && event.touches.length > 0) return { x: event.touches[0].clientX - rect.left, y: event.touches[0].clientY - rect.top };
+            if (event.clientX !== undefined) return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+            return null;
+        }
+        function handleInteractionStart(event) {
+            const coords = getEventCoords(event); if (!coords) return;
+            const worldPos = canvasToWorld(coords.x, coords.y);
+            const u = { x: parseFloat(inputs.u.x.value), y: parseFloat(inputs.u.y.value) };
+            const v = { x: parseFloat(inputs.v.x.value), y: parseFloat(inputs.v.y.value) };
+            if (Math.hypot(worldPos.x - u.x, worldPos.y - u.y) < DRAG_RADIUS) draggedVector = 'u';
+            else if (Math.hypot(worldPos.x - v.x, worldPos.y - v.y) < DRAG_RADIUS) draggedVector = 'v';
+            else { isPanning = true; panStart.x = coords.x; panStart.y = coords.y; }
+        }
+        function handleInteractionMove(event) {
+            event.preventDefault();
+            const coords = getEventCoords(event); if (!coords) return;
+            if (draggedVector) {
+                const worldPos = canvasToWorld(coords.x, coords.y);
+                const newX = worldPos.x.toFixed(2), newY = worldPos.y.toFixed(2);
+                if (draggedVector === 'u') { inputs.u.x.value = newX; inputs.u.y.value = newY; }
+                else if (draggedVector === 'v') { inputs.v.x.value = newX; inputs.v.y.value = newY; }
+                updateAll();
+            } else if (isPanning) {
+                panOffset.x += coords.x - panStart.x;
+                panOffset.y += coords.y - panStart.y;
+                panStart.x = coords.x; panStart.y = coords.y;
+                drawScene();
+            } else { canvas.style.cursor = 'move'; }
+        }
+        function handleInteractionEnd() { draggedVector = null; isPanning = false; }
+        function handleZoom(event) {
+            event.preventDefault();
+            const zoomIntensity = 0.1, wheel = event.deltaY < 0 ? 1 : -1, zoom = Math.exp(wheel * zoomIntensity);
+            const rect = canvas.getBoundingClientRect();
+            const mousePos = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+            const worldPosBeforeZoom = canvasToWorld(mousePos.x, mousePos.y);
+            scale *= zoom;
+            const worldPosAfterZoom = canvasToWorld(mousePos.x, mousePos.y);
+            panOffset.x += (worldPosAfterZoom.x - worldPosBeforeZoom.x) * scale;
+            panOffset.y += (worldPosAfterZoom.y - worldPosBeforeZoom.y) * scale;
+            drawScene();
+        }
+
+        // Asignar listeners
+        window.addEventListener('resize', handleResize);
+        Object.values(inputs).forEach(group => Object.values(group).forEach(input => input.addEventListener('input', updateAll)));
+        projectionRadios.forEach(radio => radio.addEventListener('change', updateAll));
+        showAxisLabelsToggle.addEventListener('change', drawScene);
+        animateBtn.addEventListener('click', startAnimation);
+        themeToggle.addEventListener('change', () => {
+            document.documentElement.classList.toggle('dark', !themeToggle.checked);
+            currentColors = themeToggle.checked ? lightThemeColors : darkThemeColors;
+            drawScene();
+        });
+        canvas.addEventListener('wheel', handleZoom);
+        canvas.addEventListener('mousedown', handleInteractionStart);
+        canvas.addEventListener('mousemove', handleInteractionMove);
+        canvas.addEventListener('mouseup', handleInteractionEnd);
+        canvas.addEventListener('mouseleave', handleInteractionEnd);
+        canvas.addEventListener('touchstart', handleInteractionStart, { passive: false });
+        canvas.addEventListener('touchmove', handleInteractionMove, { passive: false });
+        canvas.addEventListener('touchend', handleInteractionEnd);
+        canvas.addEventListener('touchcancel', handleInteractionEnd);
+
+        // Inicialización
+        handleResize();
+    </script>
+</body>
+</html>
+

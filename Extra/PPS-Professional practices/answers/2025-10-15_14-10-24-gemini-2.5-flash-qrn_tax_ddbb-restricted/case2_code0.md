@@ -1,0 +1,3 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :-------: | :------- | :---------- |
+| 5 | `H1 = SparsePauliOp.from_list([("II", 1), ("IZ", 2), ("XI", 3)])` | Deprecation -> Implicit conversion from a dense BaseOperator to a SparsePauliOp in Estimator observable arguments is deprecated | f8f5e7ed-990e-4a31-9035-2032af8be117 | Estimator | `H1 = SparsePauliOp.from_list([("II", 1), ("IZ", 2), ("XI", 3)])` |

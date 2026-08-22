@@ -1,0 +1,43 @@
+Introducción a la Electrónica de Potencia: https://www.youtube.com/watch?v=Xa6wEg8ORH0
+
+Introducción a las fuentes conmutadas: https://www.youtube.com/watch?v=fcNy03V5NDU
+
+Rectificación Monofásica: https://youtu.be/EMVg2MXGn9c
+
+Rectificación Controlada Monofásica: https://youtu.be/JPsbTQqPiag
+
+Rectificación Trifásica: https://www.youtube.com/watch?v=yUP4jbYtEE0
+
+Conceptos preliminares: https://www.youtube.com/watch?v=6wXNnSeYgbk
+
+Convertidor Reductor: https://www.youtube.com/watch?v=E1QWSyuxBNE
+
+Convertidor Elevador: https://youtu.be/AQlLvpXqqIg
+
+Convertidor Reductor-Elevador: https://youtu.be/7qXIED7fR8k
+
+Convertidor Flyback: https://www.youtube.com/watch?v=E6u17iaE1b0
+
+Convertidor Full-bridge / Half-bridge: https://youtu.be/--_0lqwJIWg
+
+Clase intro a inversores estaticos 
+https://www.youtube.com/watch?v=_C2hG4F_MEg
+
+
+Clase inversor puente monofásico con PWM monopulso
+https://www.youtube.com/watch?v=T3zYdJxf-NU&t=1s
+
+Clase inversor Puente monofásico con PWM Sinusoidal
+https://www.youtube.com/watch?v=DRQ_Pa3R53c
+
+
+A PARTIR DE ACA NO ESTÁN EN EL ZIP:
+
+Clase SAI Offline 
+https://www.youtube.com/watch?v=qr4lhhb5I6s
+
+Clase SAI Online
+https://www.youtube.com/watch?v=KePxVo8NQQ8
+
+Clase SAI Baterías
+https://www.youtube.com/watch?v=9CGtrM7Waa8

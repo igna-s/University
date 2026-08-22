@@ -1,0 +1,24 @@
+WEBVTT
+Kind: captions
+Language: es
+
+00:00:00.359 --> 00:00:03.629 align:start position:0%
+ 
+Experimenta<00:00:00.919><c> la</c><00:00:01.079><c> pureza</c><00:00:01.640><c> redefinida.</c><00:00:03.120><c> Voda</c>
+
+00:00:03.629 --> 00:00:03.639 align:start position:0%
+Experimenta la pureza redefinida. Voda
+ 
+
+00:00:03.639 --> 00:00:06.470 align:start position:0%
+Experimenta la pureza redefinida. Voda
+Infinite<00:00:04.160><c> 20,</c><00:00:05.040><c> acceso</c><00:00:05.520><c> inteligente</c><00:00:06.240><c> para</c>
+
+00:00:06.470 --> 00:00:06.480 align:start position:0%
+Infinite 20, acceso inteligente para
+ 
+
+00:00:06.480 --> 00:00:09.399 align:start position:0%
+Infinite 20, acceso inteligente para
+todos.
+

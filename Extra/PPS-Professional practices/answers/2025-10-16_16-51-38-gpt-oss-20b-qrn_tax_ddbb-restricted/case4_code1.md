@@ -1,0 +1,4 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :-------: | :------- | :---------- |
+| 3 | `from qiskit.tools.events import TextProgressBar` | Deprecation -> qiskit.tools.events.TextProgressBar is deprecated and will be removed in Qiskit 1.0.0 | qrn_tax_ddbb-4bc2d33a-666a-48ed-96d1-b12d38ea3acf | TextProgressBar | `from qiskit.providers.jobmonitor import JobMonitor` |
+| 12 | `TextProgressBar().update(job)` | Deprecation -> qiskit.tools.events.TextProgressBar usage deprecated and will be removed in Qiskit 1.0.0 | qrn_tax_ddbb-4bc2d33a-666a-48ed-96d1-b12d38ea3acf | TextProgressBar | `JobMonitor().run(job)` |

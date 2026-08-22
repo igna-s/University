@@ -1,0 +1,42 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+.env
+.venv
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Azure Functions
+.funcignore
+local.settings.json
+
+# C output
+*.out
+*.exe
+*.o
+
+# LaTeX temp files
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.synctex.gz

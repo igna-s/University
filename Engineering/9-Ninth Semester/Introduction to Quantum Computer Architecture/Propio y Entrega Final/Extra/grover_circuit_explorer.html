@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grover N=4 — Explorador de Circuito Cuántico</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060912;
+  --surf: #0c1322;
+  --surf2: #111c30;
+  --border: rgba(255,255,255,0.07);
+  --text: #e2e8f0;
+  --dim: #64748b;
+  --H: #22d3ee; --X: #f87171; --MCX: #c084fc; --phase: #fbbf24;
+  --measure: #34d399; --oracle: #fb923c; --diffuser: #38bdf8;
+  --compute: #4ade80; --uncompute: #86efac; --pair: #60a5fa;
+  --conflict: #f59e0b; --iteration: #a78bfa; --root: #818cf8;
+  --I: #475569;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#0c1322 0%,#180535 100%);border-bottom:1px solid var(--border);padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.htitle h1{font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,#a78bfa,#38bdf8,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.htitle p{color:var(--dim);font-size:.78rem;margin-top:.2rem;font-family:'JetBrains Mono',monospace}
+.hstats{display:flex;gap:1.5rem;flex-wrap:wrap}
+.sp{display:flex;flex-direction:column;align-items:center}
+.sp .v{font-size:1.1rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+.sp .l{font-size:.65rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-top:.1rem}
+
+/* BREADCRUMB */
+.bc{background:var(--surf);border-bottom:1px solid var(--border);padding:.6rem 2rem;display:flex;align-items:center;gap:.4rem;font-size:.82rem;overflow-x:auto;white-space:nowrap}
+.bci{display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;color:var(--dim);padding:.2rem .5rem;border-radius:6px;transition:all .2s}
+.bci:hover{color:var(--text);background:rgba(255,255,255,0.05)}
+.bci.active{color:var(--text);font-weight:600;pointer-events:none}
+.bcs{color:var(--dim);opacity:.4}
+
+/* WIRE VIEW */
+.wire-section{background:var(--surf);border-bottom:1px solid var(--border);padding:.75rem 2rem;overflow-x:auto}
+.wire-label-row{font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;color:var(--dim);margin-bottom:.5rem}
+.wires{display:flex;flex-direction:column;gap:3px;min-width:fit-content}
+.wire-row{display:flex;align-items:center;height:22px}
+.wname{width:55px;min-width:55px;font-size:.65rem;font-family:'JetBrains Mono',monospace;color:var(--dim);text-align:right;padding-right:8px;flex-shrink:0}
+.wtrack{flex:1;min-width:600px;height:2px;background:rgba(255,255,255,0.08);position:relative;border-radius:1px}
+.wtrack.active{background:rgba(255,255,255,0.25)}
+.wgates{position:absolute;top:50%;transform:translateY(-50%);left:0;right:0;display:flex;align-items:center;height:20px}
+.wgate{position:absolute;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-family:'JetBrains Mono',monospace;font-weight:600;color:#000;cursor:pointer;transition:filter .2s;white-space:nowrap;padding:0 4px;overflow:hidden}
+.wgate:hover{filter:brightness(1.3)}
+
+/* MAIN */
+.main{padding:1.25rem 2rem;max-width:1400px;margin:0 auto}
+
+/* INFO PANEL */
+.ipanel{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.4rem;margin-bottom:1.25rem;display:flex;gap:1.2rem;align-items:flex-start}
+.ibadge{width:44px;height:44px;min-width:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.iname{font-size:1rem;font-weight:600;margin-bottom:.2rem}
+.idesc{font-size:.82rem;color:var(--dim);line-height:1.6}
+.istats{display:flex;gap:.6rem;margin-top:.7rem;flex-wrap:wrap}
+.istat{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:.2rem .55rem;font-size:.7rem;font-family:'JetBrains Mono',monospace}
+
+/* GRID */
+.section-hdr{font-size:.7rem;text-transform:uppercase;letter-spacing:.15em;color:var(--dim);margin-bottom:.9rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.9rem}
+
+/* GATE CARD */
+.gcard{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;transition:all .2s;position:relative;overflow:hidden}
+.gcard:not(.leaf){cursor:pointer}
+.gcard:not(.leaf):hover{transform:translateY(-2px);border-color:rgba(255,255,255,0.14);box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.gcard::after{content:'';position:absolute;inset:0;border-radius:12px;opacity:0;transition:opacity .2s;pointer-events:none}
+.gcard:not(.leaf):hover::after{opacity:1}
+.ctop{display:flex;justify-content:space-between;align-items:center;margin-bottom:.65rem}
+.cicon{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+.carr{font-size:.9rem;color:var(--dim);transition:transform .2s}
+.gcard:not(.leaf):hover .carr{transform:translateX(3px);color:var(--text)}
+.cname{font-size:.88rem;font-weight:600;font-family:'JetBrains Mono',monospace;margin-bottom:.2rem;line-height:1.3}
+.csub{font-size:.72rem;color:var(--dim);margin-bottom:.65rem;line-height:1.4}
+.cqubits{display:flex;flex-wrap:wrap;gap:.3rem}
+.qbadge{font-size:.62rem;font-family:'JetBrains Mono',monospace;padding:.12rem .35rem;border-radius:4px;border:1px solid;opacity:.85}
+
+/* LEAF DETAIL */
+.dpanel{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.4rem;margin-top:1.25rem}
+.dpanel h3{font-size:.7rem;text-transform:uppercase;letter-spacing:.15em;color:var(--dim);margin-bottom:.9rem}
+.gatelist{display:flex;flex-wrap:wrap;gap:.4rem}
+.gpill{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:.3rem .7rem;font-size:.75rem;font-family:'JetBrains Mono',monospace}
+
+/* BACK BTN */
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;padding:.4rem .9rem;cursor:pointer;font-size:.82rem;color:var(--dim);transition:all .2s;margin-bottom:1rem}
+.back-btn:hover{color:var(--text);background:rgba(255,255,255,0.09)}
+
+/* PROB DISPLAY */
+.prob-box{margin-top:1rem;padding:.9rem;background:rgba(0,0,0,.3);border-radius:8px}
+.prob-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.5rem;font-size:.78rem;font-family:'JetBrains Mono',monospace}
+.prob-lbl{width:130px;white-space:nowrap}
+.prob-track{flex:1;height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.prob-fill{height:100%;border-radius:3px}
+.prob-val{width:45px;text-align:right;color:var(--dim)}
+
+/* ANIM */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:fadeUp .22s ease forwards}
+
+/* SEPARATOR */
+.sep{height:1px;background:var(--border);margin:1.25rem 0}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
+
+@media(max-width:700px){
+  header{flex-direction:column}
+  .grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="htitle">
+    <h1>🔬 Grover N=4 — Explorador de Circuito</h1>
+    <p>Hacé click en cualquier bloque para ver su contenido interno</p>
+  </div>
+  <div class="hstats">
+    <div class="sp"><span class="v" style="color:#a78bfa">14</span><span class="l">Qubits</span></div>
+    <div class="sp"><span class="v" style="color:#38bdf8">8</span><span class="l">Iteraciones</span></div>
+    <div class="sp"><span class="v" style="color:#34d399">256</span><span class="l">Estados</span></div>
+    <div class="sp"><span class="v" style="color:#fbbf24">2</span><span class="l">Soluciones</span></div>
+    <div class="sp"><span class="v" style="color:#f87171">41,221</span><span class="l">Profundidad</span></div>
+    <div class="sp"><span class="v" style="color:#4ade80">99.3%</span><span class="l">P(éxito)</span></div>
+  </div>
+</header>
+
+<nav class="bc" id="breadcrumb"></nav>
+
+<div class="wire-section">
+  <div class="wire-label-row">Vista de qubits — nivel actual</div>
+  <div class="wires" id="wire-view"></div>
+</div>
+
+<div class="main">
+  <div id="app"></div>
+</div>
+
+<script>
+// ─── QUBIT METADATA ────────────────────────────────────────────────────────
+const QNAMES = ['q₀','q₁','q₂','q₃','q₄','q₅','q₆','q₇','pf₀','pf₁','pf₂','pf₃','pf₄','pf₅'];
+const QDESC  = [
+  'Reina 0 · bit 0 (columna LSB)', 'Reina 0 · bit 1 (columna MSB)',
+  'Reina 1 · bit 0', 'Reina 1 · bit 1',
+  'Reina 2 · bit 0', 'Reina 2 · bit 1',
+  'Reina 3 · bit 0 (LSB)', 'Reina 3 · bit 1 (MSB)',
+  'Flag conflicto par (0,1)', 'Flag conflicto par (0,2)',
+  'Flag conflicto par (0,3)', 'Flag conflicto par (1,2)',
+  'Flag conflicto par (1,3)', 'Flag conflicto par (2,3)',
+];
+const QCOLORS = [
+  '#38bdf8','#0ea5e9','#818cf8','#6366f1',
+  '#a78bfa','#9333ea','#f472b6','#ec4899',
+  '#4ade80','#22c55e','#86efac','#16a34a','#bbf7d0','#15803d'
+];
+
+const PAIRS = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
+const N=4, K=2;
+
+function queenQubits(i){ return [2*i, 2*i+1]; }
+function flagIdx(i,j){ return 8 + PAIRS.findIndex(([a,b])=>a===i&&b===j); }
+
+function getConflicts(d){
+  const c=[];
+  for(let ci=0;ci<N;ci++) for(let cj=0;cj<N;cj++)
+    if(ci===cj||Math.abs(ci-cj)===d) c.push([ci,cj]);
+  return c;
+}
+
+function matchGates(qIdx,val){
+  const g=[];
+  for(let b=0;b<K;b++) if(((val>>b)&1)===0) g.push(qIdx[b]);
+  return g;
+}
+
+function matchDesc(qIdx,val){
+  const g=matchGates(qIdx,val);
+  return g.length ? g.map(q=>QNAMES[q]).join(', ') : '∅ (sin X)';
+}
+
+// ─── BUILD CONFLICT NODE ───────────────────────────────────────────────────
+function makeConflict(i,j,qi,qj,fi,ci,cj,d){
+  const mi=matchGates(qi,ci), mj=matchGates(qj,cj);
+  const reason=ci===cj?'misma columna':`diagonal |${ci}−${cj}|=${d}`;
+  return {
+    id:`c${i}${j}_${ci}_${cj}`,
+    name:`col${i}=${ci}, col${j}=${cj}`,
+    sub:reason,
+    type:ci===cj?'X':'phase',
+    color:ci===cj?'var(--X)':'var(--conflict)',
+    qubits:[...qi,...qj,fi],
+    desc:`Reina ${i} en col ${ci} y reina ${j} en col ${cj} — conflicto por ${reason}. Activa pf${fi-8}.`,
+    stats:[`gates: 5`,`MCX controles: 4`,`tipo: ${reason}`],
+    isLeaf:false,
+    children:[
+      {id:'mp_i_b',name:`match(R${i}=${ci})`,sub:matchDesc(qi,ci)||'∅',type:'X',color:'var(--X)',qubits:qi,
+       desc:`apply_match_pattern(reina ${i}, col=${ci}): pone X donde bit=0 para que MCX dispare al detectar el valor ${ci}.`,
+       gates:mi.length?mi.map(q=>`X(${QNAMES[q]})`):[`∅ — valor ${ci}=11b, sin X`],isLeaf:true},
+      {id:'mp_j_b',name:`match(R${j}=${cj})`,sub:matchDesc(qj,cj)||'∅',type:'X',color:'var(--X)',qubits:qj,
+       desc:`apply_match_pattern(reina ${j}, col=${cj}): X en ${matchDesc(qj,cj)}.`,
+       gates:mj.length?mj.map(q=>`X(${QNAMES[q]})`):[`∅ — valor ${cj}=11b, sin X`],isLeaf:true},
+      {id:'mcx_c',name:`MCX(${[...qi,...qj].map(q=>QNAMES[q]).join(',')} → pf${fi-8})`,sub:'4 controles',type:'MCX',color:'var(--MCX)',qubits:[...qi,...qj,fi],
+       desc:`MCX con 4 controles: voltea pf${fi-8} si R${i}=${ci} y R${j}=${cj}. Único estado que pasa el match_pattern.`,
+       gates:[`MCX(${[...qi,...qj].map(q=>QNAMES[q]).join(', ')} → ${QNAMES[fi]})`],isLeaf:true},
+      {id:'mp_i_a',name:`uncompute(R${i})`,sub:`restaura ${QNAMES[qi[0]]},${QNAMES[qi[1]]}`,type:'X',color:'var(--uncompute)',qubits:qi,
+       desc:`Deshace el match_pattern de reina ${i}: aplica X de nuevo en ${matchDesc(qi,ci)} para restaurar el estado original.`,
+       gates:mi.length?mi.map(q=>`X(${QNAMES[q]})`):[`∅ — sin X`],isLeaf:true},
+      {id:'mp_j_a',name:`uncompute(R${j})`,sub:`restaura ${QNAMES[qj[0]]},${QNAMES[qj[1]]}`,type:'X',color:'var(--uncompute)',qubits:qj,
+       desc:`Deshace el match_pattern de reina ${j}.`,
+       gates:mj.length?mj.map(q=>`X(${QNAMES[q]})`):[`∅ — sin X`],isLeaf:true},
+    ]
+  };
+}
+
+// ─── BUILD PAIR NODE ───────────────────────────────────────────────────────
+function makePair(i,j,rev=false){
+  const qi=queenQubits(i), qj=queenQubits(j), fi=flagIdx(i,j), d=j-i;
+  const conflicts=getConflicts(d);
+  const list=rev?[...conflicts].reverse():conflicts;
+  return {
+    id:`pair_${i}_${j}${rev?'r':''}`,
+    name:`Par (${i},${j})`,
+    sub:`${conflicts.length} conflictos · d=${d} · flag=pf${fi-8}${rev?' · UNCOMPUTE':''}`,
+    type:'pair',
+    color:'var(--pair)',
+    qubits:[...qi,...qj,fi],
+    desc:`Verifica conflictos entre reina ${i} (${qi.map(q=>QNAMES[q]).join(',')}) y reina ${j} (${qj.map(q=>QNAMES[q]).join(',')}). Distancia de filas d=${d}. El flag pf${fi-8} queda activo si hay conflicto.${rev?' Aplicado en orden INVERSO para uncompute.':''}`,
+    stats:[`conflictos: ${conflicts.length}`,`gates/conflicto: 5`,`total: ${conflicts.length*5}`],
+    isLeaf:false,
+    children:list.map(([ci,cj])=>makeConflict(i,j,qi,qj,fi,ci,cj,d))
+  };
+}
+
+// ─── CIRCUIT TREE ──────────────────────────────────────────────────────────
+const CIRCUIT = {
+  id:'root',name:'Grover N=4',
+  sub:'N-Reinas · 8 iteraciones · 14 qubits · profundidad: 41,221',
+  type:'root',color:'var(--root)',
+  qubits:[0,1,2,3,4,5,6,7,8,9,10,11,12,13],
+  desc:'Circuito completo del algoritmo de Grover para N=4 reinas. Codificación: reina i en fila i (implícita), columna en k=2 bits. Espacio: 2⁸=256. 2 soluciones. 8 iteraciones óptimas.',
+  stats:['qubits estado: 8','flags pares: 6','espacio: 256','soluciones: 2','iter. óptimas: 8','P(éxito): 99.3%','profundidad lógica: 18','profundidad transpilada: 41,221'],
+  isLeaf:false,
+  children:[
+    {
+      id:'init',name:'H⊗8',sub:'Superposición uniforme inicial',
+      type:'H',color:'var(--H)',qubits:[0,1,2,3,4,5,6,7],
+      desc:'Aplica H a cada uno de los 8 qubits de estado. Crea superposición uniforme |ψ₀⟩ = H⊗8|0⟩⊗8 = (1/16)·Σ_{x=0}^{255}|x⟩. Amplitud inicial: 1/16 ≈ 0.0625 por estado.',
+      stats:['gates: 8','depth: 1','tipo: Hadamard × 8'],
+      isLeaf:false,
+      children:Array.from({length:8},(_,i)=>({
+        id:`h${i}`,name:`H(${QNAMES[i]})`,sub:QDESC[i],
+        type:'H',color:'var(--H)',qubits:[i],
+        desc:`Puerta Hadamard en ${QNAMES[i]}: |0⟩ → (|0⟩+|1⟩)/√2. ${QDESC[i]}.`,
+        gates:[`H(${QNAMES[i]})`],isLeaf:true
+      }))
+    },
+    {
+      id:'grover',name:'Iteraciones Grover',sub:'×8 · Oráculo + Difusor',
+      type:'iteration',color:'var(--iteration)',qubits:[0,1,2,3,4,5,6,7,8,9,10,11,12,13],
+      desc:'Núcleo de Grover. θ=2·arcsin(√(2/256))≈0.177 rad → iteraciones óptimas=8. Cada iteración amplifica la probabilidad de las soluciones. P(sol) pasa de 1/128 (~0.8%) a ~99.3% en 8 pasos.',
+      stats:['gates: ~50,000','depth lógica: ~41,200','iteraciones: 8','speedup: O(√(256/2))≈O(11) vs O(128) clásico'],
+      isLeaf:false,
+      children:[
+        {
+          id:'oracle',name:'Oráculo',sub:'Marca soluciones con fase −1',
+          type:'oracle',color:'var(--oracle)',qubits:[0,1,2,3,4,5,6,7,8,9,10,11,12,13],
+          desc:'Transforma |x⟩ → −|x⟩ si x es una solución válida de N-reinas. Para inválidos: |x⟩ → |x⟩ sin cambios. Implementación: Compute → Phase_flip → Uncompute.',
+          stats:['gates: ~6,200','depth: ~5,150','ancillas: 6 flags','tipo: phase oracle'],
+          isLeaf:false,
+          children:[
+            {
+              id:'compute',name:'Compute Flags',sub:'6 pares · activa flags por conflicto',
+              type:'compute',color:'var(--compute)',qubits:[0,1,2,3,4,5,6,7,8,9,10,11,12,13],
+              desc:'Para cada par de reinas (i<j), verifica si hay conflicto (misma columna o diagonal). Activa el flag pf correspondiente si lo hay. Se hacen C(4,2)=6 verificaciones en paralelo conceptual.',
+              stats:['pares: 6','conflictos totales: 52','gates: ~2,900','depth: ~2,450'],
+              isLeaf:false,
+              children:PAIRS.map(([i,j])=>makePair(i,j,false))
+            },
+            {
+              id:'phase',name:'Fase −1',sub:'MCZ · actúa solo si todos los flags = 0',
+              type:'phase',color:'var(--X)',qubits:[8,9,10,11,12,13],
+              desc:'Si TODOS los flags son 0 (configuración válida → ningún conflicto), aplica fase −1. Implementado como: X⊗6 · H(pf₅) · MCX(5 controles) · H(pf₅) · X⊗6.',
+              stats:['gates: 13 + MCX decomp (~50)','depth: ~30','tipo: multi-controlled phase'],
+              isLeaf:false,
+              children:[
+                {id:'xf1',name:'X(pf₀..pf₅)',sub:'Prepara para MCZ',type:'X',color:'var(--X)',qubits:[8,9,10,11,12,13],
+                 desc:'Invierte todos los flags: |000000⟩→|111111⟩. El MCX que viene dispara sobre |111111⟩, que es cuando TODOS los flags originales eran 0 (sin conflictos).',
+                 gates:['X(pf₀)','X(pf₁)','X(pf₂)','X(pf₃)','X(pf₄)','X(pf₅)'],isLeaf:true},
+                {id:'hf1',name:'H(pf₅)',sub:'Convierte MCX en MCZ',type:'H',color:'var(--H)',qubits:[13],
+                 desc:'H·X·H = Z. Aplicando H antes y después del MCX, se implementa MCZ: fase −1 en vez de bit flip.',
+                 gates:['H(pf₅)'],isLeaf:true},
+                {id:'mcxf',name:'MCX(pf₀..pf₄ → pf₅)',sub:'5 controles',type:'MCX',color:'var(--MCX)',qubits:[8,9,10,11,12,13],
+                 desc:'X controlado por 5 qubits: invierte pf₅ si pf₀=pf₁=pf₂=pf₃=pf₄=1. Con el X⊗6 previo, esto ocurre cuando todos los flags originales eran 0, es decir: configuración válida.',
+                 gates:['MCX(pf₀, pf₁, pf₂, pf₃, pf₄ → pf₅)'],isLeaf:true},
+                {id:'hf2',name:'H(pf₅)',sub:'Completa MCZ',type:'H',color:'var(--H)',qubits:[13],
+                 desc:'Segundo H sobre pf₅. H·MCX·H implementa MCZ. El estado válido adquiere factor −1.',
+                 gates:['H(pf₅)'],isLeaf:true},
+                {id:'xf2',name:'X(pf₀..pf₅)',sub:'Restaura flags',type:'X',color:'var(--X)',qubits:[8,9,10,11,12,13],
+                 desc:'Restaura los flags al estado original (antes del X⊗6 inicial). Los flags quedan listos para el Uncompute.',
+                 gates:['X(pf₀)','X(pf₁)','X(pf₂)','X(pf₃)','X(pf₄)','X(pf₅)'],isLeaf:true},
+              ]
+            },
+            {
+              id:'uncompute',name:'Uncompute Flags',sub:'Inverso de Compute · libera ancillas',
+              type:'uncompute',color:'var(--uncompute)',qubits:[0,1,2,3,4,5,6,7,8,9,10,11,12,13],
+              desc:'Deshace el Compute en orden ESTRICTAMENTE INVERSO (par (2,3) primero, (0,1) último). La computación cuántica es reversible: los flags de ancilla vuelven a |0⟩ para la próxima iteración.',
+              stats:['pares: 6 (orden inverso)','gates: ~2,900','depth: ~2,450','tipo: uncompute ancillas'],
+              isLeaf:false,
+              children:[...PAIRS].reverse().map(([i,j])=>makePair(i,j,true))
+            },
+          ]
+        },
+        {
+          id:'diffuser',name:'Difusor',sub:'Inversión sobre la media',
+          type:'diffuser',color:'var(--diffuser)',qubits:[0,1,2,3,4,5,6,7],
+          desc:'Amplifica la probabilidad de los estados marcados. Implementa la reflexión D = 2|ψ₀⟩⟨ψ₀| − I. Fórmula: D = H⊗8 · (2|0⟩⟨0|−I) · H⊗8 = H · X · MCZ · X · H.',
+          stats:['gates: H×8+X×8+H+MCX(7)+H+X×8+H×8','depth: ~250','tipo: Grover diffuser'],
+          isLeaf:false,
+          children:[
+            {id:'dh1',name:'H(q₀..q₇)',sub:'Base comp. → Hadamard',type:'H',color:'var(--H)',qubits:[0,1,2,3,4,5,6,7],
+             desc:'Primer H⊗8: transforma a base de Hadamard. Junto con el H final implementa la reflexión alrededor de |ψ₀⟩.',
+             gates:Array.from({length:8},(_,i)=>`H(${QNAMES[i]})`),isLeaf:true},
+            {id:'dx1',name:'X(q₀..q₇)',sub:'|0⟩ → |1⟩ en todos',type:'X',color:'var(--X)',qubits:[0,1,2,3,4,5,6,7],
+             desc:'X en todos los qubits: |0⟩→|1⟩. Necesario para que el MCX (que actúa sobre |11111111⟩) corresponda a marcar el estado |00000000⟩ (el estado inicial).',
+             gates:Array.from({length:8},(_,i)=>`X(${QNAMES[i]})`),isLeaf:true},
+            {id:'dhq7a',name:'H(q₇)',sub:'MCX → MCZ (fase)',type:'H',color:'var(--H)',qubits:[7],
+             desc:'H antes del MCX: junto con H después, implementa MCZ en lugar de MCX (fase −1 en vez de bit flip).',
+             gates:['H(q₇)'],isLeaf:true},
+            {id:'dmcx',name:'MCX(q₀..q₆ → q₇)',sub:'7 controles',type:'MCX',color:'var(--MCX)',qubits:[0,1,2,3,4,5,6,7],
+             desc:'X controlado por 7 qubits: actúa sobre |11111111⟩ (= |00000000⟩ antes del X⊗8). Con H flanqueo: aplica fase −1 solo al estado inicial |ψ₀ base⟩.',
+             gates:['MCX(q₀, q₁, q₂, q₃, q₄, q₅, q₆ → q₇)'],isLeaf:true},
+            {id:'dhq7b',name:'H(q₇)',sub:'Completa MCZ',type:'H',color:'var(--H)',qubits:[7],
+             desc:'Segundo H sobre q₇. Completa la implementación de MCZ = H·MCX·H.',
+             gates:['H(q₇)'],isLeaf:true},
+            {id:'dx2',name:'X(q₀..q₇)',sub:'Restaura qubits',type:'X',color:'var(--X)',qubits:[0,1,2,3,4,5,6,7],
+             desc:'Deshace el X⊗8 anterior. Junto con el X previo implementa (2|0⟩⟨0|−I).',
+             gates:Array.from({length:8},(_,i)=>`X(${QNAMES[i]})`),isLeaf:true},
+            {id:'dh2',name:'H(q₀..q₇)',sub:'Hadamard → base comp.',type:'H',color:'var(--H)',qubits:[0,1,2,3,4,5,6,7],
+             desc:'Segundo H⊗8. Completa el difusor: D = H·X·MCZ·X·H = 2|ψ₀⟩⟨ψ₀|−I. La amplitud de las soluciones aumenta, la del resto disminuye.',
+             gates:Array.from({length:8},(_,i)=>`H(${QNAMES[i]})`),isLeaf:true},
+          ]
+        },
+      ]
+    },
+    {
+      id:'measure',name:'Medición',sub:'q[0..7] → c[0..7]',
+      type:'measure',color:'var(--measure)',qubits:[0,1,2,3,4,5,6,7],
+      desc:'Colapso del estado cuántico sobre los 8 qubits de estado. El bitstring resultante codifica las columnas de las 4 reinas en binario. Las 2 soluciones aparecen con P≈99.3% combinada.',
+      stats:['gates: 8','depth: 1','tipo: measurement','P([1,3,0,2] ó [2,0,3,1]): 99.3%'],
+      isLeaf:false,
+      children:[
+        ...Array.from({length:8},(_,i)=>({
+          id:`m${i}`,name:`M(${QNAMES[i]}→c${i})`,sub:QDESC[i],
+          type:'measure',color:'var(--measure)',qubits:[i],
+          desc:`Mide ${QNAMES[i]} en base {|0⟩,|1⟩}. Resultado → bit c${i} del registro clásico. ${QDESC[i]}.`,
+          gates:[`Measure(${QNAMES[i]} → c${i})`],isLeaf:true
+        })),
+        {id:'decode',name:'Decodificación',sub:'bitstring → columnas',type:'measure',color:'var(--measure)',qubits:[0,1,2,3,4,5,6,7],
+         desc:'El bitstring c[0..7] codifica las columnas: col_reina_i = c[2i] + 2·c[2i+1]. Resultado: [1,3,0,2] (cols en fila 0→1, 1→3, 2→0, 3→2) o [2,0,3,1].',
+         gates:['col₀ = c₀ + 2·c₁','col₁ = c₂ + 2·c₃','col₂ = c₄ + 2·c₅','col₃ = c₆ + 2·c₇','Solución 1: [1,3,0,2]','Solución 2: [2,0,3,1]'],isLeaf:true}
+      ]
+    },
+  ]
+};
+
+// ─── ICONS ────────────────────────────────────────────────────────────────
+const ICONS={
+  H:'H',X:'X',MCX:'↑X',phase:'−φ',measure:'M',oracle:'⊙',
+  diffuser:'≈',compute:'→',uncompute:'←',pair:'⊕',conflict:'!',
+  iteration:'↺',root:'⚛',I:'I',
+};
+const COLORS={
+  H:'var(--H)',X:'var(--X)',MCX:'var(--MCX)',phase:'var(--phase)',
+  measure:'var(--measure)',oracle:'var(--oracle)',diffuser:'var(--diffuser)',
+  compute:'var(--compute)',uncompute:'var(--uncompute)',pair:'var(--pair)',
+  conflict:'var(--conflict)',iteration:'var(--iteration)',root:'var(--root)',I:'var(--I)',
+};
+
+// ─── STATE ────────────────────────────────────────────────────────────────
+let navStack = [CIRCUIT];
+let selectedLeaf = null;
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────
+function currentNode(){ return navStack[navStack.length-1]; }
+
+function colorOf(node){
+  return node.color || COLORS[node.type] || '#94a3b8';
+}
+
+function hexAlpha(cssVar, a){
+  // Just return with opacity via rgba wrapping
+  return `color-mix(in srgb, ${cssVar} 100%, transparent ${Math.round((1-a)*100)}%)`;
+}
+
+function gateTypeLabel(type){
+  return ICONS[type] || type.toUpperCase().slice(0,3);
+}
+
+// ─── WIRE VIEW RENDERER ───────────────────────────────────────────────────
+function renderWires(node){
+  const wv = document.getElementById('wire-view');
+  wv.innerHTML = '';
+  const activeQubits = new Set(node.qubits || []);
+  const children = node.children || [];
+
+  QNAMES.forEach((name, qi) => {
+    if(!activeQubits.has(qi) && node.id !== 'root') {
+      // Only show active qubits
+      if([...activeQubits].length < 14) return; 
+    }
+    const row = document.createElement('div');
+    row.className = 'wire-row';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'wname';
+    lbl.style.color = activeQubits.has(qi) ? QCOLORS[qi] : 'var(--dim)';
+    lbl.textContent = name;
+    row.appendChild(lbl);
+
+    const track = document.createElement('div');
+    track.className = 'wtrack' + (activeQubits.has(qi) ? ' active' : '');
+    
+    // Place gate blocks on the wire
+    const gatesDiv = document.createElement('div');
+    gatesDiv.className = 'wgates';
+    
+    const total = children.length + 2; // +2 for margins
+    children.forEach((child, ci) => {
+      if(!child.qubits || !child.qubits.includes(qi)) return;
+      const pct = (ci + 1) / total * 100;
+      const w = 90 / total;
+      const gate = document.createElement('div');
+      gate.className = 'wgate';
+      gate.style.left = `${pct}%`;
+      gate.style.width = `${w}%`;
+      gate.style.background = colorOf(child);
+      gate.textContent = child.name.length > 8 ? child.name.slice(0,8) : child.name;
+      gate.title = child.name;
+      gate.style.cursor = child.isLeaf ? 'default' : 'pointer';
+      gate.onclick = () => { if(!child.isLeaf) drillInto(child); };
+      gatesDiv.appendChild(gate);
+    });
+
+    track.appendChild(gatesDiv);
+    row.appendChild(track);
+    wv.appendChild(row);
+  });
+}
+
+// ─── MAIN RENDER ──────────────────────────────────────────────────────────
+function renderBreadcrumb(){
+  const bc = document.getElementById('breadcrumb');
+  bc.innerHTML = '';
+  navStack.forEach((node, i) => {
+    if(i > 0){
+      const sep = document.createElement('span');
+      sep.className='bcs'; sep.textContent='›';
+      bc.appendChild(sep);
+    }
+    const item = document.createElement('div');
+    item.className = 'bci' + (i === navStack.length-1 ? ' active' : '');
+    const dot = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${colorOf(node)};margin-right:4px"></span>`;
+    item.innerHTML = dot + node.name;
+    if(i < navStack.length-1){
+      item.onclick = () => { navStack = navStack.slice(0,i+1); selectedLeaf=null; render(); };
+    }
+    bc.appendChild(item);
+  });
+}
+
+function renderInfoPanel(node){
+  const stats = (node.stats||[]);
+  const statsArr = Array.isArray(stats) ? stats : Object.entries(stats).map(([k,v])=>`${k}: ${v}`);
+  return `
+  <div class="ipanel">
+    <div class="ibadge" style="background:color-mix(in srgb,${colorOf(node)} 15%,transparent)">${gateTypeLabel(node.type)}</div>
+    <div style="flex:1">
+      <div class="iname">${node.name} <span style="color:var(--dim);font-weight:400;font-size:.8rem">— ${node.sub||node.type}</span></div>
+      <div class="idesc">${node.desc||''}</div>
+      <div class="istats">${statsArr.map(s=>`<span class="istat">${s}</span>`).join('')}</div>
+    </div>
+  </div>`;
+}
+
+function renderChildren(node){
+  if(!node.children || node.children.length === 0) return '';
+  let html = `<div class="section-hdr">Bloques internos — hacé click para entrar</div><div class="grid anim">`;
+  node.children.forEach(child => {
+    const color = colorOf(child);
+    const qBadges = (child.qubits||[]).slice(0,6).map(qi=>
+      `<span class="qbadge" style="color:${QCOLORS[qi]};border-color:${QCOLORS[qi]}33;background:${QCOLORS[qi]}11">${QNAMES[qi]}</span>`
+    ).join('')+(child.qubits&&child.qubits.length>6?`<span class="qbadge" style="color:var(--dim);border-color:var(--border)">+${child.qubits.length-6}</span>`:'');
+    
+    html += `
+    <div class="gcard${child.isLeaf?' leaf':''}" onclick="${child.isLeaf?`showLeaf('${child.id}')`:`drillInto_id('${child.id}')`}"
+         style="border-top:3px solid ${color}">
+      <div class="ctop">
+        <div class="cicon" style="background:color-mix(in srgb,${color} 20%,transparent);color:${color}">${gateTypeLabel(child.type)}</div>
+        ${child.isLeaf?'<span style="color:var(--dim);font-size:.8rem">⊙</span>':'<span class="carr">›</span>'}
+      </div>
+      <div class="cname">${child.name}</div>
+      <div class="csub">${child.sub||child.type}</div>
+      <div class="cqubits">${qBadges}</div>
+    </div>`;
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderLeafPanel(node){
+  if(!node) return '';
+  const gates = node.gates||[];
+  return `
+  <div class="dpanel anim">
+    <h3>⊙ Detalle — ${node.name}</h3>
+    <div class="idesc" style="margin-bottom:.9rem">${node.desc||''}</div>
+    <div class="gatelist">
+      ${gates.map(g=>`<span class="gpill">${g}</span>`).join('')}
+    </div>
+    ${node.id==='measure' ? renderProbBars() : ''}
+  </div>`;
+}
+
+function renderProbBars(){
+  return `
+  <div class="prob-box">
+    <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:.7rem">Distribución de medición (4096 shots)</div>
+    <div class="prob-row"><span class="prob-lbl">[1, 3, 0, 2] ✅</span>
+      <div class="prob-track"><div class="prob-fill" style="width:50%;background:var(--measure)"></div></div>
+      <span class="prob-val">~50%</span></div>
+    <div class="prob-row"><span class="prob-lbl">[2, 0, 3, 1] ✅</span>
+      <div class="prob-track"><div class="prob-fill" style="width:49%;background:var(--measure)"></div></div>
+      <span class="prob-val">~49%</span></div>
+    <div class="prob-row"><span class="prob-lbl">ruido ❌</span>
+      <div class="prob-track"><div class="prob-fill" style="width:1%;background:var(--X)"></div></div>
+      <span class="prob-val">~0.7%</span></div>
+  </div>`;
+}
+
+// ─── ACTIONS ─────────────────────────────────────────────────────────────
+function drillInto(node){
+  navStack.push(node);
+  selectedLeaf = null;
+  render();
+}
+
+// Called from onclick string
+window.drillInto_id = function(id){
+  const node = findNode(id, currentNode());
+  if(node) drillInto(node);
+};
+
+window.showLeaf = function(id){
+  const node = findNode(id, currentNode());
+  if(node){ selectedLeaf = node; renderApp(); }
+};
+
+function findNode(id, root){
+  if(root.id === id) return root;
+  for(const c of root.children||[]){
+    const f = findNode(id, c);
+    if(f) return f;
+  }
+  return null;
+}
+
+function renderApp(){
+  const node = currentNode();
+  const app = document.getElementById('app');
+  let html = '';
+  if(navStack.length > 1){
+    html += `<div class="back-btn" onclick="goBack()">← Volver a ${navStack[navStack.length-2].name}</div>`;
+  }
+  html += renderInfoPanel(node);
+  html += renderChildren(node);
+  if(selectedLeaf) html += renderLeafPanel(selectedLeaf);
+  app.innerHTML = html;
+}
+
+function render(){
+  renderBreadcrumb();
+  renderWires(currentNode());
+  renderApp();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+window.goBack = function(){
+  if(navStack.length > 1){ navStack.pop(); selectedLeaf=null; render(); }
+};
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>

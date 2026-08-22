@@ -1,0 +1,14 @@
+Resultados de Precision de Tipos (N=1000000)
+=============================================
+
+--- FLOAT (precision simple) ---
+Tipo de datos FLOAT
+Tiempo calculo aureo (FLOAT): 0.08 segundos
+Tiempo calculo iterativo (INT): 0.02 segundos
+Precision (Error Medio): 17.552436
+
+--- DOUBLE (precision doble) ---
+Tipo de datos DOUBLE
+Tiempo calculo aureo (DOUBLE): 0.07 segundos
+Tiempo calculo iterativo (INT): 0.02 segundos
+Precision (Error Medio): 0.000000

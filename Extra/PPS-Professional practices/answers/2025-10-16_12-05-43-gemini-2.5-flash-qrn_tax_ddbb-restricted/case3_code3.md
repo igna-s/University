@@ -1,0 +1,5 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :-------: | :------- | :---------- |
+| 2 | `from qiskit import qasm2 as qasm` | Deprecation -> Deprecation of qiskit.qasm module | f24d40d4-9a98-4431-85f5-3e6f98fee373 | qiskit.qasm | |
+| 9 | `qasm_str = qasm.dumps(qc)` | Deprecation -> Deprecation of QuantumCircuit.qasm() method | b5111ded-f178-4354-a8db-f475bdf64d57 | QuantumCircuit.qasm() | `qasm2.dumps(qc)` |
+| 10 | `parsed_circuit = qasm.loads(qasm_str)` | Deprecation -> The legacy OpenQASM 2 parser module previously present in qiskit.qasm has been deprecated. It will be removed in the Qiskit 1.0.0 release. The legacy OpenQASM 2 parser has been superseded by the qiskit.qasm2 module which provides a faster more correct parser for OpenQASM 2. | d81c6f52-5772-420b-9094-0c9d7d5b64a2 | qiskit.qasm | `parsed_circuit = qiskit.qasm2.loads(qasm_str)` |

@@ -1,0 +1,635 @@
+% =============================================================================
+%  Resolución del problema de N-Reinas mediante el algoritmo de Grover
+%  Formato: paper científico a dos columnas — 3 hojas A4
+% =============================================================================
+\documentclass[9pt, a4paper]{extarticle}
+\usepackage{multicol}
+
+% --- Codificación y tipografía ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{mathpazo}                 % Palatino
+\usepackage[scaled=0.88]{helvet}      % Helvética
+\usepackage[scaled=0.82]{beramono}    % Bera Mono
+\usepackage{microtype}
+
+% --- Matemáticas ---
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{physics}
+
+% --- Figuras y tablas ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup{font=scriptsize, labelfont=bf, labelsep=period, skip=1pt}
+
+% --- Layout (ajustado para 3 hojas) ---
+\usepackage[
+    top=1.2cm, bottom=1.5cm,
+    left=1.1cm, right=1.1cm,
+    headheight=16pt,
+    footskip=0.6cm
+]{geometry}
+
+% --- Colores ---
+\usepackage[dvipsnames,svgnames,x11names]{xcolor}
+\definecolor{accent}{HTML}{1A3C6E}
+\definecolor{accentlight}{HTML}{2D6AB6}
+\definecolor{secgray}{HTML}{444444}
+\definecolor{rulegold}{HTML}{B8860B}
+\definecolor{boxbg}{HTML}{F0F4FA}
+
+% --- Links ---
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accentlight,
+    citecolor=accent,
+    urlcolor=accentlight,
+    pdftitle={N-Reinas via Grover},
+    pdfauthor={UNLP}
+}
+
+% --- Secciones personalizadas ---
+\usepackage{titlesec}
+\titleformat{\section}
+    {\normalsize\bfseries\sffamily\color{accent}}
+    {\thesection.}{0.4em}{\MakeUppercase}
+\titleformat{\subsection}
+    {\small\bfseries\sffamily\color{secgray}}
+    {\thesubsection}{0.4em}{}
+\titleformat{\subsubsection}
+    {\footnotesize\bfseries\itshape\color{secgray}}
+    {\thesubsubsection}{0.4em}{}
+\titlespacing*{\section}{0pt}{6pt plus 2pt minus 2pt}{2pt plus 1pt}
+\titlespacing*{\subsection}{0pt}{4pt plus 1pt minus 1pt}{1pt}
+\titlespacing*{\subsubsection}{0pt}{3pt plus 1pt minus 1pt}{1pt}
+
+% --- Header/Footer ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\headrule}{\hbox to\headwidth{%
+    \color{accent}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\scriptsize\sffamily\color{secgray}N-Reinas v\'ia Algoritmo de Grover}
+\fancyhead[R]{\scriptsize\sffamily\color{secgray}(E1307) Intro.\ Arq.\ Comp.\ Cu\'anticas --- UNLP}
+\fancyfoot[C]{\scriptsize\sffamily\color{secgray}\thepage}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0.6pt}%
+  \renewcommand{\headrule}{\hbox to\headwidth{%
+    \color{accent}\leaders\hrule height \headrulewidth\hfill}}%
+  \fancyhead[L]{\scriptsize\sffamily\color{secgray}N-Reinas v\'ia Algoritmo de Grover}%
+  \fancyhead[R]{\scriptsize\sffamily\color{secgray}(E1307) Intro.\ Arq.\ Comp.\ Cu\'anticas --- UNLP}%
+  \fancyfoot[C]{\scriptsize\sffamily\color{secgray}\thepage}%
+}
+
+% --- Enumerados ---
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=1.2em}
+
+% --- Decoración ---
+\newcommand{\accentrule}{\par\noindent\textcolor{rulegold}{\rule{\columnwidth}{0.8pt}}\par}
+\newcommand{\BigO}{\mathcal{O}}
+
+% --- Espaciado ultra-compacto ---
+\setlength{\parskip}{0.2pt plus 0.1pt minus 0.1pt}
+\setlength{\abovecaptionskip}{1pt}
+\setlength{\belowcaptionskip}{0pt}
+\setlength{\textfloatsep}{2pt plus 1pt minus 1pt}
+\setlength{\floatsep}{2pt plus 1pt minus 1pt}
+\setlength{\intextsep}{2pt plus 1pt minus 1pt}
+\setlength{\abovedisplayskip}{2pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{2pt plus 1pt minus 1pt}
+\setlength{\columnsep}{0.45cm}
+\raggedbottom
+
+% =============================================================================
+\begin{document}
+
+% ======================== TÍTULO ========================
+\begin{center}
+
+\vspace*{-0.4cm}
+\includegraphics[width=4cm]{LOGO-Ingenieria-color-01-01-1536x587.png}
+
+\vspace{0.02cm}
+{\fontsize{7.5}{9}\selectfont\sffamily\color{secgray}%
+UNIVERSIDAD NACIONAL DE LA PLATA\; $\cdot$\; FACULTAD DE INGENIER\'IA}
+
+\vspace{0.01cm}
+{\fontsize{7.5}{9}\selectfont\sffamily\color{secgray}%
+C\'atedra (E1307) Introducci\'on a la Arquitectura de Computadoras Cu\'anticas}
+
+\vspace{0.04cm}
+\textcolor{accent}{\rule{\textwidth}{1.5pt}}
+\vspace{0.03cm}
+
+{\fontsize{13}{16}\selectfont\bfseries\sffamily\color{accent}%
+Resoluci\'on del Problema de N-Reinas\par
+\vspace{2pt}
+mediante el Algoritmo de Grover}
+
+\vspace{-0.2cm}
+\textcolor{accent}{\rule{\textwidth}{0.5pt}}
+\vspace{-0.1cm}
+
+{\small\sffamily Ignacio Andres Schwindt (03229/0) $\cdot$ Viernes 17 de Junio de 2026}
+
+\end{center}
+
+\vspace{0.03cm}
+
+\noindent
+\colorbox{boxbg}{%
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep\relax}
+\vspace{2pt}
+{\small\sffamily\bfseries\color{accent} RESUMEN}\par\vspace{1pt}
+{\small
+Se presenta una implementaci\'on del algoritmo de b\'usqueda cu\'antica de Grover
+aplicada al problema combinatorio de las N-reinas. La codificaci\'on asigna
+$k = \lceil\log_2 N\rceil$ qubits por reina para representar su columna,
+eliminando conflictos de fila por construcci\'on. El or\'aculo detecta conflictos
+de columna y diagonal mediante enumeraci\'on expl\'icita de patrones y qubits flag,
+aplicando fase $-1$ a las configuraciones v\'alidas a trav\'es del esquema
+\emph{compute--phase--uncompute}. Se verifica la correcci\'on completa para
+$N = 4$ (14~qubits, 8~iteraciones, $P(\text{\'exito}) \approx 99.6\%$) y se
+valida el or\'aculo de forma aislada para $N = 5$ (30~qubits), confirmando que
+las 10 soluciones conocidas son correctamente identificadas.
+Se discuten las limitaciones de escalabilidad y posibles optimizaciones
+mediante sumadores cu\'anticos.
+}
+\vspace{2pt}
+\end{minipage}}
+
+\vspace{0.01cm}
+\noindent
+\colorbox{boxbg}{%
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep\relax}
+\vspace{2pt}
+{\small\sffamily\bfseries\color{accent} PALABRAS CLAVE}\quad
+{\small\itshape
+Computaci\'on cu\'antica $\cdot$ Algoritmo de Grover $\cdot$ N-reinas $\cdot$
+Or\'aculo cu\'antico $\cdot$ Qiskit $\cdot$ B\'usqueda no estructurada}
+\vspace{2pt}
+\end{minipage}}
+
+\vspace{0.07cm}
+
+\begin{multicols}{2}
+\raggedcolumns
+
+% ======================== 1. INTRODUCCIÓN ========================
+\section{Introducci\'on}
+
+El problema de las N-reinas consiste en ubicar $N$ reinas en un tablero
+de $N \times N$ de modo que ninguna amenace a otra: sin compartir fila,
+columna ni diagonal. Formulado originalmente por Max Bezzel en 1848 y
+estudiado extensivamente por Gauss, el problema se ha convertido en un
+cl\'asico de la teor\'ia combinatoria y la ciencia de la
+computaci\'on~\cite{nqueens}.
+Para $N = 4$ existen exactamente 2~soluciones; para $N = 5$, hay 10;
+para $N = 8$ (tablero est\'andar), 92; y la cantidad crece r\'apidamente.
+La b\'usqueda cl\'asica por fuerza bruta tiene complejidad $\BigO(N!)$
+al explorar permutaciones de columnas, y aunque algoritmos de backtracking
+mejoran esto en la pr\'actica, la complejidad en el peor caso sigue siendo
+exponencial.
+
+El \textbf{algoritmo de Grover}~\cite{grover1996}, publicado en 1996,
+ofrece una aceleraci\'on cuadr\'atica para problemas de b\'usqueda no
+estructurada: si hay $M$ soluciones en un espacio de tama\~no $\mathcal{N}$,
+las encuentra en $\BigO\!\big(\sqrt{\mathcal{N}/M}\big)$ consultas al
+or\'aculo, contra $\BigO(\mathcal{N}/M)$ en el caso cl\'asico. Esta
+aceleraci\'on es \'optima: Bennett, Bernstein, Brassard y Vazirani
+demostraron que ning\'un algoritmo cu\'antico puede hacerlo mejor
+para b\'usqueda no estructurada~\cite{bennett1997}.
+
+En este trabajo se presenta una implementaci\'on en Python
+utilizando Qiskit~\cite{qiskit}, simulada con Aer, que cubre la
+codificaci\'on cu\'antica del tablero, el dise\~no del or\'aculo, el
+difusor de Grover, y resultados para $N = 4$ (ejecuci\'on completa) y
+$N = 5$ (val. or\'aculo).
+
+Adicionalmente, se discute el impacto del mapeo de las restricciones combinatorias hacia compuertas reversibles. Aunque la ejecuci\'on f\'isica de algoritmos con tal profundidad a\'un est\'a limitada por el ruido inherente a los procesadores NISQ (\emph{Noisy Intermediate-Scale Quantum}), esta exploraci\'on establece un caso de estudio \'util sobre c\'omo estructurar y validar or\'aculos de decisi\'on complejos de forma modular.
+
+% ======================== 2. ALGORITMO DE GROVER ========================
+\section{El algoritmo de Grover}
+
+\subsection{Principio y flujo general}
+
+Grover opera sobre $n$ qubits con
+$\mathcal{N} = 2^n$ estados. El or\'aculo
+$U_f$ aplica $U_f\ket{x} = (-1)^{f(x)}\ket{x}$
+(\emph{phase kickback} a las soluciones).
+El algoritmo (Fig.~\ref{fig:high_level}) tiene tres etapas:
+\textbf{(1)}~Inicializaci\'on en superposici\'on uniforme
+$\ket{\psi_0} = H^{\otimes n}\ket{0}^{\otimes n}$.
+\textbf{(2)}~Iteraci\'on de Grover (repetida $t^*$ veces):
+or\'aculo $U_f$ + difusor $D = 2\ket{\psi_0}\!\bra{\psi_0} - I$.
+\textbf{(3)}~Medici\'on en la base computacional.
+
+La medici\'on colapsa el estado del sistema, revelando la soluci\'on con una alta probabilidad si se escogi\'o el n\'umero correcto de iteraciones. Este comportamiento probabil\'istico es propio de los algoritmos cu\'anticos, donde la interferencia constructiva amplifica la amplitud de los estados que cumplen con las condiciones del or\'aculo.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.72\columnwidth]{grover_high_level.png}
+    \caption{Flujo del algoritmo de Grover para N-reinas.}
+    \label{fig:high_level}
+\end{figure}
+
+\subsection{Interpretaci\'on geom\'etrica}
+
+El estado del sistema vive en un plano bidimensional
+generado por:
+\begin{equation}
+    \ket{\alpha} = \frac{1}{\sqrt{\mathcal{N}-M}} \sum_{f(x)=0} \ket{x},\quad
+    \ket{\beta} = \frac{1}{\sqrt{M}} \sum_{f(x)=1} \ket{x}
+\end{equation}
+El estado inicial $\ket{\psi_0}$ forma un \'angulo $\theta/2 = \arcsin\sqrt{M/\mathcal{N}}$
+con $\ket{\alpha}$. Cada iteraci\'on rota el estado un \'angulo $\theta$
+hacia $\ket{\beta}$.
+
+\subsection{Iteraciones \'optimas}
+
+El n\'umero \'optimo de iteraciones es:
+\begin{equation}
+    t^* = \left\lfloor \frac{\pi}{2\theta} - \frac{1}{2} \right\rceil,\;\;
+    \theta = 2\arcsin\!\sqrt{\frac{M}{\mathcal{N}}}
+\end{equation}
+Para $N\!=\!4$: $\mathcal{N}\!=\!256$, $M\!=\!2$, $\theta \approx 0.177$~rad,
+$t^*\!=\!8$, $P(\text{\'exito})\!\approx\!99.6\%$.
+\textbf{Nota:} Si se excede $t^*$, la probabilidad \emph{disminuye}
+--- el algoritmo ``pasa de largo'' la soluci\'on.
+Este fen\'omeno no tiene an\'alogo cl\'asico.
+
+% ======================== 3. CODIFICACIÓN ========================
+\section{Codificaci\'on cu\'antica}
+
+\subsection{Eliminaci\'on de la simetr\'ia de fila}
+
+La primera decisi\'on de dise\~no es fijar impl\'icitamente
+cada reina~$i$ en la fila~$i$. Esto elimina conflictos de fila
+por construcci\'on y reduce el espacio de b\'usqueda de
+$N^{2N}$ (posiciones arbitrarias) a $N^N$ (solo columnas por reina).
+
+\subsection{Registro de estado}
+
+La columna de la reina $i$ se codifica en
+$k = \lceil\log_2 N\rceil$ qubits binarios. Los qubits
+$q_{ik}, q_{ik+1}, \ldots, q_{ik+k-1}$ representan la columna
+en base~2, con $q_{ik}$ como bit menos significativo (LSB).
+Para $N\!=\!4$: $k\!=\!2$, registro total de $n = Nk = 8$ qubits
+(Fig.~\ref{fig:encoding}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.72\columnwidth]{nqueens_encoding.png}
+    \caption{Codificaci\'on de $[1,3,0,2]$ para $N=4$: 2~qubits por reina.}
+    \label{fig:encoding}
+\end{figure}
+
+\subsection{Qubits ancilla (flags)}
+
+El or\'aculo requiere qubits auxiliares:
+\textbf{Flags de pares}: un qubit por cada par $(i,j)$ con $i<j$,
+total $\binom{N}{2}$ flags.
+\textbf{Flags de rango} (solo cuando $2^k > N$): un qubit por reina
+para detectar columnas fuera de $[0, N)$.
+Para $N\!=\!4$, $2^2 = 4 = N$, no se necesitan; para $N\!=\!5$
+($2^3 = 8 > 5$), se agregan 5 flags.
+
+\begin{table}[H]
+    \centering
+    \caption{Recursos del circuito seg\'un $N$.}
+    \label{tab:resources}
+    \scriptsize
+    \begin{tabular}{@{}ccccccc@{}}
+        \toprule
+        $N$ & $k$ & Estado & F.\,pares & F.\,rango & Total & Sols. \\
+        \midrule
+        4 & 2 & 8  & 6  & 0 & 14 & 2  \\
+        5 & 3 & 15 & 10 & 5 & 30 & 10 \\
+        6 & 3 & 18 & 15 & 6 & 39 & 4  \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+% ======================== 4. ORÁCULO ========================
+\section{Dise\~no del or\'aculo}
+
+El or\'aculo es el componente central del circuito.
+Aplica fase $-1$ exclusivamente a los estados que representan
+configuraciones v\'alidas, en tres etapas (Fig.~\ref{fig:oracle}):
+\emph{compute}, \emph{phase flip} y \emph{uncompute}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.72\columnwidth]{oracle_structure.png}
+    \caption{Estructura: Compute $\to$ Phase Flip $\to$ Uncompute.}
+    \label{fig:oracle}
+\end{figure}
+
+\subsection{Compute Flags}
+
+Para cada par $(i, j)$, $i < j$, se verifica conflicto
+($c_i = c_j$ o $|c_i - c_j| = j - i$)
+mediante \textbf{enumeraci\'on expl\'icita de patrones}
+(Fig.~\ref{fig:conflict}).
+
+\vspace{0.2cm}
+\noindent\textbf{Costo Computacional:} Esta verificaci\'on minimiza el ancho aplicando compuertas $X$ \textit{in-place}, pero su profundidad escala como $\BigO(N^3 \log^2 N)$ debido a las Toffoli generalizadas (MCX) requeridas. Esto explica el enorme costo en $N \ge 5$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.72\columnwidth]{conflict_detection.png}
+    \caption{Detecci\'on de conflicto $(c_i, c_j)$ con \texttt{match\_pattern}.}
+    \label{fig:conflict}
+\end{figure}
+
+\subsubsection{Funci\'on match\_pattern}
+
+Esta es la pieza clave de la detecci\'on. Dado un registro
+de $k$ qubits y un valor objetivo $v$, aplica puertas $X$ a cada
+qubit cuyo bit correspondiente en $v$ es 0:
+\begin{equation}
+    \bigotimes_{b=0}^{k-1} X^{1-v_b} \ket{v} = \ket{1}^{\otimes k}
+\end{equation}
+Esto transforma la condici\'on ``el registro vale $v$'' en
+``todos los qubits valen 1'', que es exactamente lo que detecta
+una puerta MCX (Toffoli generalizada). Un MCX posterior voltea el
+flag correspondiente. Finalmente, se aplica la misma secuencia de $X$
+para restaurar el registro ($X^2 = I$).
+Para un estado computacional fijo $\ket{c_i, c_j}$, exactamente
+una combinaci\'on de patrones coincide, garantizando que el flag se
+voltea 0 \'o 1 veces.
+
+\subsubsection{Detecci\'on de fuera de rango}
+
+Para $N$ que no es potencia de 2 (e.g.\ $N = 5$ con $k = 3$), los
+valores de columna $\{N, N{+}1, \ldots, 2^k{-}1\}$ son inv\'alidos.
+Un flag adicional por reina se activa si su columna codifica un valor
+$\geq N$, usando la misma t\'ecnica de \texttt{match\_pattern}.
+
+\subsection{Phase Flip}
+
+Una vez computados todos los flags, se aplica $-1$ condicionada a
+que todos valgan 0 (sin conflictos ni columnas fuera de rango):
+\begin{equation}
+    X^{\otimes m}\!\cdot\!\big(H\!\cdot\!\text{MCX}\!\cdot\!H\big)\!\cdot\!X^{\otimes m}
+\end{equation}
+donde $m$ es el n\'umero total de flags. La secuencia $X^{\otimes m}$
+convierte $\ket{0}^{\otimes m}$ en $\ket{1}^{\otimes m}$ (que dispara el
+MCX). El truco $H \cdot \text{MCX} \cdot H$ implementa un MCZ (fase
+controlada):
+\begin{equation}
+    HXH = Z \implies H \cdot \text{MCX}(\vec{c} \to t) \cdot H = \text{MCZ}(\vec{c}, t)
+\end{equation}
+
+\subsection{Uncompute Flags}
+
+Para que el or\'aculo sea unitario y reutilizable entre iteraciones,
+las ancillas deben volver a $\ket{0}$. Se deshace la etapa de Compute
+aplicando las mismas operaciones en orden inverso. Dado que $X$ y MCX
+son autoinversas, esta inversi\'on es directa.
+
+\vspace{0.3cm}
+\noindent
+\colorbox{boxbg}{%
+\begin{minipage}{\dimexpr\columnwidth-2\fboxsep\relax}
+\vspace{2pt}
+{\small\sffamily\bfseries\color{accent} COMPARACI\'ON DE CODIFICACI\'ON}\par\vspace{1pt}
+{\small\itshape
+A diferencia de formulaciones basadas en simuladores cu\'anticos
+de prop\'osito especial con \'atomos en redes \'opticas~\cite{torggler2019},
+y de mapeos espaciales que utilizan
+$N^2$ qubits asignando uno a cada casillero~\cite{jha2018, santhosh2023},
+el enfoque de codificaci\'on por columna presentado aqu\'i requiere solo
+$N \lceil\log_2 N\rceil$ qubits de estado. Aunque esto reduce dr\'asticamente
+el espacio de Hilbert necesario y garantiza por construcci\'on que no haya
+conflictos de fila, conlleva el costo de un or\'aculo de decisi\'on con
+mayor profundidad para resolver el resto de las restricciones combinatorias.
+}
+\vspace{2pt}
+\end{minipage}}
+\vspace{0.3cm}
+
+% ======================== 5. DIFUSOR ========================
+\section{El difusor de Grover}
+
+Implementa la reflexi\'on $D = 2\ket{\psi_0}\!\bra{\psi_0} - I$
+(inversi\'on sobre la media) sobre los $n$ qubits de estado.
+Su descomposici\'on en puertas es:
+\begin{equation}
+    D = H^{\otimes n}\!\cdot\!X^{\otimes n}\!\cdot\!\text{MCZ}
+        \!\cdot\!X^{\otimes n}\!\cdot\!H^{\otimes n}
+\end{equation}
+El circuito (Fig.~\ref{fig:diffuser}) opera: (1)~pasar a la base de
+Hadamard con $H^{\otimes n}$; (2)~marcar $\ket{0\ldots 0}$ con
+$X^{\otimes n}$ seguido de MCZ; (3)~deshacer $X^{\otimes n}$ y volver
+a la base computacional.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.68\columnwidth]{diffuser_circuit.png}
+    \caption{Circuito del difusor para 8~qubits de estado.}
+    \label{fig:diffuser}
+\end{figure}
+
+\noindent\textbf{Efecto sobre las amplitudes.} Sea $\bar{a}$ la amplitud media.
+El difusor transforma cada amplitud $a_x \to 2\bar{a} - a_x$:
+los estados con amplitud por debajo de la media se aten\'uan,
+mientras que las soluciones (con amplitud negativa grande) se
+reflejan a valores positivos grandes.
+
+% ======================== 6. RESULTADOS ========================
+\section{Resultados}
+
+\subsection{\texorpdfstring{$N=4$}{N=4}: ejecuci\'on completa}
+
+Para $N = 4$, el circuito completo se simul\'o con el backend
+\texttt{AerSimulator} (m\'etodo \texttt{statevector}) durante 4096~shots.
+
+\begin{table}[H]
+    \centering
+    \caption{Par\'ametros del circuito para $N = 4$.}
+    \label{tab:params}
+    \scriptsize
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        Par\'ametro & Valor \\
+        \midrule
+        Qubits de estado & 8 (2~bits/columna) \\
+        Flags de pares & 6 \\
+        Qubits totales & 14 \\
+        Espacio de b\'usqueda & $2^8 = 256$ \\
+        Soluciones cl\'asicas & 2 \\
+        Iteraciones \'optimas & 8 \\
+        Profundidad (transpilada) & $\sim$41\,000 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Las dos soluciones v\'alidas, $[1,3,0,2]$ y $[2,0,3,1]$,
+concentran $\sim\!99.6\%$ de la probabilidad total
+($\sim$49.6\% cada una, Fig.~\ref{fig:results}).
+La decodificaci\'on del bitstring medido se realiza invirtiendo
+el orden de bits (Qiskit imprime MSB primero) y reconstruyendo
+la columna de cada reina:
+$\text{col}_i = \sum_{b=0}^{k-1} c_{ik+b} \cdot 2^b$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.78\columnwidth]{measurement_results.png}
+    \caption{Probabilidad tras 8 iteraciones ($N\!=\!4$). Las dos soluciones
+    dominan con $\sim$49.6\% cada una; ruido $<1\%$.}
+    \label{fig:results}
+\end{figure}
+
+\subsection{\texorpdfstring{$N=5$}{N=5}: validaci\'on del or\'aculo}
+
+El circuito completo para $N\!=\!5$ requiere 30~qubits y $\sim$44
+iteraciones ($\sim\!6\!\times\!10^5$ compuertas), fuera del alcance
+pr\'actico de la simulaci\'on cl\'asica.
+Sin embargo, se valid\'o el or\'aculo de forma aislada, preparando
+estados computacionales conocidos y midiendo los flags:
+
+Las \textbf{10 soluciones} cl\'asicas (obtenidas por fuerza bruta
+con \texttt{classical\_solutions}) resultaron en 0~flags activos
+en todos los casos.
+Los casos negativos testeados incluyeron:
+\begin{itemize}
+    \item $[0,0,0,0,0]$: todas en misma columna.
+    \item $[0,1,2,3,4]$: diagonal principal.
+    \item $[0,2,4,1,7]$: columna 7 fuera de rango ($\geq 5$).
+    \item $[1,3,5,0,2]$: columna 5 fuera de rango.
+\end{itemize}
+Todos fueron correctamente rechazados con flags $> 0$.
+Esto confirma que el or\'aculo separa perfectamente las
+configuraciones v\'alidas del resto del espacio de b\'usqueda.
+
+% ======================== 7. COMPLEJIDAD ========================
+\section{Complejidad y limitaciones}
+
+\subsection{Complejidad del or\'aculo}
+
+La enumeraci\'on expl\'icita de patrones produce:
+$\binom{N}{2} = \BigO(N^2)$ pares de reinas;
+hasta $\BigO(N)$ combinaciones conflictivas por par;
+cada verificaci\'on: $\BigO(k)$ puertas $X$ m\'as un MCX de $2k$ controles.
+Total: $\BigO(N^3)$ llamadas a MCX y $\BigO(N^3 \log N)$ compuertas elementales.
+Una implementaci\'on con \textbf{sumadores cu\'anticos} (\emph{quantum adders})
+permitir\'ia comparar columnas aritm\'eticamente, reduciendo los MCX
+por par de $\BigO(N)$ a $\BigO(\text{poly}(k))$.
+
+\subsection{Escalabilidad}
+
+\begin{table}[H]
+    \centering
+    \caption{Viabilidad de simulaci\'on seg\'un $N$.}
+    \label{tab:scale}
+    \scriptsize
+    \begin{tabular}{@{}cccl@{}}
+        \toprule
+        $N$ & Qubits & Iters. & Simulable \\
+        \midrule
+        4 & 14 & 8    & S\'i (\texttt{statevector}) \\
+        5 & 30 & 44   & Solo or\'aculo (\texttt{MPS}) \\
+        6 & 39 & $\sim$200 & No (simulador cl\'asico) \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Para $N \geq 5$, las dos v\'ias hacia la ejecuci\'on end-to-end son:
+(1)~hardware cu\'antico real con fidelidad y $T_1/T_2$ suficientes
+(aspiracional en 2026); o (2)~reescritura del or\'aculo con sumadores
+cu\'anticos para reducir la profundidad.
+
+% ======================== 8. CONCLUSIONES ========================
+\section{Conclusiones}
+
+\begin{enumerate}
+    \item \textbf{Correcci\'on verificada.}
+          Para $N\!=\!4$, el algoritmo completo encuentra las 2~soluciones
+          con $P \approx 99.6\%$. Para $N\!=\!5$, el or\'aculo clasifica
+          correctamente las 10 soluciones y rechaza todos los casos
+          inv\'alidos testeados.
+
+    \item \textbf{Aceleraci\'on cuadr\'atica.}
+          El algoritmo consulta el or\'aculo
+          $\BigO\!\big(\sqrt{\mathcal{N}/M}\big)$ veces, comparado con
+          $\BigO(\mathcal{N}/M)$ en b\'usqueda cl\'asica.
+          Para $N\!=\!4$: 8~iteraciones vs.\ $\sim$128 consultas cl\'asicas.
+
+    \item \textbf{Dise\~no modular.}
+          La separaci\'on en codificaci\'on, or\'aculo
+          (compute--phase--uncompute) y difusor permite extender o
+          reemplazar componentes de forma independiente.
+
+    \item \textbf{Limitaci\'on principal.}
+          La enumeraci\'on expl\'icita genera circuitos profundos
+          ($\sim$41\,000 de profundidad para $N\!=\!4$).
+          Sumadores cu\'anticos reducir\'ian significativamente la
+          profundidad para $N\!\geq\!5$.
+
+    \item \textbf{Perspectiva.}
+          La ejecuci\'on en hardware cu\'antico real requerir\'ia
+          tiempos de coherencia ($T_1$, $T_2$) muy superiores a los
+          disponibles actualmente, adem\'as de correcci\'on de errores
+          cu\'anticos. No obstante, la implementaci\'on sirve como
+          demostraci\'on conceptual de la ventaja cuadr\'atica de Grover
+          sobre problemas combinatorios.
+\end{enumerate}
+
+% ======================== BIBLIOGRAFÍA ========================
+\begin{thebibliography}{9}
+\small
+    \bibitem{grover1996}
+    L.\,K.~Grover,
+    ``\href{https://doi.org/10.1145/237814.237866}{A fast quantum mechanical algorithm for database search},''
+    \textit{Proc.\ 28th ACM STOC}, pp.\,212--219, 1996.
+
+    \bibitem{nielsen2010}
+    M.\,A.~Nielsen and I.\,L.~Chuang,
+    \href{https://doi.org/10.1017/CBO9780511976667}{\textit{Quantum Computation and Quantum Information}},
+    Cambridge Univ.\ Press, 10th Ann.\ Ed., 2010.
+
+    \bibitem{qiskit}
+    Qiskit Development Team,
+    ``\href{https://qiskit.org}{Qiskit: An open-source framework for quantum computing},''
+    2024.
+
+    \bibitem{nqueens}
+    J.~Bell and B.~Stevens,
+    ``\href{https://doi.org/10.1016/j.disc.2007.12.043}{A survey of known results and research areas for $n$-queens},''
+    \textit{Discrete Math.}, vol.\,309, no.\,1, pp.\,1--31, 2009.
+
+    \bibitem{bennett1997}
+    C.\,H.~Bennett, E.~Bernstein, G.~Brassard, and U.~Vazirani,
+    ``\href{https://doi.org/10.1137/S0097539796300933}{Strengths and weaknesses of quantum computing},''
+    \textit{SIAM J.\ Comput.}, vol.\,26, no.\,5, pp.\,1510--1523, 1997.
+
+    \bibitem{jha2018}
+    R.~Jha, D.~Das, A.~Dash, S.~Jayaraman, B.\,K.~Behera, and P.\,K.~Panigrahi,
+    ``\href{https://arxiv.org/abs/1806.10221}{A novel quantum N-queens solver algorithm and its simulation
+    and application to satellite communication using IBM Quantum Experience},''
+    arXiv:1806.10221 [quant-ph], 2018.
+
+    \bibitem{santhosh2023}
+    S.\,G.\,S.~Santhosh, P.~Joshi, A.~Barui, and P.\,K.~Panigrahi,
+    ``\href{https://arxiv.org/abs/2312.16312}{A quantum approach to solve N-queens problem},''
+    arXiv:2312.16312 [quant-ph], 2023.
+
+    \bibitem{torggler2019}
+    V.~Torggler, P.~Aumann, H.~Ritsch, and W.~Lechner,
+    ``\href{https://doi.org/10.22331/q-2019-06-03-149}{A quantum N-queens solver},''
+    \textit{Quantum}, vol.\,3, p.\,149, 2019.
+    arXiv:1803.00735 [quant-ph].
+\end{thebibliography}
+
+\end{multicols}
+
+\end{document}

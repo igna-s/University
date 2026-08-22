@@ -1,0 +1,493 @@
+
+══════════════════════════════════════════════════════
+  PASO 1: COMPILACIÓN
+══════════════════════════════════════════════════════
+make: Nothing to be done for 'all'.
+  => OK
+
+══════════════════════════════════════════════════════
+  PASO 2: VERIFICACIÓN DE MATRICES (cátedra)
+══════════════════════════════════════════════════════
+  [OK] /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m
+  [OK] /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m
+  [OK] /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+  [OK] /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m
+  [OK] /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m
+  [OK] /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+  [OK] /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m
+  [OK] /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m
+  [OK] /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+
+══════════════════════════════════════════════════════
+  EJERCICIO 1a: mm_naive optimizado (MPI)
+══════════════════════════════════════════════════════
+  C = A * B  |  B almacenada column-major  |  validación vs R*.m
+
+  ── N=512 ──────────────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1a 512 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  P=1  Tiempo=0.221720 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1a 512 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  P=2  Tiempo=0.131730 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1a 512 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  P=4  Tiempo=0.086039 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1a 512 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  P=8  Tiempo=0.088010 s  Validacion=OK
+
+  ── N=1024 ──────────────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1a 1024 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  P=1  Tiempo=4.683537 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1a 1024 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  P=2  Tiempo=3.317564 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1a 1024 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  P=4  Tiempo=2.464014 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1a 1024 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  P=8  Tiempo=1.661077 s  Validacion=OK
+
+  ── N=2048 ──────────────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1a 2048 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  P=1  Tiempo=109.213220 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1a 2048 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  P=2  Tiempo=71.717355 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1a 2048 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  P=4  Tiempo=46.468503 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1a 2048 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  P=8  Tiempo=36.100571 s  Validacion=OK
+
+
+══════════════════════════════════════════════════════
+  EJERCICIO 1b: C = A·A autoproducto (MPI)
+══════════════════════════════════════════════════════
+  Validación: rank 0 computa A×A secuencial e informa  (no requiere archivo R)
+
+  ── N=512 ──────────────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1b 512 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m
+N=512  P=1  Tiempo=0.086722 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1b 512 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m
+N=512  P=2  Tiempo=0.051722 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1b 512 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m
+N=512  P=4  Tiempo=0.047243 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1b 512 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m
+N=512  P=8  Tiempo=0.044777 s  Validacion=OK
+
+  ── N=1024 ──────────────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1b 1024 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m
+N=1024  P=1  Tiempo=0.875830 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1b 1024 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m
+N=1024  P=2  Tiempo=0.489413 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1b 1024 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m
+N=1024  P=4  Tiempo=0.397023 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1b 1024 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m
+N=1024  P=8  Tiempo=0.371057 s  Validacion=OK
+
+  ── N=2048 ──────────────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1b 2048 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m
+N=2048  P=1  Tiempo=6.618154 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1b 2048 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m
+N=2048  P=2  Tiempo=3.757596 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1b 2048 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m
+N=2048  P=4  Tiempo=2.995164 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1b 2048 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m
+N=2048  P=8  Tiempo=2.914105 s  Validacion=OK
+
+
+══════════════════════════════════════════════════════
+  EJERCICIO 1c: mmblk por bloques (MPI)  [BS=64 y BS=128]
+══════════════════════════════════════════════════════
+  C = A * B  |  B column-major  |  validación vs R*.m
+
+  ── N=512  BS=64 ──────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1c 512 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=64  P=1  Tiempo=0.175039 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1c 512 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=64  P=2  Tiempo=0.100089 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1c 512 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=64  P=4  Tiempo=0.061774 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1c 512 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=64  P=8  Tiempo=0.058583 s  Validacion=OK
+
+  ── N=512  BS=128 ──────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1c 512 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=128  P=1  Tiempo=0.208185 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1c 512 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=128  P=2  Tiempo=0.108821 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1c 512 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=128  P=4  Tiempo=0.092749 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1c 512 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=128  P=8  Tiempo=0.059971 s  Validacion=OK
+
+  ── N=1024  BS=64 ──────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1c 1024 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=64  P=1  Tiempo=1.665051 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1c 1024 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=64  P=2  Tiempo=0.868341 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1c 1024 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=64  P=4  Tiempo=0.550489 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1c 1024 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=64  P=8  Tiempo=0.408961 s  Validacion=OK
+
+  ── N=1024  BS=128 ──────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1c 1024 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=128  P=1  Tiempo=1.646535 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1c 1024 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=128  P=2  Tiempo=0.872262 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1c 1024 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=128  P=4  Tiempo=0.598103 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1c 1024 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=128  P=8  Tiempo=0.402857 s  Validacion=OK
+
+  ── N=2048  BS=64 ──────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1c 2048 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=64  P=1  Tiempo=13.123626 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1c 2048 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=64  P=2  Tiempo=7.459156 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1c 2048 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=64  P=4  Tiempo=4.555113 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1c 2048 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=64  P=8  Tiempo=3.114109 s  Validacion=OK
+
+  ── N=2048  BS=128 ──────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1c 2048 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=128  P=1  Tiempo=13.481348 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1c 2048 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=128  P=2  Tiempo=7.484043 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1c 2048 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=128  P=4  Tiempo=4.600836 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1c 2048 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=128  P=8  Tiempo=3.254014 s  Validacion=OK
+
+
+══════════════════════════════════════════════════════
+  EJERCICIO 1c BLAS: mmblk_blas (MPI + cblas_dgemm)
+══════════════════════════════════════════════════════
+  C = A * B  |  B column-major  |  validación vs R*.m
+
+mpicc -O2 -Wall -DUSE_BLAS -o p3Ej1c_blas p3Ej1c.c -lm -lblas
+  => BLAS OK
+  ── N=512  BS=64 ──────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1c_blas 512 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=64  P=1  Tiempo=0.110874 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1c_blas 512 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=64  P=2  Tiempo=0.057177 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1c_blas 512 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=64  P=4  Tiempo=0.054750 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1c_blas 512 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=64  P=8  Tiempo=0.045528 s  Validacion=OK
+
+  ── N=512  BS=128 ──────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1c_blas 512 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=128  P=1  Tiempo=0.159935 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1c_blas 512 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=128  P=2  Tiempo=0.075707 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1c_blas 512 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=128  P=4  Tiempo=0.051725 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1c_blas 512 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B512.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R512.m
+N=512  BS=128  P=8  Tiempo=0.042677 s  Validacion=OK
+
+  ── N=1024  BS=64 ──────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1c_blas 1024 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=64  P=1  Tiempo=0.985829 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1c_blas 1024 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=64  P=2  Tiempo=0.532474 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1c_blas 1024 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=64  P=4  Tiempo=0.352324 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1c_blas 1024 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=64  P=8  Tiempo=0.227946 s  Validacion=OK
+
+  ── N=1024  BS=128 ──────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1c_blas 1024 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=128  P=1  Tiempo=1.086061 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1c_blas 1024 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=128  P=2  Tiempo=0.591179 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1c_blas 1024 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=128  P=4  Tiempo=0.376276 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1c_blas 1024 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B1024.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R1024.m
+N=1024  BS=128  P=8  Tiempo=0.252350 s  Validacion=OK
+
+  ── N=2048  BS=64 ──────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1c_blas 2048 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=64  P=1  Tiempo=7.129864 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1c_blas 2048 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=64  P=2  Tiempo=4.042930 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1c_blas 2048 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=64  P=4  Tiempo=2.606192 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1c_blas 2048 64 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=64  P=8  Tiempo=1.610964 s  Validacion=OK
+
+  ── N=2048  BS=128 ──────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej1c_blas 2048 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=128  P=1  Tiempo=8.180213 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej1c_blas 2048 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=128  P=2  Tiempo=4.423271 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej1c_blas 2048 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=128  P=4  Tiempo=2.783621 s  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej1c_blas 2048 128 /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/A2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/B2048.m /mnt/d/Concurrencia-UNLP/Practica_1/Matrices/R2048.m
+N=2048  BS=128  P=8  Tiempo=1.779884 s  Validacion=OK
+
+
+══════════════════════════════════════════════════════
+  EJERCICIO 2: Mínimo, máximo y promedio (MPI)
+══════════════════════════════════════════════════════
+  Datos generados internamente (srand 42)  |  validación inline
+
+  ── N=512 ──────────────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej2 512
+N=512  P=1  Tiempo=0.001471 s
+  Min=0.001811  Max=999.996441  Promedio=499.764234
+  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej2 512
+N=512  P=2  Tiempo=0.001296 s
+  Min=0.001811  Max=999.996441  Promedio=499.764234
+  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej2 512
+N=512  P=4  Tiempo=0.000776 s
+  Min=0.001811  Max=999.996441  Promedio=499.764234
+  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej2 512
+N=512  P=8  Tiempo=0.001064 s
+  Min=0.001811  Max=999.996441  Promedio=499.764234
+  Validacion=OK
+
+  ── N=1024 ──────────────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej2 1024
+N=1024  P=1  Tiempo=0.006719 s
+  Min=0.001675  Max=999.999252  Promedio=500.122069
+  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej2 1024
+N=1024  P=2  Tiempo=0.005815 s
+  Min=0.001675  Max=999.999252  Promedio=500.122069
+  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej2 1024
+N=1024  P=4  Tiempo=0.006397 s
+  Min=0.001675  Max=999.999252  Promedio=500.122069
+  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej2 1024
+N=1024  P=8  Tiempo=0.012348 s
+  Min=0.001675  Max=999.999252  Promedio=500.122069
+  Validacion=OK
+
+  ── N=2048 ──────────────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej2 2048
+N=2048  P=1  Tiempo=0.037041 s
+  Min=0.000923  Max=999.999873  Promedio=499.988878
+  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej2 2048
+N=2048  P=2  Tiempo=0.023701 s
+  Min=0.000923  Max=999.999873  Promedio=499.988878
+  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej2 2048
+N=2048  P=4  Tiempo=0.024637 s
+  Min=0.000923  Max=999.999873  Promedio=499.988878
+  Validacion=OK
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej2 2048
+N=2048  P=8  Tiempo=0.050744 s
+  Min=0.000923  Max=999.999873  Promedio=499.988878
+  Validacion=OK
+
+
+══════════════════════════════════════════════════════
+  EJERCICIO 3: Transposición N×N (MPI_Alltoall)
+══════════════════════════════════════════════════════
+  Datos generados internamente  |  validación: T[j][i]==A[i][j]
+
+  ── N=512 ──────────────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej3 512
+N=512  P=1  Tiempo=0.006276 s  Validacion=OK (T[j][i]==A[i][j])
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej3 512
+N=512  P=2  Tiempo=0.004194 s  Validacion=OK (T[j][i]==A[i][j])
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej3 512
+N=512  P=4  Tiempo=0.002662 s  Validacion=OK (T[j][i]==A[i][j])
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej3 512
+N=512  P=8  Tiempo=0.003021 s  Validacion=OK (T[j][i]==A[i][j])
+
+  ── N=1024 ──────────────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej3 1024
+N=1024  P=1  Tiempo=0.047863 s  Validacion=OK (T[j][i]==A[i][j])
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej3 1024
+N=1024  P=2  Tiempo=0.021679 s  Validacion=OK (T[j][i]==A[i][j])
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej3 1024
+N=1024  P=4  Tiempo=0.015976 s  Validacion=OK (T[j][i]==A[i][j])
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej3 1024
+N=1024  P=8  Tiempo=0.020504 s  Validacion=OK (T[j][i]==A[i][j])
+
+  ── N=2048 ──────────────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej3 2048
+N=2048  P=1  Tiempo=0.213660 s  Validacion=OK (T[j][i]==A[i][j])
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej3 2048
+N=2048  P=2  Tiempo=0.070505 s  Validacion=OK (T[j][i]==A[i][j])
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej3 2048
+N=2048  P=4  Tiempo=0.064104 s  Validacion=OK (T[j][i]==A[i][j])
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej3 2048
+N=2048  P=8  Tiempo=0.102851 s  Validacion=OK (T[j][i]==A[i][j])
+
+
+══════════════════════════════════════════════════════
+  EJERCICIO 4: N-Reinas (Master-Worker / Bag of Tasks)
+══════════════════════════════════════════════════════
+  Mapeo dinámico — tareas NO uniformes — P=1 como referencia secuencial
+
+  ── N=12 reinas ───────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej4 12
+N=12  P=1 (sec)  UNIQUE=1787  TOTAL=14200  Tiempo=0.001740 s
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej4 12
+N=12  P=2  UNIQUE=1787  TOTAL=14200  Tiempo=0.001772 s
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej4 12
+N=12  P=4  UNIQUE=1787  TOTAL=14200  Tiempo=0.000744 s
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej4 12
+N=12  P=8  UNIQUE=1787  TOTAL=14200  Tiempo=0.000979 s
+
+  ── N=13 reinas ───────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej4 13
+N=13  P=1 (sec)  UNIQUE=9233  TOTAL=73712  Tiempo=0.009483 s
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej4 13
+N=13  P=2  UNIQUE=9233  TOTAL=73712  Tiempo=0.009501 s
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej4 13
+N=13  P=4  UNIQUE=9233  TOTAL=73712  Tiempo=0.003465 s
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej4 13
+N=13  P=8  UNIQUE=9233  TOTAL=73712  Tiempo=0.003335 s
+
+  ── N=14 reinas ───────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej4 14
+N=14  P=1 (sec)  UNIQUE=45752  TOTAL=365596  Tiempo=0.052923 s
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej4 14
+N=14  P=2  UNIQUE=45752  TOTAL=365596  Tiempo=0.054261 s
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej4 14
+N=14  P=4  UNIQUE=45752  TOTAL=365596  Tiempo=0.017911 s
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej4 14
+N=14  P=8  UNIQUE=45752  TOTAL=365596  Tiempo=0.032041 s
+
+
+══════════════════════════════════════════════════════
+  EJERCICIO 5: Merge Sort paralelo (árbol binario de fusiones)
+══════════════════════════════════════════════════════
+  Validación: igual a qsort secuencial  |  N potencia de 2
+
+  ── N=2^20 = 1048576 ─────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej5 1048576
+N=1048576  P=1  Tiempo=0.128133 s  Validacion=OK (igual a qsort secuencial)
+  Primeros 5: 11 13 15 20 64
+  Ultimos  5: 10485700 10485701 10485704 10485708 10485708
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej5 1048576
+N=1048576  P=2  Tiempo=0.072832 s  Validacion=OK (igual a qsort secuencial)
+  Primeros 5: 11 13 15 20 64
+  Ultimos  5: 10485700 10485701 10485704 10485708 10485708
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej5 1048576
+N=1048576  P=4  Tiempo=0.049126 s  Validacion=OK (igual a qsort secuencial)
+  Primeros 5: 11 13 15 20 64
+  Ultimos  5: 10485700 10485701 10485704 10485708 10485708
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej5 1048576
+N=1048576  P=8  Tiempo=0.046773 s  Validacion=OK (igual a qsort secuencial)
+  Primeros 5: 11 13 15 20 64
+  Ultimos  5: 10485700 10485701 10485704 10485708 10485708
+
+  ── N=2^22 = 4194304 ─────────────────
+  $ mpirun --oversubscribe --allow-run-as-root -np 1 ./p3Ej5 4194304
+N=4194304  P=1  Tiempo=0.558098 s  Validacion=OK (igual a qsort secuencial)
+  Primeros 5: 47 53 62 64 78
+  Ultimos  5: 41942991 41942998 41943004 41943007 41943038
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 2 ./p3Ej5 4194304
+N=4194304  P=2  Tiempo=0.343266 s  Validacion=OK (igual a qsort secuencial)
+  Primeros 5: 47 53 62 64 78
+  Ultimos  5: 41942991 41942998 41943004 41943007 41943038
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 4 ./p3Ej5 4194304
+N=4194304  P=4  Tiempo=0.223076 s  Validacion=OK (igual a qsort secuencial)
+  Primeros 5: 47 53 62 64 78
+  Ultimos  5: 41942991 41942998 41943004 41943007 41943038
+
+  $ mpirun --oversubscribe --allow-run-as-root -np 8 ./p3Ej5 4194304
+N=4194304  P=8  Tiempo=0.178992 s  Validacion=OK (igual a qsort secuencial)
+  Primeros 5: 47 53 62 64 78
+  Ultimos  5: 41942991 41942998 41943004 41943007 41943038
+
+
+══════════════════════════════════════════════════════
+  RESUMEN
+══════════════════════════════════════════════════════
+Fallos detectados: 0
+Resultados en:     /mnt/d/Concurrencia-UNLP/Practica_3/resultados.txt
+Fecha:             Wed Apr 22 18:02:54 -03 2026

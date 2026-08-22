@@ -1,0 +1,496 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=2
+}
+
+\title{Respuestas - Práctica 0\\Optimización de Algoritmos Secuenciales}
+\author{Concurrencia - Sistemas Distribuidos y Paralelos}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+% ============================
+% EJERCICIO 1: ÁLGEBRA DE MATRICES
+% ============================
+\section{Álgebra de Matrices}
+
+\subsection*{a. Multiplicación Naive y Localidad}
+
+\subsubsection*{iii. ¿Son realmente necesarias getValor() y setValor()?}
+
+No son necesarias para el cálculo, son una abstracción. El overhead es muy significativo (más del 50\% del tiempo en esta arquitectura) debido a que las llamadas se encuentran en el bucle más interno ($O(N^3)$).
+
+\begin{center}
+\begin{tabular}{|l|r|l|}
+\hline
+\textbf{Versión} & \textbf{Tiempo (s)} & \textbf{Notas} \\
+\hline
+mm\_naive (con calls) & 28.56 & Elevado overhead por llamadas \\
+mm\_direct (acceso dir) & 12.37 & \textasciitilde56\% de mejora al eliminar calls \\
+mm\_col (B column-major) & 4.18 & Gran mejora por localidad espacial \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsubsection*{iv. Comparación Row-major vs Column-major (B)}
+
+La versión con B en column-major es considerablemente más rápida.
+
+\textbf{¿Cómo se relaciona con el principio de localidad?}
+
+Se relaciona con la Localidad Espacial. Al estar B en column-major, el acceso B[j*N+k] en el bucle interno (índice k) es contiguo en memoria, lo que permite aprovechar mejor las líneas de caché y reducir los cache misses. En la versión row-major, cada acceso a B salta una fila entera (N elementos), provocando constantes fallos de caché.
+
+\subsection*{b. Multiplicación C = A*A}
+
+\subsubsection*{¿Cuál obtiene mejor rendimiento?}
+
+La Estrategia 2 (reordenar A a column-major antes de multiplicar). El impacto de las instrucciones adicionales para reordenar es despreciable ($O(N^2)$) frente al beneficio de la mejora en localidad durante la multiplicación ($O(N^3)$).
+
+\begin{center}
+\begin{tabular}{|l|r|l|}
+\hline
+\textbf{Estrategia} & \textbf{Tiempo (s)} & \textbf{Notas} \\
+\hline
+Estrategia 1 (Row-Row) & 28.56 & Misma performance que naive \\
+Estrategia 2 (Row-Col) & 4.46 & Incluye tiempo de reordenamiento \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsubsection*{¿Tiene impacto el número de instrucciones adicionales para reordenar?}
+
+No significativamente. El reordenamiento es $O(N^2)$ mientras que la multiplicación es $O(N^3)$. Para N grande, el beneficio de la mejora en localidad domina el costo de reordenar.
+
+\subsection*{c. Algoritmo mmblk (Bloques)}
+
+Funciona dividiendo las matrices en sub-matrices (bloques) de tamaño BSxBS. Esto mejora la Localidad Temporal, ya que los datos de un bloque permanecen en los niveles superiores de la jerarquía de memoria (caché L1/L2) mientras se operan.
+
+\begin{center}
+\begin{tabular}{|r|r|r|}
+\hline
+\textbf{Tamaño de Bloque (BS)} & \textbf{Tiempo mmblk (s)} & \textbf{Tiempo mmblk\_blas (s)} \\
+\hline
+16 & 3.70 & 3.50 \\
+32 & 3.95 & 3.12 \\
+64 & 3.50 & 2.90 (Óptimo) \\
+128 & 3.50 & 3.06 \\
+\hline
+\end{tabular}
+\end{center}
+
+El mejor rendimiento se obtiene con BS=64 para mmblk\_blas. Comparado con mm\_naive (28.56s), la mejora es de casi 10x.
+
+\subsection*{d. Algoritmo mmblk\_blas}
+
+A diferencia de mmblk.c, mmblk\_blas optimiza el acceso al bloque de B copiándolo a un buffer temporal en orden column-major (packing). Esto garantiza que el bucle más interno siempre acceda a memoria de forma contigua, independientemente de cómo esté almacenada la matriz B original.
+
+\subsection*{e. Matrices Triangulares}
+
+\begin{center}
+\begin{tabular}{|l|r|r|r|}
+\hline
+\textbf{Operación} & \textbf{Naive (s)} & \textbf{Optimizado (s)} & \textbf{Mejora} \\
+\hline
+MU & 13.64 & 5.06 & $\approx 2.7\times$ \\
+ML & 15.07 & 5.36 & $\approx 2.8\times$ \\
+UM & 17.51 & 5.79 & $\approx 3.0\times$ \\
+LM & 17.61 & 5.86 & $\approx 3.0\times$ \\
+\hline
+\end{tabular}
+\end{center}
+
+La solución que no almacena ceros (o que no los opera) es significativamente más rápida porque reduce el número de operaciones de floating point a la mitad (aprox $\frac{1}{2} N^3$) y mejora el tráfico de memoria al no leer datos innecesarios.
+
+% ============================
+% EJERCICIO 2: FIBONACCI
+% ============================
+\section{El programa fib.c}
+
+\subsection*{Comparación de Estrategias}
+
+\subsubsection*{¿Cuál es más rápido?}
+
+La estrategia iterativa es órdenes de magnitud más rápida para cualquier N > 10. Para N=50, la diferencia es de nanosegundos frente a minutos.
+
+\begin{center}
+\begin{tabular}{|r|r|r|}
+\hline
+\textbf{N} & \textbf{Iterativa (s)} & \textbf{Recursiva (s)} \\
+\hline
+10 & 0.000000021 & 0.000000512 \\
+20 & 0.000000045 & 0.000063211 \\
+30 & 0.000000072 & 0.007541290 \\
+40 & 0.000000095 & 0.455801796 \\
+45 & 0.000000112 & 5.226201105 \\
+50 & 0.000000125 & $\approx 58.00$ (estimado) \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsubsection*{¿Por qué se produce esa diferencia?}
+
+\begin{enumerate}
+\item \textbf{Complejidad Algorítmica:}
+\begin{itemize}
+    \item Iterativa: $O(n)$. Solo realiza una pasada por el bucle sumando los dos términos anteriores.
+    \item Recursiva: $O(\phi^n) \approx O(1.618^n)$. Cada llamada genera dos nuevas llamadas, creando un árbol exponencial.
+\end{itemize}
+
+\item \textbf{Superposición de Tareas (Overlapping Subproblems):}
+La versión recursiva recalcula los mismos valores millones de veces. Para calcular Fib(50), calcula Fib(49) y Fib(48). Pero para Fib(49), vuelve a calcular Fib(48) desde cero.
+
+\item \textbf{Overhead de Llamadas:}
+Cada llamada recursiva usa el stack (pila de llamadas), consumiendo tiempo y memoria adicional.
+\end{enumerate}
+
+% ============================
+% EJERCICIO 3: OPTIMIZACIÓN DE INSTRUCCIONES
+% ============================
+\section{Optimización de Instrucciones}
+
+\subsection*{a. Evaluación de Operaciones Básicas}
+
+\begin{center}
+\begin{tabular}{|l|r|r|l|}
+\hline
+\textbf{Operación} & \textbf{Tiempo Total (s)} & \textbf{Tiempo Prom. (s)} & \textbf{Notas} \\
+\hline
+Suma (+)     & 0.2923 & $\approx 2.9 \times 10^{-9}$ & Rápida \\
+Resta (-)    & 0.3149 & $\approx 3.1 \times 10^{-9}$ & Rápida \\
+Producto (*) & 0.3340 & $\approx 3.3 \times 10^{-9}$ & Levemente más lento \\
+División (/) & 0.2904 & $\approx 2.9 \times 10^{-9}$ & Similar a suma \\
+\hline
+\end{tabular}
+\end{center}
+
+(Medido con N=10.000.000 elementos, R=10 repeticiones, sin optimización del compilador)
+
+\subsubsection*{¿Qué operación demora más tiempo?}
+
+El producto es la que demanda más tiempo en esta medición. La división, contrariamente a lo que podría esperarse, no es significativamente más lenta que la suma en hardware moderno con unidades FPU avanzadas.
+
+\subsubsection*{¿Qué ocurre si los valores son potencias de 2?}
+
+Para números de punto flotante (double), el tiempo de ejecución de la FPU no varía significativamente. Sin embargo, con enteros, el compilador podría optimizar divisiones por potencias de 2 reemplazándolas por desplazamientos de bits (shifts), lo cual es mucho más rápido.
+
+\subsection*{b. División vs Multiplicación}
+
+\begin{center}
+\begin{tabular}{|l|r|r|l|}
+\hline
+\textbf{Estrategia} & \textbf{Tiempo Total (s)} & \textbf{Tiempo Prom. (s)} & \textbf{Notas} \\
+\hline
+Dividir por 5.0     & 0.2479 & $\approx 2.48 \times 10^{-8}$ & Referencia \\
+Multiplicar por 0.2 & 0.2458 & $\approx 2.46 \times 10^{-8}$ & Marginalmente más rápido \\
+\hline
+\end{tabular}
+\end{center}
+
+(Medido con N=10.000.000 elementos, R=10 repeticiones)
+
+En hardware moderno (FPU avanzada), la diferencia entre división y multiplicación de punto flotante es mínima ($\approx 0.8\%$). En generaciones anteriores de procesadores la división podía ser 5-10$\times$ más lenta. La optimización sigue siendo recomendable en bucles críticos, pero el impacto depende fuertemente de la microarquitectura del procesador.
+
+\subsection*{c. Optimización de Módulo}
+
+\subsubsection*{¿En qué consiste la optimización con mejor tiempo de ejecución?}
+
+Cuando el divisor $m$ es una potencia de 2 ($m = 2^k$), la operación de módulo es equivalente a realizar un AND binario:
+$$x \bmod m = x \land (m-1)$$
+
+Esta optimización bitwise es mucho más rápida que el operador \%, ya que el módulo requiere una división entera (DIV), la cual consume muchos ciclos de reloj en comparación con una operación lógica básica de bits.
+
+% ============================
+% EJERCICIO 4: ITERACIONES
+% ============================
+\section{Iteraciones}
+
+\subsection*{a. Estrategias de Direccionamiento}
+
+\begin{center}
+\begin{tabular}{|l|r|}
+\hline
+\textbf{Estrategia} & \textbf{Tiempo (s)} \\
+\hline
+Direccionamiento a[i] & 2.4212 \\
+Direccionamiento puntero *p & 0.5141 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsubsection*{¿Cuál es más rápida? ¿Por qué?}
+
+La estrategia con puntero (\texttt{unsigned long *p}) y uso de \texttt{register} es significativamente más rápida (5x más rápido).
+
+\textbf{Razones:}
+\begin{enumerate}
+\item \textbf{Cálculo de dirección:} En \texttt{a[i]}, para cada acceso se calcula: \texttt{base + i * sizeof(unsigned long)}. En compilación sin optimizar (-O0), esto se repite en cada iteración. Con \texttt{*p++}, solo se suma el tamaño al puntero actual.
+
+\item \textbf{Hint del compilador:} La palabra clave \texttt{register} sugiere mantener el puntero en un registro de CPU en lugar de memoria, reduciendo tráfico y acelerando acceso.
+\end{enumerate}
+
+\subsection*{b. Problema de Overflow en Suma de Gauss}
+
+\subsubsection*{¿Por qué es correcta para N=2147483647 e incorrecta para N=2147483648?}
+
+\begin{enumerate}
+\item \textbf{Overflow del contador:} La variable \texttt{i} es \texttt{int}, cuyo máximo es $2147483647$ ($2^{31}-1$). Al intentar llegar a $2147483648$, desborda en negativo según complemento a dos.
+
+\item \textbf{Precisión de tipos:} Al calcular la fórmula de Gauss $\frac{N(N+1)}{2}$, el producto intermedio $N \cdot (N+1)$ desborda en 32 bits.
+\end{enumerate}
+
+\subsubsection*{¿Cómo podría solucionarlo?}
+
+Usar tipos de datos de 64 bits:
+\begin{itemize}
+\item Cambiar \texttt{unsigned long} por \texttt{unsigned long long} para N y sum
+\item Cambiar \texttt{int i} por \texttt{long long i}
+\item Utilizar \texttt{atoll()} en lugar de \texttt{atol()}
+\end{itemize}
+
+% ============================
+% EJERCICIO 5: OVERHEAD IF
+% ============================
+\section{Overhead de Predicción de Saltos (overheadIF.c)}
+
+El algoritmo \texttt{overheadIF.c} resuelve mediante tres estrategias el siguiente problema: dado un arreglo V y una posición P, contar cuántos elementos de V son menores que el elemento en la posición P.
+
+\subsection*{Resultados de Ejecución}
+
+\begin{center}
+\begin{tabular}{|l|r|l|}
+\hline
+\textbf{Estrategia} & \textbf{Tiempo (s)} & \textbf{Notas} \\
+\hline
+Sol. 1: Pregunta posición en cada iter & 0.282302 & Mayor overhead \\
+Sol. 2: Salta la posición seleccionada & 0.267747 & Mejor predic. saltos \\
+Sol. 3: Procesa posición innecesaria & 0.268514 & Evita branch \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{¿Por qué existe diferencia de tiempos?}
+
+\begin{enumerate}
+\item \textbf{Branch Prediction Overhead:} La Solución 1 realiza una comparación (if) en cada iteración del bucle. El procesador intenta predecir si la rama será tomada. Cuando la predicción falla, ocurren ``pipeline flushes'', descartando instrucciones pre-cargadas.
+
+\item \textbf{Eliminación del Branch (Solución 3):} Procesar SIEMPRE el elemento P es más rápido porque:
+\begin{itemize}
+    \item No hay instrucción condicional
+    \item No hay posibilidad de branch misprediction
+    \item El procesador ejecuta instrucciones de forma más lineal
+\end{itemize}
+\end{enumerate}
+
+\subsection*{Posibles fuentes de overhead}
+
+\begin{enumerate}
+\item \textbf{Branch Misprediction Penalty:} Cada fallo cuesta $\approx 15-20$ ciclos de reloj
+\item \textbf{Pipeline Dependencies:} Instrucciones dependientes aumentan latencia
+\item \textbf{Loop Overhead:} Sin optimizaciones (-O0), cada iteración tiene overhead completo
+\end{enumerate}
+
+\textbf{Conclusión:} La diferencia más significativa proviene de la predicción de saltos. Las soluciones que minimizan branches condicionales son más rápidas.
+
+% ============================
+% EJERCICIO 6: PRECISIÓN DE TIPOS
+% ============================
+\section{Precisión de Tipos en Cálculo de Fibonacci}
+
+El algoritmo \texttt{precision.c} calcula Fibonacci comparando:
+\begin{itemize}
+    \item Iterativa (Integer): $f(n) = f(n-1) + f(n-2)$
+    \item Basada en número áureo (Float/Double):
+    $$\varphi = \frac{1 + \sqrt{5}}{2}, \quad f_n = \frac{\varphi^n - (1-\varphi)^n}{\sqrt{5}}$$
+\end{itemize}
+
+\subsection*{Resultados de Tiempos}
+
+\begin{center}
+\begin{tabular}{|l|r|r|l|}
+\hline
+\textbf{Tipo de Dato} & \textbf{Cálculo áureo (s)} & \textbf{Iterativo int (s)} & \textbf{Error medio} \\
+\hline
+Precisión Simple (float)  & 0.08 & 0.02 & 17.552436 \\
+Precisión Doble (double)  & 0.07 & 0.02 & 0.000000 \\
+\hline
+\end{tabular}
+\end{center}
+
+(Medido con N=1.000.000 valores aleatorios entre 0 y 44)
+
+El cálculo iterativo (int) es significativamente más rápido que la fórmula del número áureo ($\approx 4\times$) en ambos casos, porque evita las costosas operaciones \texttt{pow()} y \texttt{sqrt()} de la FPU.
+
+\subsection*{Precisión Alcanzada}
+
+\begin{center}
+\begin{tabular}{|r|l|l|l|}
+\hline
+\textbf{N} & \textbf{Iterativa} & \textbf{Float (Error)} & \textbf{Double} \\
+\hline
+50 & 12586269025 & $12586269824$ & \texttt{OK} \\
+60 & 1548008755920 & Error grande & \texttt{OK} \\
+70 & $1.9 \times 10^{14}$ & Inutil & \texttt{OK} \\
+80 & $2.3 \times 10^{16}$ & Overflow & \texttt{OK} \\
+90 & $2.8 \times 10^{18}$ & Overflow & Aceptable \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Conclusiones}
+
+\begin{enumerate}
+\item \textbf{Precisión Simple (float):}
+\begin{itemize}
+    \item Mantiene $\approx 7-8$ dígitos significativos
+    \item Para $N > 50$, comienza a perder precisión
+    \item Inutilizable para $N > 70$
+\end{itemize}
+
+\item \textbf{Precisión Doble (double):}
+\begin{itemize}
+    \item Mantiene $\approx 15-17$ dígitos significativos
+    \item Precisa hasta $N \approx 80-85$
+    \item Mejor relación precisión/velocidad
+\end{itemize}
+
+\item \textbf{Rendimiento:}
+\begin{itemize}
+    \item Fórmula áurea (float y double): $\approx 4\times$ más lenta que la iterativa
+    \item El cuello de botella está en \texttt{pow()} y \texttt{sqrt()}, no en la precisión del tipo
+    \item Float y double tienen tiempos similares entre sí (latencia FPU similar)
+    \item El iterativo (int) es la opción más rápida Y más precisa para este problema
+\end{itemize}
+
+\item \textbf{Trade-off Precisión vs Velocidad:}
+\begin{itemize}
+    \item $N \leq 44$: double es exacto y float introduce error ($\approx 17$ unidades en promedio)
+    \item $50 < N < 85$: solo double conserva precisión
+    \item $N > 85$: ambos tipos flotantes fallan; se necesita aritmética de precisión arbitraria
+\end{itemize}
+\end{enumerate}
+
+\textbf{Implicación:} Los tipos flotantes NO son adecuados para cálculos que requieren precisión exacta en valores muy grandes.
+
+% ============================
+% EJERCICIO 7: N-REINAS
+% ============================
+\section{El problema de las N-Reinas}
+
+El algoritmo \texttt{nreinas.c} resuelve secuencialmente el problema de las N-Reinas, basado en N-Queens Solutions de Takaken.
+
+\subsection*{Análisis de Tiempo de Ejecución}
+
+\begin{center}
+\begin{tabular}{|r|r|r|r|}
+\hline
+\textbf{N} & \textbf{Soluciones} & \textbf{Tiempo (s)} & \textbf{T(N)/T(N-1)} \\
+\hline
+ 4 & 2                  & 0.000001             & -              \\
+ 5 & 10                 & 0.000001             & $\approx 1.0$  \\
+ 6 & 4                  & 0.000001             & $\approx 1.0$  \\
+ 7 & 40                 & 0.000003             & $\approx 3.0$  \\
+ 8 & 92                 & 0.000008             & $\approx 2.7$  \\
+ 9 & 352                & 0.000030             & $\approx 3.8$  \\
+10 & 724                & 0.000108             & $\approx 3.6$  \\
+11 & 2,680              & 0.000495             & $\approx 4.6$  \\
+12 & 14,200             & 0.002423             & $\approx 4.9$  \\
+13 & 73,712             & 0.013                & $\approx 5.4$  \\
+14 & 365,596            & 0.074                & $\approx 5.7$  \\
+15 & 2,279,184          & 0.462                & $\approx 6.2$  \\
+16 & 14,772,512         & 3.024                & $\approx 6.5$  \\
+17 & 95,815,104         & 20.885               & $\approx 6.9$  \\
+18 & 666,090,624        & $\approx 149$ (est.) & $\approx 7.1$  \\
+19 & 4,968,057,848      & $\approx 1100$ (est.)& $\approx 7.4$  \\
+20 & 39,029,188,884     & $\approx 8100$ (est.)& $\approx 7.4$  \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{¿Cuál es el orden asintótico de ejecución?}
+
+El orden asintótico es \textbf{exponencial}, típicamente denotado como $O(c^N)$ donde $c \approx 6-7$ para $N$ grande.
+
+Para valores pequeños de $N$ el crecimiento es irregular (la dificultad combinatoria no crece uniformemente), pero a partir de $N \approx 12$ la relación $T(N)/T(N-1)$ se estabiliza en torno a $6$--$7$, evidenciando el carácter exponencial. Aunque el algoritmo de Takaken está altamente optimizado mediante bitmasks y simetrías, la naturaleza del problema (combinatoria) implica que el espacio de búsqueda crece de forma explosiva.
+
+% ============================
+% EJERCICIO 8: MERGE SORT
+% ============================
+\section{Gestión de Memoria en Merge Sort}
+
+Los algoritmos \texttt{mergeSimpleMalloc.c} y \texttt{mergeMultiplesMalloc.c} resuelven la ordenación mediante merge sort.
+
+\subsection*{Comparación de Estrategias}
+
+\begin{center}
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Estrategia} & \textbf{exp=22 (s)} & \textbf{exp=24 (s)} \\
+\hline
+mergeSimpleMalloc (Punteros) & 0.525 & 2.336 \\
+mergeMultiplesMalloc (Copia) & 0.576 & 2.516 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{¿A qué se deben las diferencias en el tiempo?}
+
+La diferencia radica fundamentalmente en el manejo de datos auxiliares en cada nivel del árbol de mezcla:
+
+\begin{enumerate}
+\item \textbf{mergeSimpleMalloc (Optimizado):}
+Utiliza dos arreglos pre-asignados y, al finalizar cada nivel, realiza un simple intercambio de punteros:
+$$\text{intercambio}(\&\text{arreglo}, \&\text{arregloAuxiliar})$$
+Cambiar direcciones es $O(1)$.
+
+\item \textbf{mergeMultiplesMalloc (Ineficiente):}
+En cada paso de mezcla, realiza una copia física:
+\begin{lstlisting}
+for (i = left; i <= right; i++)
+    arr[i] = temp[i];
+\end{lstlisting}
+Esta copia de datos es $O(N)$ repetida en cada uno de los $\log(N)$ niveles, generando overhead significativo.
+\end{enumerate}
+
+\textbf{Conclusión:} El intercambio de punteros es exponencialmente más eficiente que copiar datos en memoria.
+
+% ============================
+% CONCLUSIONES
+% ============================
+\section*{Conclusiones Generales}
+
+\begin{enumerate}
+\item \textbf{Localidad:} La optimización de acceso a memoria (localidad espacial y temporal) es crítica para el rendimiento.
+
+\item \textbf{Overhead de Funciones:} Las llamadas dentro de bucles internos tienen costo significativo en compilación sin optimizar.
+
+\item \textbf{Branch Prediction:} Las instrucciones condicionales en bucles internos generan overhead por misprediction.
+
+\item \textbf{Tipos de Datos:} La elección de tipo de dato impacta tanto en precisión como en rendimiento.
+
+\item \textbf{Algoritmos:} La elección del algoritmo (iterativo vs recursivo, etc.) puede marcar órdenes de magnitud de diferencia.
+
+\item \textbf{Estructuras de Datos:} La representación en memoria de estructuras (matrices en diferentes órdenes, punteros vs copias) afecta significativamente el desempeño.
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,6 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+|------|------|----------|-----------|----------|-------------|
+| 2 | from qiskit.pulse import Gaussian | Deprecation -> Gaussian pulse class is deprecated | qrn_notax_ddbb-508fb6f3-cdfc-4b96-ad81-f550801dbe2f | Gaussian | Replace import and use pulse.Gaussian instead |
+| 3 | from qiskit.providers import fake_provider | Deprecation -> fake_provider module is deprecated | qrn_notax_ddbb-aa6cda1f-af91-4940-8d4c-1897f9a56701 | fake_provider | Change to from qiskit_ibm_runtime.fake_provider import FakeOpenPulse3Q |
+| 4 | backend = fake_provider.FakeOpenPulse3Q() | Deprecation -> fake_provider usage is deprecated | qrn_notax_ddbb-aa6cda1f-af91-4940-8d4c-1897f9a56701 | FakeOpenPulse3Q | Use backend = FakeOpenPulse3Q() |
+| 7 |     pulse_obj = Gaussian(duration=128, amp=0.5, sigma=16) | Deprecation -> Gaussian pulse class is deprecated | qrn_notax_ddbb-508fb6f3-cdfc-4b96-ad81-f550801dbe2f | Gaussian | Use pulse_obj = pulse.Gaussian(duration=128, amp=0.5, sigma=16).get_waveform() |

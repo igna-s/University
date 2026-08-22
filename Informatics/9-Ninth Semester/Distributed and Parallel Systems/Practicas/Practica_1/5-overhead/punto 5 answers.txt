@@ -1,0 +1,51 @@
+Análisis de Overhead por Predicción de Saltos (overheadIF.c)
+
+El algoritmo overheadIF.c resuelve mediante tres estrategias el siguiente problema:
+Dado un arreglo V y una posición P, contar cuántos elementos de V son menores que
+el elemento en la posición P.
+
+Resultados de Ejecución (N grande, P variable)
+----------------------------------------------
+| Estrategia                                  | Tiempo (s) | Notas                    |
+|---------------------------------------------|------------|--------------------------|
+| Solución 1: Pregunta posición en cada iter  | 0.282302   | Mayor overhead           |
+| Solución 2: Salta la posición seleccionada  | 0.267747   | Mejor predic. de saltos   |
+| Solución 3: Procesa la posición innecesaria | 0.268514   | Evita branch prediction   |
+
+¿Por qué existe diferencia de tiempos de ejecución entre las distintas estrategias?
+
+1. Branch Prediction Overhead:
+   La Solución 1 realiza una comparación (if) en cada iteración del bucle más interno.
+   El procesador intenta predecir si la rama será tomada (taken) o no (not taken).
+   Cuando P está al inicio o final del arreglo, la predicción tiende a fallar frecuentemente.
+   Esto causa "pipeline flushes", donde el procesador descarta instrucciones pre-cargadas.
+
+2. Cache Behavior:
+   La Solución 1 accede a memoria en orden: V[0], V[1], ..., V[N-1], pero el acceso a P
+   rompe este patrón de localidad si P no es una constante o está calculada dinámicamente.
+
+3. Eliminación del Branch (Solución 3):
+   La Solución 3 evita el branch prediction al procesar SIEMPRE el elemento en la posición P,
+   incluso cuando es innecesario para el contador. Esto es más rápido porque:
+   - No hay instrucción condicional (if)
+   - No hay posibilidad de branch misprediction
+   - El procesador puede ejecutar instrucciones de forma más lineal y predecible
+
+Posibles Fuentes de Overhead:
+
+1. **Branch Misprediction Penalty**: Cada fallo de predicción cuesta ~15-20 ciclos de reloj
+   (descartar instrucciones del pipeline)
+
+2. **Acceso a Memoria Secundaria**: Lectura del valor en posición P dentro del bucle
+   (menor efecto que branch prediction en este caso)
+
+3. **Pipeline Dependencies**: Las tres soluciones tienen dependencias de datos similares
+   (lectura de V[i] → comparación → incremento del contador)
+
+4. **Loop Unrolling**: Sin optimizaciones (-O0), el compilador no desenrolla el bucle,
+   por lo que cada iteración tiene el overhead completo de la rama condicional.
+
+Conclusión:
+La diferencia más significativa proviene de la predicción de saltos condicionales.
+Las soluciones que minimizan o eliminan branches condicionales (2 y 3) son más rápidas
+que la que contiene un if en el bucle más interno (1).

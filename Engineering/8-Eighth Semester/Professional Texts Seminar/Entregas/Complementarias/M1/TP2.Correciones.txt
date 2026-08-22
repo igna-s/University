@@ -1,0 +1,21 @@
+Hola Ignacio, ante todo las correcciones del TPN°1 que realizaste están muy bien, de esa forma tendrás el panorama más claro para redactar el informe.
+
+Por otro lado, el TPN°2 también está muy bien, te comento algunos detalles y sugerencias:
+
+En el diagrama de Gantt podrías haber incorporado alguna actividad de campo específica de tu enfoque, ya que justamente involucra relevar información de los dispensers de la facultad y para ello tendrás que recorrerlos y ver su estado. También podés incluir entrevistas a personas que los utilizan.
+
+La lista de fuentes bibliográficas está muy bien pero te faltaría buscar información del acceso a los dispensers que es el tema principal. Además, podés completarla con los autores y links de acceso, así ya te queda listo para incorporarlas a la sección Bibliografía de tu informe técnico.
+
+Las palabras clave repiten la palabra discapacidad por lo que luego la incluirás sólo 1 vez.
+
+El texto sobre el tipo de información es correcto pero se solicita un párrafo (al menos 2 oraciones) para cada tipo, en este caso quedó 1 párrafo para los 3 tipos.
+
+En el caso de la inferencia se utiliza tiempo verbal condicional (si bien al decir "se puede inferir" se tiene en cuenta que no es un hecho), por ej. "no habría sido" en vez de "no ha sido". Además, faltó mencionar quién emitió la opinión, siempre manteniendo el tono impersonal.
+
+No es necesaria una re-entrega, pero tenelo en cuenta al momento de redactar el informe técnico.
+
+Saludos y cualquier duda conversamos en clase,
+
+ 
+
+Alba

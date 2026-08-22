@@ -1,0 +1,364 @@
+================================================================================
+PRACTICA 3 — RESUMEN MPI: COMO PARALELIZAR ALGORITMOS SECUENCIALES
+================================================================================
+
+METODOLOGÍA GENERAL: DISEÑO FOSTER
+-----------------------------------
+Todos los ejercicios siguen el mismo proceso mental para convertir un algoritmo
+secuencial en paralelo:
+
+  1. DESCOMPOSICIÓN: identificar las unidades de trabajo independientes.
+     ¿Qué parte del cómputo puede hacerse sin conocer el resultado de otra parte?
+
+  2. COMUNICACIÓN: determinar qué datos necesitan compartirse entre procesos
+     y en qué dirección fluyen.
+
+  3. AGLOMERACIÓN: agrupar tareas finas en bloques más grandes para reducir el
+     overhead de comunicación (cada Send/Recv tiene un costo fijo de latencia).
+
+  4. MAPEO: decidir qué proceso ejecuta qué bloque de trabajo.
+     - Estático: se asigna antes de correr (todos los ejs menos Ej4).
+     - Dinámico: se asigna en tiempo de ejecución según disponibilidad (Ej4).
+
+El patrón MPI que más aparece es SPMD (Single Program Multiple Data):
+  - Todos los procesos ejecutan el MISMO código.
+  - Se bifurcan con "if (rank == 0)" para separar el rol del coordinador.
+  - El trabajo real lo hacen TODOS en paralelo sobre sus datos locales.
+
+================================================================================
+EJ1a — Multiplicación de matrices C = A * B  (naive optimizado)
+================================================================================
+PROBLEMA SECUENCIAL: para C = A * B con matrices N×N, el triple bucle ijk
+tarda O(N³) operaciones.
+
+IDEA DE PARALELIZACIÓN:
+  - Cada fila i de C solo depende de la fila i de A y de toda la matriz B.
+  - Las filas de C son completamente independientes → se pueden calcular en
+    paralelo sin ninguna sincronización intermedia.
+
+ESTRUCTURA MPI:
+  Rank 0: lee A y B del disco.
+  Todos:
+    1. Bcast(B)       → todos reciben B completa (B se necesita entera siempre).
+    2. Scatter(A)     → cada proceso recibe N/P filas de A.
+    3. Cómputo local  → cada proceso calcula sus N/P filas de C.
+    4. Gather(C)      → rank 0 recibe todos los resultados.
+
+OPTIMIZACIÓN DEL KERNEL LOCAL (loop ikj en lugar de ijk):
+  El bucle clásico ijk accede a B por columnas → saltos en memoria → cache misses.
+  Cambiando el orden a ikj, se mantiene el factor a_ik fijo mientras se barre
+  la fila de B → acceso secuencial → mucho mejor uso de caché L1/L2.
+
+MAPEO: estático, carga perfectamente uniforme (todos hacen exactamente (N/P)·N²
+operaciones).
+
+================================================================================
+EJ1b — Autoproducto C = A * A
+================================================================================
+DIFERENCIA RESPECTO A 1a:
+  Solo hay UNA matriz. Se broadcast A completa (para usarla como "segunda
+  operanda") Y se scatter A también (para las filas locales). El resultado
+  es conceptualmente idéntico a 1a pero sin leer un archivo B separado.
+
+VALIDACIÓN INLINE: rank 0 computa A×A secuencialmente (ikj) ANTES de la
+medición de tiempo y luego compara con el resultado paralelo. No necesita
+archivo de referencia externo.
+
+================================================================================
+EJ1c — Multiplicación por bloques (blocking)
+================================================================================
+DIFERENCIA RESPECTO A 1a:
+  La comunicación MPI es IDÉNTICA (Bcast/Scatter/Gather). Solo cambia el kernel
+  de cómputo local.
+
+IDEA DEL BLOCKING:
+  En lugar de procesar filas completas de A y B, se trabaja con sub-bloques
+  de tamaño BS×BS. Si BS es pequeño, el bloque cabe en caché L1/L2 y se
+  reutiliza muchas veces antes de ser desalojado.
+
+  Esto no cambia la complejidad O(N³) pero reduce drásticamente los cache misses,
+  lo que en la práctica puede dar speedups de 2x-10x sobre el naive.
+
+COMPILACIÓN CON -DUSE_BLAS:
+  Activa una variante que transpone localmente cada bloque de B (column-major
+  → row-major) para aprovechar acceso secuencial dentro del bloque.
+
+================================================================================
+EJ2 — Mínimo, máximo y promedio de una matriz N×N
+================================================================================
+PROBLEMA SECUENCIAL: recorrer los N² elementos y computar estadísticas.
+
+IDEA DE PARALELIZACIÓN:
+  - min/max/suma son operaciones asociativas y conmutativas → se pueden
+    calcular por partes y luego combinar.
+  - Cada elemento contribuye de forma independiente → N² tareas atómicas.
+
+ESTRUCTURA MPI:
+  1. Scatter → cada proceso recibe N²/P elementos (la matriz se trata como
+     un arreglo lineal, no importa la estructura 2D).
+  2. Reducción local → cada proceso computa su min/max/suma parcial.
+  3. MPI_Reduce con MPI_MIN, MPI_MAX, MPI_SUM → combina todos en rank 0.
+
+NOTA IMPORTANTE — srand(42):
+  La matriz se genera aleatoriamente en rank 0 con srand(42). El 42 es una
+  "semilla" fija. Usar una semilla fija garantiza que cada vez que se ejecuta
+  el programa se generen exactamente los mismos números. Esto es crucial para
+  validación: rank 0 puede re-computar el resultado secuencial sobre los mismos
+  datos y comparar. Si se usara srand(time(NULL)), los datos cambiarían en cada
+  ejecución y la validación sería imposible sin guardar los datos en disco.
+  (Lo mismo aplica a Ej5 con srand(42) para el arreglo de enteros.)
+
+PATRÓN MPI CLAVE: MPI_Reduce
+  Operación colectiva que combina valores de todos los procesos usando una
+  operación (MIN, MAX, SUM, PROD, etc.) y deposita el resultado en un proceso
+  raíz. Es equivalente a un árbol binario de reducciones pero expresado en una
+  sola llamada.
+
+================================================================================
+EJ3 — Transposición de matriz N×N
+================================================================================
+PROBLEMA SECUENCIAL: T[j][i] = A[i][j]. Trivial secuencialmente.
+
+POR QUÉ ES DIFÍCIL EN PARALELO:
+  Si proceso p tiene las filas [p·N/P .. (p+1)·N/P - 1] de A, entonces tiene
+  que producir las COLUMNAS p·N/P .. (p+1)·N/P - 1 de T. Pero esas columnas
+  están distribuidas en TODOS los procesos. Hay una redistribución total de
+  datos: cada proceso necesita datos de todos los demás.
+
+ESTRUCTURA MPI:
+  1. Scatter(A) → cada proceso recibe N/P filas de A.
+  2. Empaquetar send_buf: para cada destino q, extraer el sub-bloque N/P×N/P
+     de columnas que le corresponde a q.
+  3. MPI_Alltoall → cada proceso envía un bloque a cada otro proceso.
+     Esta es la operación clave: intercambio total estructurado.
+  4. Desempaquetar recv_buf → colocar datos en local_T en el orden correcto.
+  5. Gather(T) → rank 0 reconstruye T completa.
+
+PATRÓN MPI CLAVE: MPI_Alltoall
+  Cada proceso envía un chunk diferente a cada proceso y recibe un chunk
+  diferente de cada proceso. Es el patrón "all-to-all", más costoso que
+  Bcast/Scatter/Gather pero necesario cuando hay dependencias cruzadas totales.
+
+  Comunicación: O(N²) datos totales movidos (cada elemento se mueve exactamente
+  una vez), distribuidos entre P² pares de procesos.
+
+================================================================================
+EJ4 — N-Reinas paralelo (Master-Worker / Bag of Tasks)
+================================================================================
+PROBLEMA SECUENCIAL: backtracking con poda para contar soluciones del problema
+N-Reinas. El árbol de búsqueda es irregular: algunas ramas se podan pronto
+(cómputo barato) y otras generan miles de soluciones (cómputo caro).
+
+POR QUÉ EL MAPEO ESTÁTICO FALLA:
+  Si se asignan tareas a procesos de forma fija (proceso 0 toma las primeras K
+  tareas, proceso 1 las siguientes K, etc.), algunos procesos pueden quedar con
+  todas las tareas "caras" y otros con las "baratas". El tiempo total es el del
+  proceso más lento → desbalance severo de carga.
+
+IDEA DE PARALELIZACIÓN (Bag of Tasks):
+  - Se corta el árbol de backtracking en nivel 1-2 para generar tareas
+    independientes (subtárboles).
+  - Las tareas se meten en una "bolsa" (lista en el master).
+  - Los workers piden tareas a demanda: cuando terminan una, piden la siguiente.
+  - Así el proceso más rápido toma automáticamente más tareas.
+
+ESTRUCTURA MPI (punto a punto):
+  Master (rank 0):
+    - Envía una tarea (3 ints: tipo, b1, b2) a cada worker con MPI_Send.
+    - Espera resultados con MPI_Recv(MPI_ANY_SOURCE) → recibe del primero que
+      termine.
+    - Al recibir un resultado, envía otra tarea al mismo worker (si hay tareas).
+    - Cuando no hay más tareas, envía señal de fin (TAG_DONE) a todos.
+
+  Worker (rank > 0):
+    - Loop: MPI_Recv tarea → ejecutar backtracking → MPI_Send resultado.
+    - Sale del loop al recibir TAG_DONE.
+
+TIPOS DE TAREAS:
+  - Tipo 1 (Backtrack1): primera reina en esquina → explorar con segunda reina
+    variando posición. Menos simétrico.
+  - Tipo 2 (Backtrack2): primera reina en posición interior → usa simetría
+    de reflexión para no repetir soluciones equivalentes.
+
+================================================================================
+EJ5 — Merge Sort paralelo (árbol binario de fusiones)
+================================================================================
+PROBLEMA SECUENCIAL: ordenar N elementos. qsort es O(N log N).
+
+IDEA DE PARALELIZACIÓN:
+  - Dividir el arreglo en P partes iguales.
+  - Cada proceso ordena su parte localmente con qsort → O((N/P) log(N/P)).
+  - Combinar los P arreglos ordenados mediante fusiones en árbol binario.
+
+ESTRUCTURA MPI:
+  1. Scatter → cada proceso recibe N/P enteros.
+  2. qsort local.
+  3. Árbol de fusiones (log₂P rondas):
+     Ronda 0: proceso 1 envía a proceso 0, proceso 3 envía a proceso 2, etc.
+     Ronda 1: proceso 2 envía a proceso 0, proceso 6 envía a proceso 4, etc.
+     En cada ronda, el que RECIBE fusiona su arreglo con el recibido y duplica
+     su tamaño. El que ENVÍA termina su trabajo (break).
+  4. Al final, rank 0 tiene el arreglo completo ordenado.
+
+PATRÓN: árbol de reducción. Similar a MPI_Reduce pero con una operación
+personalizada (merge) que no cabe en las operaciones predefinidas de MPI.
+
+NOTA sobre srand(42): igual que en Ej2, la semilla fija permite validar
+comparando con qsort secuencial aplicado sobre los mismos datos.
+
+OBSERVACIÓN SOBRE LA CARGA:
+  En las fusiones, la carga NO es uniforme. En la última ronda solo trabaja
+  rank 0. En la penúltima, ranks 0 y N/2. En la primera ronda trabajan todos.
+  Los procesos terminan progresivamente y quedan inactivos. El cuello de botella
+  es siempre rank 0 que hace la fusión final de N elementos.
+
+================================================================================
+PREGUNTA 1: ¿POR QUÉ srand EN EL MERGE SORT (Y EN Ej2)?
+================================================================================
+srand(seed) inicializa el generador de números pseudo-aleatorios con una semilla.
+
+  srand(42)  → siempre produce la misma secuencia de rand().
+  srand(time(NULL)) → produce una secuencia diferente en cada ejecución.
+
+Se usa srand(42) (semilla fija) porque:
+
+  a) REPRODUCIBILIDAD: el mismo input produce el mismo output → debugging
+     y validación son posibles. Si los datos cambian cada vez, no se puede
+     saber si un resultado diferente es un bug o simplemente datos distintos.
+
+  b) VALIDACIÓN AUTOMÁTICA: rank 0 puede regenerar los mismos datos después
+     de la ejecución paralela para comparar. En Ej2 el master re-recorre A
+     secuencialmente con la misma A generada con srand(42). En Ej5, se copia
+     data[] y se aplica qsort secuencial para comparar con el resultado paralelo.
+
+  c) EXPERIMENTOS COMPARABLES: al medir performance con distintos P, todos
+     los experimentos trabajan sobre exactamente los mismos datos → la
+     comparación de tiempos es justa.
+
+En producción real se usaría srand(time(NULL)) o mejor un generador criptográfico,
+pero para ejercicios académicos srand(42) es estándar.
+
+================================================================================
+PREGUNTA 2: ¿CUÁNDO ES VENTAJOSO USAR COMUNICACIÓN PUNTO A PUNTO?
+================================================================================
+Las comunicaciones colectivas (Bcast, Scatter, Gather, Reduce, Alltoall) son
+más simples de programar pero asumen patrones fijos: todos participan, con
+cantidades iguales de datos, al mismo tiempo.
+
+Usar MPI_Send/MPI_Recv (punto a punto) es ventajoso cuando:
+
+  1. DISTRIBUCIÓN DINÁMICA DE TRABAJO (como Ej4):
+     El master no sabe de antemano cuánto tardará cada tarea. Solo cuando un
+     worker termina se le asigna la siguiente. Ninguna operación colectiva
+     modela este patrón: Scatter asigna cantidades fijas, no "una tarea por vez".
+
+  2. CANTIDAD DE DATOS VARIABLE POR PROCESO:
+     Si el proceso 0 debe enviar 100 elementos al proceso 1 y 500 al proceso 2,
+     Scatter no sirve (asume partes iguales). Se necesitan dos MPI_Send con
+     tamaños distintos.
+
+  3. COMUNICACIÓN ASIMÉTRICA:
+     En un pipeline (A → B → C → D), cada proceso solo habla con su vecino.
+     Usar Bcast o Reduce sería desperdiciar comunicación en nodos que no
+     necesitan los datos.
+
+  4. SINCRONIZACIÓN FINA / EVITAR BARRERAS IMPLÍCITAS:
+     Las colectivas sincronizan a todos los procesos. A veces se quiere que
+     algunos procesos avancen sin esperar a otros.
+
+  5. ÁRBOL PERSONALIZADO (como Ej5):
+     La fusión en árbol binario necesita que proceso 1 envíe a 0, proceso 3
+     envíe a 2, etc. No es un Gather (que reúne todo en rank 0 de una vez).
+
+REGLA GENERAL:
+  - Patrones REGULARES y UNIFORMES → colectivas (más eficientes internamente
+    porque el runtime puede usar redes especializadas como switches InfiniBand).
+  - Patrones DINÁMICOS o IRREGULARES → punto a punto.
+
+================================================================================
+PREGUNTA 3: ¿QUÉ OTRAS IMPLEMENTACIONES EXISTEN ADEMÁS DE MASTER-WORKER?
+================================================================================
+Master-Worker (Ej4) tiene una limitación: el master es un cuello de botella.
+Con muchos workers, el master pasa todo el tiempo distribuyendo tareas y no
+computa nada útil.
+
+Alternativas:
+
+  1. SPMD / DATA PARALLEL (Ej1, Ej2, Ej3, Ej5):
+     El más común. Todos los procesos ejecutan el mismo código sobre particiones
+     disjuntas de los datos. No hay "master" real; el rank 0 solo coordina la
+     I/O inicial y final. Es el patrón más escalable.
+     Cuándo usarlo: cuando la carga es uniforme y los datos se pueden particionar.
+
+  2. PIPELINE:
+     Los procesos se organizan en cadena. Proceso 0 produce datos, proceso 1
+     los transforma y pasa al 2, etc. Ideal para streaming de datos.
+     Ejemplo: etapas de un compilador, procesamiento de video frame a frame.
+     Ventaja: latencia baja para el primer resultado; todos trabajan en paralelo
+     sobre distintas etapas.
+     Desventaja: la etapa más lenta define el throughput global.
+
+  3. ÁRBOL DE REDUCCIÓN (Ej5 usa esto para las fusiones):
+     Las comunicaciones siguen una topología de árbol binario. Útil cuando la
+     operación final es una combinación de resultados parciales (suma, merge,
+     max) y se quiere distribuir el trabajo de combinación (no solo rank 0 fusiona).
+     Ventaja: O(log P) rondas en lugar de O(P).
+
+  4. ANILLO (Ring):
+     Cada proceso envía datos al proceso rank+1 (mod P). Usado en algoritmos
+     como la multiplicación de matrices de Cannon o el algoritmo de Fox.
+     Ventaja: comunicación local, sin nodos centrales sobrecargados.
+
+  5. DIVIDE AND CONQUER PARALELO:
+     El problema se divide recursivamente. Cada mitad se resuelve en paralelo
+     y luego se combina. Similar al árbol de reducción pero bidireccional.
+     El merge sort de Ej5 es una versión de esto.
+
+  6. WORK STEALING:
+     Variante descentralizada del Master-Worker. Cada proceso tiene su propia
+     cola de tareas. Cuando un proceso termina su cola, "roba" tareas de la
+     cola de otro proceso. No hay master centralizado → mucho más escalable.
+     MPI puro no lo soporta bien (se usa más con OpenMP o TBB), pero puede
+     implementarse con ventanas RMA (MPI_Win).
+
+  7. CLIENTE-SERVIDOR REPLICADO:
+     Múltiples masters (servidores) atienden a grupos de workers. Reduce el
+     cuello de botella del master único. Útil cuando el número de workers es
+     muy grande (cientos o miles de procesos).
+
+COMPARACIÓN RÁPIDA:
+  Patrón              | Escalabilidad | Balance de carga | Complejidad
+  ───────────────────────────────────────────────────────────────────
+  Master-Worker       | Media         | Bueno (dinámico) | Baja
+  SPMD/Data Parallel  | Alta          | Bueno si uniforme| Muy baja
+  Pipeline            | Media         | Limitado         | Media
+  Árbol de reducción  | Alta          | Parcial          | Media
+  Work Stealing       | Muy alta      | Excelente        | Alta
+
+================================================================================
+RESUMEN: RECETA GENERAL PARA PARALELIZAR CON MPI
+================================================================================
+
+  PASO 1 — ¿El trabajo puede dividirse en partes independientes?
+    Sí → descomposición de datos (Ej1, Ej2, Ej3, Ej5).
+    No (árbol de búsqueda, backtracking) → descomposición exploratoria (Ej4).
+
+  PASO 2 — ¿La carga es uniforme?
+    Sí → mapeo estático, usar colectivas (Scatter/Gather/Reduce/Alltoall).
+    No (como N-Reinas) → mapeo dinámico, usar punto a punto (Master-Worker).
+
+  PASO 3 — ¿Cuánta comunicación hay entre procesos?
+    Mínima (cada proceso solo necesita su parte) → Scatter + cómputo + Gather.
+    Un dato compartido por todos (como la matriz B en Ej1) → agregar Bcast.
+    Redistribución total (como transponer) → MPI_Alltoall con empaquetado.
+    Reducción jerárquica (como merge sort) → árbol de punto a punto.
+
+  PASO 4 — Optimizar el kernel LOCAL antes que la comunicación.
+    La comunicación es una fracción del tiempo total solo si el cómputo local
+    es eficiente. Ver Ej1c: cambiar el orden de los bucles (blocking) da más
+    ganancia que agregar más procesos.
+
+  PASO 5 — Medir con MPI_Wtime() y validar contra resultado secuencial.
+    Siempre usar datos reproducibles (srand fijo) para poder comparar.
+
+================================================================================

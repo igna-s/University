@@ -1,0 +1,1 @@
+Please provide the Qiskit code snippet you would like me to analyze. I need the `qiskit-snippet` content to generate the refactoring recommendations and the updated code.

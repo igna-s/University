@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario: No-Clonación y BB84</title>
+
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['\\(', '\\)'], ['$', '$']],
+            displayMath: [['\\[', '\\]'], ['$$', '$$']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            box-sizing: border-box;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #0056b3;
+            margin: 0;
+        }
+
+        .quiz-header p {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-top: 8px;
+        }
+
+        #question-counter {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        #question-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            min-height: 80px;
+        }
+
+        /* Estilo para código (generado por formatText) */
+        code {
+            background-color: #ffecef;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 1rem;
+            color: #d63384;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        @media (min-width: 640px) {
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+
+        .option-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #0056b3;
+            background-color: #f7fafc;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background-color: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .hint-section {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .hint-btn {
+            background: none;
+            border: none;
+            color: #0056b3;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        #hint-text {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            color: #475569;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        #feedback-panel {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #feedback-panel.correct-feedback {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00BCD4;
+        }
+
+        #feedback-panel.incorrect-feedback {
+            background-color: #fff1f2;
+            border-left: 5px solid #f43f5e;
+        }
+
+        .theory-btn {
+            background-color: transparent;
+            color: #0056b3;
+            border: 2px solid #0056b3;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .theory-btn:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .navigation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 30px;
+        }
+
+        .nav-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #004494;
+        }
+
+        .nav-btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        #score-container {
+            text-align: center;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 16px;
+            text-align: left;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            color: #0056b3;
+            margin-top: 0;
+        }
+
+        .modal-content pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .modal-close-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Cuestionario</h1>
+            <p>Basado en la Clase 10: No-Clonación y BB84</p>
+        </div>
+
+        <div id="quiz-content">
+            <div id="question-counter"></div>
+            <div id="question-text"></div>
+            <div class="options-grid" id="options-container"></div>
+            <div class="hint-section" id="hint-section"></div>
+            <div id="feedback-panel"></div>
+        </div>
+
+        <div id="score-container" style="display: none;">
+             <h2>Cuestionario Finalizado</h2>
+             <p id="score-text" style="font-size: 1.2rem;"></p>
+             <button class="nav-btn" onclick="restartQuiz()">Volver a Intentar</button>
+        </div>
+
+
+        <div class="navigation-controls">
+            <button class="nav-btn" id="prev-btn" onclick="prevQuestion()">Anterior</button>
+            <button class="nav-btn" id="next-btn" onclick="nextQuestion()">Siguiente</button>
+        </div>
+    </div>
+
+    <div id="theory-modal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modal-text"></div>
+            <button class="modal-close-btn" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            // --- TEMA 1: TEOREMA DE NO CLONACIÓN ---
+            {
+                question: "El Teorema de No-Clonación establece que es imposible crear una copia:",
+                options: [
+                    "De un estado \\(|0\\rangle\\) o \\(|1\\rangle\\).",
+                    "Idéntica e independiente de un estado cuántico arbitrario y desconocido.",
+                    "Aproximada de cualquier estado cuántico.",
+                    "De un estado si conocemos su base de preparación."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Los estados de la base computacional sí se pueden copiar (con una CNOT).",
+                    "¡Correcto! Las palabras clave son: idéntica, independiente y desconocido.",
+                    "Incorrecto. Existen máquinas de clonación aproximada (que no son perfectas).",
+                    "Incorrecto. Si conocemos la base, podemos medir y repreparar el estado."
+                ],
+                hint: "El teorema se aplica a estados generales de los cuales no tenemos información previa.",
+                theoryHTML: `<h2>El Teorema de No-Clonación</h2>
+                    <p><b>Teorema:</b> Es imposible construir un operador unitario universal \\(\\hat{U}\\) que pueda crear una copia <b>idéntica</b> e <b>independiente</b> de un estado cuántico <b>desconocido</b> y arbitrario.</p>
+                    <p>Esto es una consecuencia directa de la <b>linealidad</b> de la mecánica cuántica.</p>
+                   `
+            },
+            {
+                question: "Si aplicamos una compuerta CNOT al estado \\(|00\\rangle\\), el resultado es \\(|00\\rangle\\). Si la aplicamos a \\(|10\\rangle\\), es \\(|11\\rangle\\). ¿Significa esto que la CNOT es una máquina de clonación?",
+                options: [
+                    "Sí, porque copia el bit de control en el objetivo.",
+                    "Sí, pero solo para qubits superconductores.",
+                    "No, porque solo funciona para la base computacional, no para superposiciones arbitrarias.",
+                    "No, porque el estado resultante está entrelazado."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Solo parece copiar en la base clásica (0 y 1).",
+                    "Incorrecto.",
+                    "¡Correcto! La CNOT copia información clásica (base Z), pero falla al intentar copiar estados en superposición (como \\(|+\\rangle\\)), creando entrelazamiento en su lugar.",
+                    "Incorrecto. Para las entradas \\(|00\\rangle\\) y \\(|10\\rangle\\), el resultado NO está entrelazado."
+                ],
+                hint: "Para ser un clonador universal, debería funcionar también para el estado \\(|+\\rangle\\).",
+                theoryHTML: `<h2>La CNOT como 'Copiadora'</h2>
+                    <p>La CNOT se comporta como una copiadora clásica: \\(CNOT|x\\rangle|0\\rangle = |x\\rangle|x\\rangle\\) para \\(x \\in \\{0,1\\}\\).</p>
+                    <p>Sin embargo, el teorema de no-clonación se refiere a estados <b>arbitrarios</b>. La CNOT falla al intentar clonar superposiciones.</p>
+                   `
+            },
+            {
+                question: "Si intentamos clonar el estado \\(|+\\rangle\\) usando una CNOT (con un objetivo en \\(|0\\rangle\\)), ¿qué estado obtenemos realmente?",
+                options: [
+                    "Dos copias separadas: \\(|+\\rangle|+\\rangle\\).",
+                    "El estado de Bell \\(|\\Phi^+\\rangle = \\frac{|00\\rangle+|11\\rangle}{\\sqrt{2}}\\).",
+                    "El estado \\(|00\\rangle\\).",
+                    "El estado \\(|11\\rangle\\)."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Este sería el resultado de un clonador ideal, pero es imposible.",
+                    "¡Correcto! \\( CNOT(|+\\rangle|0\\rangle) = CNOT(\\frac{|00\\rangle+|10\\rangle}{\\sqrt{2}}) = \\frac{|00\\rangle+|11\\rangle}{\\sqrt{2}} \\). Es un estado entrelazado.",
+                    "Incorrecto.",
+                    "Incorrecto."
+                ],
+                hint: "Aplica la linealidad: la CNOT actúa sobre \\(|00\\rangle\\) y \\(|10\\rangle\\) por separado.",
+                theoryHTML: `<h2>La Prueba de Fuego</h2>
+                    <p>Al aplicar CNOT a \\(|+\\rangle|0\\rangle\\):</p>
+                    <p>\\( \\text{CNOT} \\left( \\frac{|0\\rangle+|1\\rangle}{\\sqrt{2}} \\otimes |0\\rangle \\right) = \\frac{1}{\\sqrt{2}} ( \\text{CNOT}|00\\rangle + \\text{CNOT}|10\\rangle ) = \\frac{|00\\rangle+|11\\rangle}{\\sqrt{2}} \\)</p>
+                    <p>El resultado es un estado <b>entrelazado</b>, no dos copias independientes. <b>La CNOT no clona, entrelaza.</b></p>
+                   `
+            },
+            {
+                question: "La demostración del teorema de no-clonación por contradicción concluye que una máquina clonadora universal solo podría clonar dos estados \\(|\\psi\\rangle\\) y \\(|\\phi\\rangle\\) si:",
+                options: [
+                    "Son ortogonales (\\(\\langle\\psi|\\phi\\rangle = 0\\)) o idénticos.",
+                    "Están en superposición.",
+                    "Son estados de Bell.",
+                    "Sus amplitudes son reales."
+                ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! La ecuación derivada es \\(\\langle\\psi|\\phi\\rangle = (\\langle\\psi|\\phi\\rangle)^2\\), lo que implica que el producto interno debe ser 0 o 1.",
+                    "Incorrecto.",
+                    "Incorrecto.",
+                    "Incorrecto."
+                ],
+                hint: "La condición matemática es \\(x = x^2\\). ¿Qué valores puede tomar x?",
+                theoryHTML: `<h2>La Contradicción Matemática</h2>
+                    <p>Si asumimos que existe un clonador unitario \\(\\hat{U}\\), llegamos a la condición:</p>
+                    <p>\\( \\langle\\psi|\\phi\\rangle = (\\langle\\psi|\\phi\\rangle)^2 \\)</p>
+                    <p>Esto implica que \\(\\langle\\psi|\\phi\\rangle\\) debe ser <b>0</b> (estados ortogonales) o <b>1</b> (estados idénticos). No se pueden clonar estados arbitrarios que no cumplan esto.</p>
+                   `
+            },
+            {
+                question: "La prueba del teorema basada en la <b>linealidad</b> muestra que al intentar clonar una superposición \\(\\alpha|0\\rangle + \\beta|1\\rangle\\), la máquina produce:",
+                options: [
+                    "\\(\\alpha^2|00\\rangle + \\beta^2|11\\rangle\\) (una mezcla estadística).",
+                    "\\(\\alpha|00\\rangle + \\beta|11\\rangle\\) (un estado entrelazado).",
+                    "\\((\\alpha|0\\rangle + \\beta|1\\rangle) \\otimes (\\alpha|0\\rangle + \\beta|1\\rangle)\\) (clonación exitosa).",
+                    "El estado nulo."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto.",
+                    "¡Correcto! La linealidad obliga a la máquina a actuar sobre cada componente (con su ancilla) por separado: \\(\\hat{U}((\\alpha|0\\rangle + \\beta|1\\rangle)\\otimes|0\\rangle) = \\alpha \\hat{U}|00\\rangle + \\beta \\hat{U}|10\\rangle = \\alpha|00\\rangle + \\beta|11\\rangle\\).",
+                    "Incorrecto. Este es el resultado 'ideal' que viola la linealidad (contiene términos cruzados como \\(|01\\rangle\\)).",
+                    "Incorrecto."
+                ],
+                hint: "La máquina actúa linealmente sobre cada parte de la suma: clona el 0 y clona el 1, y luego suma los resultados.",
+                theoryHTML: `<h2>La Prueba por Linealidad</h2>
+                    <p><b>Lo que debería pasar (Clonación ideal):</b> \\( (\\alpha|0\\rangle+\\beta|1\\rangle) \\otimes (\\alpha|0\\rangle+\\beta|1\\rangle) \\) (tiene términos cruzados).</p>
+                    <p><b>Lo que realmente pasa (Linealidad):</b> \\( \\alpha(|00\\rangle) + \\beta(|11\\rangle) \\).</p>
+                    <p>Los resultados son diferentes. La linealidad prohíbe la clonación perfecta.</p>
+                   `
+            },
+            {
+                question: "¿Cuál de las siguientes es una implicación directa del Teorema de No-Clonación?",
+                options: [
+                    "Podemos enviar información más rápido que la luz.",
+                    "Podemos hacer copias de seguridad (backups) de ordenadores cuánticos fácilmente.",
+                    "Es imposible para un espía copiar un qubit desconocido sin dejar rastro.",
+                    "La computación cuántica es imposible."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. El teorema de no-comunicación prohíbe esto.",
+                    "Incorrecto. El teorema dice justamente lo contrario: no podemos hacer copias de seguridad de estados desconocidos.",
+                    "¡Correcto! Esta es la base de la criptografía cuántica. Si Eva intenta copiar la información, fallará o perturbará el estado.",
+                    "Incorrecto."
+                ],
+                hint: "Piensa en seguridad y criptografía.",
+                theoryHTML: `<h2>Implicaciones del Teorema</h2>
+                    <ul>
+                        <li><b>Seguridad:</b> Es la base de la criptografía cuántica. Un espía no puede 'copiar' un qubit para medirlo después.</li>
+                        <li><b>Corrección de Errores:</b> No podemos hacer 'backups' simples de qubits.</li>
+                    </ul>
+                   `
+            },
+
+            // --- TEMA 2: MEDICIÓN EN DISTINTAS BASES ---
+            {
+                question: "Los ordenadores cuánticos actuales (y Qiskit) solo permiten medir físicamente en la base:",
+                options: [
+                    "Base X (Hadamard).",
+                    "Base Y (Circular).",
+                    "Base Z (Computacional).",
+                    "Cualquier base arbitraria."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto.",
+                    "Incorrecto.",
+                    "¡Correcto! El hardware solo distingue entre \\(|0\\rangle\\) y \\(|1\\rangle\\). Para otras bases, necesitamos rotar el estado antes de medir.",
+                    "Incorrecto. Solo miden en Z nativamente."
+                ],
+                hint: "Es la base formada por los estados 0 y 1.",
+                theoryHTML: `<h2>La Pregunta Práctica</h2>
+                    <p>El hardware cuántico y los simuladores <b>solo saben cómo realizar mediciones en la base Z</b> (base computacional). No existen 'compuertas de medición en X' nativas.</p>
+                   `
+            },
+            {
+                question: "Para medir en una base arbitraria definida por la transformación unitaria \\(\\hat{U}\\) (donde \\(\\hat{U}|0\\rangle = |v_0\\rangle\\)), ¿qué operación debemos aplicar antes de la medición en Z?",
+                options: [
+                    "La misma compuerta \\(\\hat{U}\\).",
+                    "La inversa \\(\\hat{U}^\\dagger\\).",
+                    "Una compuerta Hadamard.",
+                    "Ninguna operación."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Eso rotaría el estado aún más lejos de la base Z.",
+                    "¡Correcto! Si \\(\\hat{U}\\) crea la base, \\(\\hat{U}^\\dagger\\) la 'deshace', llevando los vectores de la base arbitraria de vuelta a \\(|0\\rangle\\) y \\(|1\\rangle\\) para ser medidos.",
+                    "Incorrecto. Eso es solo para la base X.",
+                    "Incorrecto."
+                ],
+                hint: "Necesitamos 'deshacer' la rotación que creó la base para volver a la base computacional.",
+                theoryHTML: `<h2>La Estrategia: 'Deshacer' el Cambio de Base</h2>
+                    <p>Para medir en una nueva base, aplicamos el operador <b>\\(\\hat{U}^\\dagger\\)</b> (el inverso del que crea la base) y luego realizamos una medición estándar en Z.</p>
+                   `
+            },
+            {
+                question: "¿Qué compuerta (o secuencia) se debe aplicar para medir en la **base X** (\\(|+\\rangle, |-\\rangle\\))?",
+                options: [
+                    "Compuerta X.",
+                    "Compuerta H (Hadamard).",
+                    "Compuerta S.",
+                    "Compuertas S y luego H."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. X es un bit-flip.",
+                    "¡Correcto! La Hadamard es su propia inversa. Transforma \\(|+\\rangle\\) en \\(|0\\rangle\\) y \\(|-\\rangle\\) en \\(|1\\rangle\\).",
+                    "Incorrecto.",
+                    "Incorrecto. Esa secuencia es para la base Y."
+                ],
+                hint: "Es la compuerta que crea superposiciones.",
+                theoryHTML: `<h2>Medición en la Base X</h2>
+                    <p>El operador que crea la base X es \\(H\\). Como \\(H = H^\\dagger\\), para medir aplicamos <b>H</b>.</p>
+                    <ul>
+                        <li>Si medimos '0', el estado era \\(|+\\rangle\\).</li>
+                        <li>Si medimos '1', el estado era \\(|-\\rangle\\).</li>
+                    </ul>
+                   `
+            },
+            {
+                question: "Para medir en la **base Y** (\\(|i\\rangle, |-i\\rangle\\)), la secuencia correcta en Qiskit antes de medir es:",
+                options: [
+                    "Aplicar H.",
+                    "Aplicar S.",
+                    "Aplicar `sdg` (S daga) y luego `h`.",
+                    "Aplicar `h` y luego `s`."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Eso es para base X.",
+                    "Incorrecto.",
+                    "¡Correcto! La base Y se crea con \\(S \\cdot H\\). Para medir, aplicamos la inversa: \\((SH)^\\dagger = H^\\dagger S^\\dagger = H S^\\dagger\\). En Qiskit, aplicamos `sdg` y luego `h`.",
+                    "Incorrecto."
+                ],
+                hint: "Necesitamos el inverso de la creación de la base Y. La inversa de S es S-daga.",
+                theoryHTML: `<h2>Medición en la Base Y</h2>
+                    <p>El operador de creación es \\(S \\cdot H\\). El operador de medición (inverso) es \\(H \\cdot S^\\dagger\\).</p>
+                    <p>En un circuito:</p>
+                    <ol>
+                        <li>Aplicar <b>Sdg</b> (\\(S^\\dagger\\)).</li>
+                        <li>Aplicar <b>H</b>.</li>
+                        <li>Medir en Z.</li>
+                    </ol>
+                   `
+            },
+            {
+                question: "Si medimos en la base X y obtenemos el resultado '0', ¿en qué estado estaba el sistema (antes de la rotación)?",
+                options: [
+                    "\\(|0\\rangle\\)",
+                    "\\(|1\\rangle\\)",
+                    "\\(|+\\rangle\\)",
+                    "\\(|-\\rangle\\)"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto.",
+                    "Incorrecto.",
+                    "¡Correcto! La transformación es \\(H|+\\rangle = |0\\rangle\\). Por lo tanto, medir 0 implica que el estado original era \\(|+\\rangle\\).",
+                    "Incorrecto. Medir 1 implicaría \\(|-\\rangle\\)."
+                ],
+                hint: "H transforma el estado más (+) en el estado cero (0).",
+                theoryHTML: `<h2>Interpretación (Base X)</h2>
+                    <ul>
+                        <li>Resultado '0' \\(\\leftrightarrow\\) Estado \\(|+\\rangle\\)</li>
+                        <li>Resultado '1' \\(\\leftrightarrow\\) Estado \\(|-\\rangle\\)</li>
+                    </ul>
+                   `
+            },
+
+            // --- TEMA 3: PROTOCOLO BB84 ---
+            {
+                question: "¿Cuál es el objetivo principal del protocolo BB84?",
+                options: [
+                    "Enviar mensajes de texto cifrados instantáneamente.",
+                    "Distribuir una clave secreta compartida entre dos partes de forma segura.",
+                    "Clonar información cuántica a distancia.",
+                    "Realizar cálculos cuánticos distribuidos."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. BB84 no envía el mensaje, solo la clave.",
+                    "¡Correcto! Es un protocolo de Distribución de Claves Cuánticas (QKD).",
+                    "Incorrecto. El teorema de no-clonación lo prohíbe.",
+                    "Incorrecto."
+                ],
+                hint: "Se usa para generar una serie de bits aleatorios que solo Alice y Bob conocen.",
+                theoryHTML: `<h2>El Objetivo del Protocolo BB84</h2>
+                    <p>El objetivo de BB84 es permitir que Alice y Bob creen una <b>clave secreta compartida</b> a partir de cero, con un alto grado de confianza de que nadie más la conoce.</p>
+                   `
+            },
+            {
+                question: "En BB84, Alice codifica sus bits eligiendo aleatoriamente entre dos bases. ¿Cuáles son?",
+                options: [
+                    "Base Z (\\(|0\\rangle, |1\\rangle\\)) y Base X (\\(|+\\rangle, |-\\rangle\\)).",
+                    "Base Z y Base Y.",
+                    "Base X y Base Y.",
+                    "Solo Base Z."
+                ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! Estas dos bases son 'mútuamente insesgadas', lo que maximiza la seguridad.",
+                    "Incorrecto.",
+                    "Incorrecto.",
+                    "Incorrecto. Se necesitan dos bases no ortogonales para que funcione."
+                ],
+                hint: "Usa la base estándar y la base de superposición (Hadamard).",
+                theoryHTML: `<h2>El Alfabeto Cuántico de Alice</h2>
+                    <p>Su estrategia se basa en dos elecciones aleatorias:</p>
+                    <ol>
+                        <li><b>El Bit Clásico:</b> 0 o 1.</li>
+                        <li><b>La Base de Codificación:</b> <b>Base Z</b> o <b>Base X</b>.</li>
+                    </ol>
+                   `
+            },
+            {
+                question: "Si Alice envía un '0' codificado en la Base X, ¿qué estado cuántico envía?",
+                options: [
+                    "\\(|0\\rangle\\)",
+                    "\\(|1\\rangle\\)",
+                    "\\(|+\\rangle\\)",
+                    "\\(|-\\rangle\\)"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Eso es '0' en base Z.",
+                    "Incorrecto.",
+                    "¡Correcto! En la base X, el '0' lógico se representa por el estado \\(|+\\rangle\\).",
+                    "Incorrecto. Eso es '1' en base X."
+                ],
+                hint: "El '0' suele asociarse al estado 'positivo' o 'superior' de la base.",
+                theoryHTML: `<h2>Tabla de Codificación</h2>
+                    <ul>
+                        <li>0 en Z \\(\\to |0\\rangle\\)</li>
+                        <li>1 en Z \\(\\to |1\\rangle\\)</li>
+                        <li>0 en X \\(\\to |+\\rangle\\)</li>
+                        <li>1 en X \\(\\to |-\\rangle\\)</li>
+                    </ul>
+                   `
+            },
+            {
+                question: "¿Qué sucede si Bob mide el qubit de Alice en una base diferente a la que ella usó para enviarlo?",
+                options: [
+                    "Bob siempre obtiene el resultado correcto.",
+                    "Bob obtiene un resultado completamente aleatorio (50% 0, 50% 1).",
+                    "El qubit se destruye sin dar resultado.",
+                    "Bob sabe inmediatamente que usó la base incorrecta."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto.",
+                    "¡Correcto! Por ejemplo, medir \\(|0\\rangle\\) (base Z) en la base X da 0 o 1 con igual probabilidad. No hay correlación.",
+                    "Incorrecto.",
+                    "Incorrecto. Bob solo obtiene un bit, no sabe si es correcto o aleatorio hasta que habla con Alice."
+                ],
+                hint: "Piensa en medir un estado \\(|0\\rangle\\) en la base X. ¿Cuál es el resultado?",
+                theoryHTML: `<h2>Analizando el Resultado</h2>
+                    <p><b>Las Bases NO Coinciden:</b> El resultado de Bob es <b>aleatorio</b> y no guarda correlación con el bit de Alice.</p>
+                   `
+            },
+            {
+                question: "¿Qué es la 'Reconciliación de Bases' en BB84?",
+                options: [
+                    "Alice y Bob revelan sus bits secretos para ver si coinciden.",
+                    "Alice y Bob comparan públicamente qué bases usaron y descartan los bits donde las bases no coinciden.",
+                    "Alice vuelve a enviar los qubits que se perdieron.",
+                    "Alice y Bob acuerdan usar solo la base Z en el futuro."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. ¡Nunca deben revelar los bits de la clave!",
+                    "¡Correcto! Se dicen 'usé Z' o 'usé X' públicamente. Si coinciden, conservan el bit; si no, lo tiran. Esto no revela el valor del bit (0 o 1) a un espía.",
+                    "Incorrecto.",
+                    "Incorrecto."
+                ],
+                hint: "Es el proceso de filtrar la 'paja' (mediciones aleatorias) para dejar solo el 'trigo' (mediciones correlacionadas).",
+                theoryHTML: `<h2>La Reconciliación de Bases</h2>
+                    <p>Alice y Bob <b>anuncian públicamente</b> la secuencia de <b>bases</b> que usaron. Conservan los bits donde las bases coinciden y descartan el resto.</p>
+                   `
+            },
+            {
+                question: "¿Cómo detectan Alice y Bob a una espía (Eva)?",
+                options: [
+                    "Eva roba la clave y Alice se da cuenta porque Bob no responde.",
+                    "Eva inevitablemente introduce errores en la clave al medir en la base incorrecta.",
+                    "Usan un canal cuántico dedicado para la detección.",
+                    "Eva no puede ser detectada, por eso se necesita cifrado post-cuántico."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto.",
+                    "¡Correcto! Si Eva mide un qubit en la base incorrecta, colapsa el estado. Si Bob luego mide en la base correcta (la de Alice), tiene un 50% de probabilidad de obtener un error debido al colapso causado por Eva.",
+                    "Incorrecto.",
+                    "Incorrecto. BB84 es teóricamente seguro y detecta espías."
+                ],
+                hint: "La medición de Eva perturba el estado cuántico (colapso).",
+                theoryHTML: `<h2>El Acto del Crimen</h2>
+                    <p>La presencia de Eva se detecta cuando ella elige una base de medición diferente a la de Alice. Su medición perturba el estado y crea un error detectable (QBER) cuando Alice y Bob comparan una parte de sus claves.</p>
+                   `
+            },
+            {
+                question: "Si Eva intenta espiar midiendo todos los qubits en la base Z, ¿qué pasa con los qubits que Alice envió en base X?",
+                options: [
+                    "Eva los lee perfectamente.",
+                    "No pasa nada, Eva no obtiene información.",
+                    "Eva colapsa los estados \\(|+\\rangle\\) y \\(|-\\rangle\\) a \\(|0\\rangle\\) o \\(|1\\rangle\\), introduciendo errores.",
+                    "El sistema se bloquea."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Medir \\(|+\\rangle\\) en Z da resultado aleatorio.",
+                    "Incorrecto. Eva obtiene un bit aleatorio, pero daña el estado.",
+                    "¡Correcto! Esta alteración del estado es lo que Alice y Bob detectarán luego.",
+                    "Incorrecto."
+                ],
+                hint: "Medir en la base incorrecta destruye la superposición original.",
+                theoryHTML: `<h2>El Error Inducido</h2>
+                    <p>Si Alice envía \\(|+\\rangle\\) (Base X) y Eva mide en Base Z, el estado colapsa a \\(|0\\rangle\\) o \\(|1\\rangle\\). Si Bob luego mide correctamente en Base X, ya no recibirá \\(|+\\rangle\\), sino un estado colapsado que puede darle un error.</p>
+                   `
+            },
+            {
+                question: "Si Alice y Bob detectan una tasa de error (QBER) alta en su verificación, ¿qué deben hacer?",
+                options: [
+                    "Corregir los errores y usar la clave.",
+                    "Descartar la clave por completo e intentar de nuevo.",
+                    "Usar la clave solo para mensajes poco importantes.",
+                    "Cambiar a un protocolo clásico."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Demasiados errores significan que Eva tiene mucha información sobre la clave. No es segura.",
+                    "¡Correcto! Una tasa de error alta indica la presencia de un espía. La única opción segura es abortar y reiniciar.",
+                    "Incorrecto.",
+                    "Incorrecto."
+                ],
+                hint: "La presencia de errores altos implica que la seguridad ha sido comprometida.",
+                theoryHTML: `<h2>La Verificación Final</h2>
+                    <p>Si encuentran discrepancias significativas (QBER alto), saben que Eva estuvo allí. <b>Descartan la clave por completo</b> y vuelven a empezar.</p>
+                   `
+            },
+            {
+                question: "¿Cuál es el principio físico que impide que Eva haga una copia perfecta del qubit para medirla más tarde?",
+                options: [
+                    "El Principio de Incertidumbre.",
+                    "El Teorema de No-Clonación.",
+                    "El Efecto Túnel.",
+                    "La Superconductividad."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Aunque relacionado, la prohibición específica de copiar es el teorema de no-clonación.",
+                    "¡Correcto! Si Eva pudiera clonar el qubit, guardaría una copia y mediría la otra después de saber la base. El teorema de no-clonación hace esto imposible.",
+                    "Incorrecto.",
+                    "Incorrecto."
+                ],
+                hint: "Es el tema principal de la primera parte de esta clase.",
+                theoryHTML: `<h2>¿Por Qué es Seguro?</h2>
+                    <p><b>Teorema de No-Clonación:</b> Eva no puede evitar el problema haciendo una copia del qubit para medirla tranquilamente. La clonación de un estado desconocido es imposible.</p>
+                   `
+            },
+
+            // --- PREGUNTAS BASADAS EN EL JUPYTER NOTEBOOK (.ipynb) ---
+            {
+                question: "En Qiskit, el proceso de simulación se divide en 3 pasos. ¿Cuáles son?",
+                options: [
+                    "Diseñar, Compilar, Ejecutar.",
+                    "Construir, Ejecutar, Analizar.",
+                    "Programar, Simular, Graficar.",
+                    "Entrelazar, Medir, Colapsar."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto.",
+                    "¡Correcto! 1. Construir el circuito. 2. Ejecutar en un backend (simulador). 3. Analizar los resultados (counts).",
+                    "Incorrecto.",
+                    "Incorrecto."
+                ],
+                hint: "Construir el circuito es el primero, ver los resultados es el último.",
+                theoryHTML: `<h2>El Flujo de Trabajo de Simulación</h2>
+                    <ol>
+                        <li><b>Construir:</b> Se crea un <code>QuantumCircuit</code>.</li>
+                        <li><b>Ejecutar:</b> Se elige un backend y se envía el circuito (<code>run</code>).</li>
+                        <li><b>Analizar:</b> Se recogen los resultados (<code>result</code>, <code>counts</code>).</li>
+                    </ol>
+                   `
+            },
+            {
+                question: "Para simular el ruido o mediciones reales en Qiskit, a menudo usamos el simulador:",
+                options: [
+                    "`StatevectorSimulator`",
+                    "`UnitarySimulator`",
+                    "`AerSimulator`",
+                    "`QuantumSimulator`"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Este da el vector matemático exacto.",
+                    "Incorrecto. Este da la matriz unitaria.",
+                    "¡Correcto! `AerSimulator` es la herramienta estándar para simular la ejecución de circuitos con 'shots' (disparos) y obtener estadísticas de medición.",
+                    "Incorrecto."
+                ],
+                hint: "Es parte de la librería `qiskit_aer`.",
+                theoryHTML: `<h2>Simulación</h2>
+                    <p>Para la simulación, usaremos el <code>AerSimulator</code> de Qiskit.</p>
+<pre>from qiskit_aer import AerSimulator
+simulator = AerSimulator()</pre>
+                   `
+            },
+            {
+                question: "La función `transpile` en Qiskit sirve para:",
+                options: [
+                    "Convertir código Python a C++.",
+                    "Optimizar y adaptar el circuito para un backend específico.",
+                    "Graficar el circuito.",
+                    "Ejecutar el circuito."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto.",
+                    "¡Correcto! Traduce las compuertas abstractas a las compuertas base que el hardware (o simulador) soporta y optimiza la estructura.",
+                    "Incorrecto.",
+                    "Incorrecto."
+                ],
+                hint: "Adapta el circuito 'lógico' al hardware 'físico'.",
+                theoryHTML: `<h2>Transpilación</h2>
+                    <p>El paso de <code>transpile</code> optimiza el circuito para el backend. Es una buena práctica.</p>
+<pre>compiled_circuit = transpile(qc, simulator)</pre>
+                   `
+            },
+            {
+                question: "En el código de simulación de BB84, si `alice_bases[i]` es 'X' y `bob_bases[i]` es 'Z', ¿qué sucede con el bit resultante?",
+                options: [
+                    "Se guarda como parte de la clave final.",
+                    "Se descarta durante la fase de sondeo (reconciliación).",
+                    "Se le aplica una corrección de error.",
+                    "Bob obtiene automáticamente el bit correcto."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Solo se guardan si las bases coinciden.",
+                    "¡Correcto! Como las bases no coinciden, el resultado es aleatorio y no útil. El código verifica `if alice_bases[i] == bob_bases[i]` para decidir si guardar el bit.",
+                    "Incorrecto.",
+                    "Incorrecto."
+                ],
+                hint: "Si las bases son distintas, la medición no está correlacionada determinísticamente.",
+                theoryHTML: `<h2>Fase de Sondeo (Código)</h2>
+<pre>if alice_bases[i] == bob_bases[i]:
+    # Si las bases coinciden, se quedan con el bit
+    clave_alice.append(...)
+    clave_bob.append(...)</pre>
+                   `
+            },
+            {
+                question: "¿Qué es el 'One-Time Pad' (Cifrado de Vernam)?",
+                options: [
+                    "Un algoritmo de cifrado cuántico.",
+                    "El único sistema de cifrado clásico teóricamente irrompible.",
+                    "Un protocolo para intercambiar claves.",
+                    "Un tipo de compuerta lógica."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Es un algoritmo clásico.",
+                    "¡Correcto! Requiere una clave aleatoria tan larga como el mensaje y que no se reutilice. Su seguridad es perfecta.",
+                    "Incorrecto. BB84 es para intercambiar claves; Vernam es para usarlas.",
+                    "Incorrecto."
+                ],
+                hint: "Es el sistema perfecto que BB84 aspira a alimentar.",
+                theoryHTML: `<h2>El Cifrado de Vernam (One-Time Pad)</h2>
+                    <p>Se ha demostrado matemáticamente que este sistema es <b>incondicionalmente seguro</b>. Un espía que intercepte el mensaje cifrado no obtiene absolutamente ninguna información.</p>
+                    <ul>
+                        <li>Clave aleatoria.</li>
+                        <li>Tan larga como el mensaje.</li>
+                        <li>De un solo uso.</li>
+                    </ul>
+                   `
+            },
+            {
+                question: "En la práctica moderna, ¿cómo se usa la clave generada por BB84?",
+                options: [
+                    "Para cifrar todo el tráfico de internet con One-Time Pad.",
+                    "Como semilla para generar números pseudoaleatorios.",
+                    "Como clave para algoritmos de cifrado simétrico clásicos rápidos como AES.",
+                    "No se usa, es solo teórico."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Sería demasiado lento e ineficiente por la longitud de clave necesaria.",
+                    "Incorrecto.",
+                    "¡Correcto! Se usa un sistema híbrido. BB84 resuelve la distribución segura de la clave, y AES usa esa clave para cifrar los datos a alta velocidad.",
+                    "Incorrecto. Ya existen redes QKD comerciales."
+                ],
+                hint: "BB84 es lento generando bits, AES es rápido cifrando datos. Se combinan lo mejor de ambos mundos.",
+                theoryHTML: `<h2>El Rol Práctico: Un Sistema Híbrido</h2>
+                    <ol>
+                        <li><b>Generar Clave (Cuántico):</b> Alice y Bob usan BB84 para generar una clave (ej: 256 bits).</li>
+                        <li><b>Cifrar (Clásico):</b> Usan esa clave para un algoritmo como <b>AES</b>.</li>
+                    </ol>
+                    <p>BB84 no reemplaza el cifrado clásico, sino que soluciona la distribución de claves.</p>
+                   `
+            }
+        ];
+
+        // --- FUNCIÓN DE FORMATEO DE TEXTO PARA EL PROBLEMA DE MARKDOWN ---
+        // Convierte el markdown simple en etiquetas HTML válidas
+        function formatText(text) {
+            if (!text) return text;
+            // Reemplazar `codigo` por <code>codigo</code>
+            let html = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+            // Reemplazar **negrita** por <b>negrita</b>
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+            // Reemplazar *cursiva* por <i>cursiva</i>
+            html = html.replace(/\*([^*]+)\*/g, '<i>$1</i>');
+            return html;
+        }
+
+        // --- LÓGICA DEL CUESTIONARIO ---
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let score = 0;
+
+        const questionCounterEl = document.getElementById('question-counter');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const feedbackPanelEl = document.getElementById('feedback-panel');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const quizContentEl = document.getElementById('quiz-content');
+        const scoreContainerEl = document.getElementById('score-container');
+        const scoreTextEl = document.getElementById('score-text');
+        const hintSectionEl = document.getElementById('hint-section');
+        const modalEl = document.getElementById('theory-modal');
+        const modalTextEl = document.getElementById('modal-text');
+
+
+        function displayQuestion() {
+            feedbackPanelEl.style.display = 'none';
+            optionsContainerEl.innerHTML = '';
+            hintSectionEl.innerHTML = '';
+
+            if (currentQuestionIndex >= quizData.length) {
+                showScore();
+                return;
+            }
+
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            questionCounterEl.textContent = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+
+            // APLICAMOS EL FORMATEO AQUÍ (para convertir `...` y **...**)
+            questionTextEl.innerHTML = formatText(currentQuestion.question);
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                // APLICAMOS EL FORMATEO AQUÍ TAMBIÉN
+                button.innerHTML = formatText(option);
+                button.className = 'option-btn';
+                button.onclick = () => checkAnswer(index);
+                optionsContainerEl.appendChild(button);
+            });
+
+            // Add Hint functionality
+            if(currentQuestion.hint) {
+                const hintBtn = document.createElement('button');
+                hintBtn.textContent = 'Necesito una pista';
+                hintBtn.className = 'hint-btn';
+                const hintText = document.createElement('div');
+                hintText.id = 'hint-text';
+                // APLICAMOS EL FORMATEO AQUÍ TAMBIÉN
+                hintText.innerHTML = formatText(currentQuestion.hint);
+                hintBtn.onclick = () => {
+                    hintText.style.display = 'block';
+                    hintBtn.style.display = 'none';
+                };
+                hintSectionEl.appendChild(hintBtn);
+                hintSectionEl.appendChild(hintText);
+            }
+
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset();
+            }
+
+            updateNavButtons();
+
+            if(userAnswers[currentQuestionIndex] !== null){
+                showPreviousAnswer();
+            }
+        }
+
+        function showPreviousAnswer(){
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const currentQuestion = quizData[currentQuestionIndex];
+            const correctIndex = currentQuestion.correctAnswer;
+            const optionButtons = optionsContainerEl.querySelectorAll('.option-btn');
+            const hintBtn = hintSectionEl.querySelector('.hint-btn');
+            if(hintBtn) hintBtn.style.display = 'none';
+
+
+            optionButtons.forEach((btn, i) => {
+                if (i === correctIndex) {
+                    btn.classList.add('correct');
+                } else if (i === userAnswer.selectedIndex) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+
+            // APLICAMOS EL FORMATEO AQUÍ TAMBIÉN
+            feedbackPanelEl.innerHTML = `<p>${formatText(currentQuestion.feedback[userAnswer.selectedIndex])}</p>`;
+
+            if (currentQuestion.theoryHTML) {
+                const theoryBtn = document.createElement('button');
+                theoryBtn.textContent = 'Ver Teoría';
+                theoryBtn.className = 'theory-btn';
+                theoryBtn.onclick = () => showTheory(currentQuestion.theoryHTML);
+                feedbackPanelEl.appendChild(theoryBtn);
+            }
+
+            feedbackPanelEl.className = userAnswer.isCorrect ? 'correct-feedback' : 'incorrect-feedback';
+            feedbackPanelEl.style.display = 'block';
+
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset();
+            }
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(userAnswers[currentQuestionIndex] !== null) return;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedIndex === currentQuestion.correctAnswer;
+
+            userAnswers[currentQuestionIndex] = { selectedIndex, isCorrect };
+
+            if(isCorrect) {
+                score++;
+            }
+
+            showPreviousAnswer();
+        }
+
+        function showTheory(htmlContent) {
+            modalTextEl.innerHTML = htmlContent;
+            modalEl.style.display = 'flex';
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset([modalTextEl]);
+            }
+        }
+
+        function closeModal() {
+            modalEl.style.display = 'none';
+        }
+
+        function updateNavButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === quizData.length -1) {
+                nextBtn.textContent = 'Finalizar';
+            } else {
+                 nextBtn.textContent = 'Siguiente';
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function showScore(){
+            quizContentEl.style.display = 'none';
+            document.querySelector('.navigation-controls').style.display = 'none';
+            scoreContainerEl.style.display = 'block';
+
+            scoreTextEl.textContent = `Tu puntuación es ${score} de ${quizData.length}.`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            score = 0;
+
+            scoreContainerEl.style.display = 'none';
+            quizContentEl.style.display = 'block';
+            document.querySelector('.navigation-controls').style.display = 'flex';
+
+            displayQuestion();
+        }
+
+        // Iniciar el cuestionario
+        displayQuestion();
+    </script>
+
+</body>
+</html>

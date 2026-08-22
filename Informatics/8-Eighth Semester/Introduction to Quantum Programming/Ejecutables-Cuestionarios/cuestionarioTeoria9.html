@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario: Compuertas Controladas</title>
+
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['\\(', '\\)'], ['$', '$']],
+            displayMath: [['\\[', '\\]'], ['$$', '$$']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            box-sizing: border-box;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #0056b3;
+            margin: 0;
+        }
+
+        .quiz-header p {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-top: 8px;
+        }
+
+        #question-counter {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        #question-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            min-height: 80px;
+        }
+
+        #question-text code {
+            background-color: #ffecef;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 1.1rem;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        @media (min-width: 640px) {
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .option-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #0056b3;
+            background-color: #f7fafc;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background-color: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .hint-section {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .hint-btn {
+            background: none;
+            border: none;
+            color: #0056b3;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        #hint-text {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            color: #475569;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        #feedback-panel {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #feedback-panel.correct-feedback {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00BCD4;
+        }
+
+        #feedback-panel.incorrect-feedback {
+            background-color: #fff1f2;
+            border-left: 5px solid #f43f5e;
+        }
+
+        .theory-btn {
+            background-color: transparent;
+            color: #0056b3;
+            border: 2px solid #0056b3;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .theory-btn:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .navigation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 30px;
+        }
+
+        .nav-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #004494;
+        }
+
+        .nav-btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        #score-container {
+            text-align: center;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 16px;
+            text-align: left;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            color: #0056b3;
+            margin-top: 0;
+        }
+
+        .modal-content pre {
+            background-color: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+        }
+
+        .modal-content code {
+            background-color: #ffecef;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+        }
+
+        .modal-close-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Cuestionario</h1>
+            <p>Basado en la Teoría 9</p>
+        </div>
+
+        <div id="quiz-content">
+            <div id="question-counter"></div>
+            <div id="question-text"></div>
+            <div class="options-grid" id="options-container"></div>
+            <div class="hint-section" id="hint-section"></div>
+            <div id="feedback-panel"></div>
+        </div>
+
+        <div id="score-container" style="display: none;">
+             <h2>Cuestionario Finalizado</h2>
+             <p id="score-text" style="font-size: 1.2rem;"></p>
+             <button class="nav-btn" onclick="restartQuiz()">Volver a Intentar</button>
+        </div>
+
+        <div class="navigation-controls">
+            <button class="nav-btn" id="prev-btn" onclick="prevQuestion()">Anterior</button>
+            <button class="nav-btn" id="next-btn" onclick="nextQuestion()">Siguiente</button>
+        </div>
+    </div>
+
+    <div id="theory-modal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modal-text"></div>
+            <button class="modal-close-btn" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "¿Por qué las compuertas de 1 qubit, incluso aplicadas en paralelo como \\(H^{\\otimes N}\\), no pueden crear entrelazamiento?",
+                options: [
+                    "Porque no son unitarias.",
+                    "Porque solo funcionan en el estado \\(|0\\rangle\\).",
+                    "Porque no implementan una lógica 'if-then' condicional.",
+                    "Porque no pueden crear superposiciones."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Todas las compuertas cuánticas, incluidas las de 1 qubit, deben ser unitarias.",
+                    "Incorrecto. Actúan sobre cualquier estado, como \\(H|1\\rangle = |-\\rangle\\).",
+                    "¡Correcto! Carecen de interacción condicional. Cada qubit evoluciona de forma independiente, por lo que no se pueden generar correlaciones.",
+                    "Incorrecto. La compuerta H está diseñada específicamente para crear superposiciones."
+                ],
+                hint: "El entrelazamiento requiere una 'interacción condicional' entre qubits.",
+                theoryHTML: `<h2>La Necesidad de la Interacción: Compuertas Controladas</h2>
+                    <p>En la clase anterior vimos cómo aplicar compuertas de 1 qubit en paralelo \\((H^{\\otimes N})\\), pero llegamos a una conclusión clave: estas operaciones <b>nunca pueden crear entrelazamiento</b>. Para construir algoritmos complejos, necesitamos <b>interacción condicional</b>.</p>
+                    <p>La solución es una <b>Compuerta Controlada-U</b> \\((CU)\\), donde \\(U\\) es una operación unitaria.</p>`
+            },
+            {
+                question: "En la 'receta universal' para una compuerta \\(CU\\) con control en \\(q_1\\) y objetivo en \\(q_0\\), ¿cuál es el operador total?",
+                options: [
+                    "\\(CU = (|0\\rangle\\langle0|) \\otimes \\hat{U} + (|1\\rangle\\langle1|) \\otimes \\hat{I}\\)",
+                    "\\(CU = (|0\\rangle\\langle0|) \\otimes \\hat{I} + (|1\\rangle\\langle1|) \\otimes \\hat{U}\\)",
+                    "\\(CU = \\hat{I} \\otimes (|0\\rangle\\langle0|) + \\hat{U} \\otimes (|1\\rangle\\langle1|)\\)",
+                    "\\(CU = (\\hat{P}_0 \\otimes \\hat{I}) \\cdot (\\hat{P}_1 \\otimes \\hat{U})\\)"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esto aplicaría la compuerta \\(U\\) cuando el control es \\(|0\\rangle\\).",
+                    "¡Correcto! Esta fórmula suma los dos 'casos': el proyector \\(\\hat{P}_0\\) se acopla con la Identidad (no hacer nada), y el proyector \\(\\hat{P}_1\\) se acopla con la compuerta \\(\\hat{U}\\).",
+                    "Incorrecto. Esto describiría una compuerta con control en \\(q_0\\) (el segundo término está invertido).",
+                    "Incorrecto. Los operadores de los casos se suman, no se multiplican."
+                ],
+                hint: "El operador total es la suma de los dos 'casos' lógicos (control=0 y control=1).",
+                theoryHTML: `<h2>La Receta Universal: Control en \\(q_1\\) (el más significativo)</h2>
+                    <p><b>La Lógica:</b></p>
+                    <ul>
+                        <li><b>Caso A (\\(q_1\\)=0):</b> Operador \\(\\hat{P}_0 \\otimes \\hat{I}\\).</li>
+                        <li><b>Caso B (\\(q_1\\)=1):</b> Operador \\(\\hat{P}_1 \\otimes \\hat{U}\\).</li>
+                    </ul>
+                    <p>El operador total es la <b>suma</b> de los operadores de cada caso:</p>
+                    $$ CU = (|0\\rangle\\langle0|) \\otimes \\hat{I} + (|1\\rangle\\langle1|) \\otimes \\hat{U} $$`
+            },
+            {
+                question: "Si aplicamos la compuerta \\(CU_{1,0}\\) (control en \\(q_1\\)) al estado \\(|01\\rangle\\), ¿cuál es el resultado?",
+                options: [
+                    "\\(|01\\rangle\\)",
+                    "\\(|0\\rangle \\otimes (U|1\\rangle)\\)",
+                    "\\(|11\\rangle\\)",
+                    "\\(\\vec{0}\\)"
+                ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! El qubit de control \\(q_1\\) está en el estado \\(|0\\rangle\\), por lo que la condición 'if' no se cumple y no se aplica ninguna operación al objetivo.",
+                    "Incorrecto. La operación \\(U\\) solo se aplica si el control es \\(|1\\rangle\\).",
+                    "Incorrecto. Esto solo ocurriría si \\(U=X\\) y el control fuera \\(|1\\rangle\\).",
+                    "Incorrecto. La operación es unitaria y conserva la norma."
+                ],
+                hint: "La compuerta \\(U\\) solo se aplica si el qubit de control es \\(|1\\rangle\\).",
+                theoryHTML: `<h2>Resumen de la Acción sobre la Base:</h2>
+                    <ul>
+                        <li><b>Para \\(|00\\rangle\\) (control en \\(|0\\rangle\\)):</b> El estado no cambia:  \\(CU|00\\rangle = |00\\rangle\\)</li>
+                        <li><b>Para \\(|01\\rangle\\) (control en \\(|0\\rangle\\)):</b> El estado no cambia: \\(CU|01\\rangle = |01\\rangle\\)</li>
+                        <li><b>Para \\(|10\\rangle\\) (control en \\(|1\\rangle\\)):</b> Se aplica \\(U\\) al objetivo: \\(CU|10\\rangle = |1\\rangle \\otimes (U|0\\rangle)\\)</li>
+                        <li><b>Para \\(|11\\rangle\\) (control en \\(|1\\rangle\\)):</b> Se aplica \\(U\\) al objetivo: \\(CU|11\\rangle = |1\\rangle \\otimes (U|1\\rangle)\\)</li>
+                    </ul>`
+            },
+            {
+                question: "¿Cuál es la fórmula correcta para la compuerta \\(CU_{0,1}\\) (control en \\(q_0\\), objetivo en \\(q_1\\))?",
+                options: [
+                    "\\(CU_{0,1} = \\hat{I} \\otimes |0\\rangle\\langle0| + \\hat{U} \\otimes |1\\rangle\\langle1|\\)",
+                    "\\(CU_{0,1} = |0\\rangle\\langle0| \\otimes \\hat{I} + |1\\rangle\\langle1| \\otimes \\hat{U}\\)",
+                    "\\(CU_{0,1} = \\hat{I} \\otimes \\hat{U} + |0\\rangle\\langle0| \\otimes |1\\rangle\\langle1|\\)",
+                    "\\(CU_{0,1} = |1\\rangle\\langle1| \\otimes \\hat{U} + |0\\rangle\\langle0| \\otimes \\hat{I}\\)"
+                ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! El primer término del producto tensorial corresponde a \\(q_1\\) (el objetivo) y el segundo a \\(q_0\\) (el control). Se aplica \\(\\hat{I}\\) al objetivo si el control es 0, y \\(\\hat{U}\\) al objetivo si el control es 1.",
+                    "Incorrecto. Esta es la fórmula para \\(CU_{1,0}\\) (control en \\(q_1\\)).",
+                    "Incorrecto. Esta fórmula no tiene sentido.",
+                    "Incorrecto. Esta es la fórmula para \\(CU_{1,0}\\), solo que con los términos sumados en orden inverso."
+                ],
+                hint: "El orden del producto tensorial es clave. El operador del qubit \\(q_1\\) va a la izquierda y el de \\(q_0\\) a la derecha.",
+                theoryHTML: `<h2>La Receta para \\(CU_{0,1}\\) (Control en \\(q_0\\))</h2>
+                    <p><b>La Lógica (se invierte el orden en el producto tensorial):</b></p>
+                    <ul>
+                        <li><b>Caso A (\\(q_0\\)=0):</b> Operador \\(\\hat{I} \\otimes |0\\rangle\\langle0|\\).</li>
+                        <li><b>Caso B (\\(q_0\\)=1):</b> Operador \\(\\hat{U} \\otimes |1\\rangle\\langle1|\\).</li>
+                    </ul>
+                    <p>El operador total es la <b>suma</b>:</p>
+                    $$ CU_{0,1} = \\hat{I} \\otimes |0\\rangle\\langle0| + \\hat{U} \\otimes |1\\rangle\\langle1| $$`
+            },
+            {
+                question: "¿Cuál es la acción de la compuerta CNOT (control en \\(q_1\\), objetivo en \\(q_0\\)) sobre el estado \\(|10\\rangle\\)?",
+                options: [
+                    "\\(|10\\rangle\\)",
+                    "\\(|00\\rangle\\)",
+                    "\\(|11\\rangle\\)",
+                    "\\(|01\\rangle\\)"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. El qubit de control es \\(|1\\rangle\\), por lo que la CNOT sí actúa.",
+                    "Incorrecto. La CNOT no afecta al qubit de control.",
+                    "¡Correcto! El control \\(q_1\\) es \\(|1\\rangle\\), por lo que se aplica \\(X\\) al objetivo \\(q_0\\) (que es \\(|0\\rangle\\)), transformándolo en \\(|1\\rangle\\). El estado final es \\(|11\\rangle\\).",
+                    "Incorrecto. La CNOT no afecta al qubit de control y voltea el qubit objetivo."
+                ],
+                hint: "CNOT = Controlada-NOT. 'Si el control es 1, aplica NOT al objetivo'.",
+                theoryHTML: `<h2>La Compuerta Controlada-NOT (CNOT)</h2>
+                    <p><b>Acción sobre la Base Computacional (Control en \\(q_1\\), Objetivo en \\(q_0\\)):</b></p>
+                    <ul>
+                        <li>CNOT \\(|00\\rangle \\rightarrow |00\\rangle\\) <i>(Control es 0, no pasa nada)</i></li>
+                        <li>CNOT \\(|01\\rangle \\rightarrow |01\\rangle\\) <i>(Control es 0, no pasa nada)</i></li>
+                        <li>CNOT \\(|10\\rangle \\rightarrow |11\\rangle\\) <i>(Control es 1, se aplica X a \\(|0\\rangle \\to |1\\rangle\\))</i></li>
+                        <li>CNOT \\(|11\\rangle \\rightarrow |10\\rangle\\) <i>(Control es 1, se aplica X a \\(|1\\rangle \\to |0\\rangle\\))</i></li>
+                    </ul>`
+            },
+            {
+                question: "Usando la 'receta universal', ¿cuál es la fórmula constructiva para la CNOT (control \\(q_1\\), objetivo \\(q_0\\))?",
+                options: [
+                    "\\(|0\\rangle\\langle0| \\otimes \\hat{I} + |1\\rangle\\langle1| \\otimes \\hat{Z}\\)",
+                    "\\(|0\\rangle\\langle0| \\otimes \\hat{I} + |1\\rangle\\langle1| \\otimes \\hat{X}\\)",
+                    "\\(\\hat{I} \\otimes |0\\rangle\\langle0| + \\hat{X} \\otimes |1\\rangle\\langle1|\\)",
+                    "\\(|0\\rangle\\langle0| \\otimes \\hat{X} + |1\\rangle\\langle1| \\otimes \\hat{I}\\)"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esta es la fórmula para la compuerta CZ (Controlada-Z).",
+                    "¡Correcto! Esta es la 'receta universal' \\(CU\\) donde la compuerta unitaria \\(U\\) ha sido reemplazada por la compuerta \\(X\\) (NOT).",
+                    "Incorrecto. Esta es la fórmula para una CNOT con el control en \\(q_0\\) (objetivo \\(q_1\\)).",
+                    "Incorrecto. Esto aplicaría una \\(X\\) al objetivo solo si el control es \\(|0\\rangle\\)."
+                ],
+                hint: "La CNOT es una Controlada-U donde U = X.",
+                theoryHTML: `<h2>La Fórmula Constructiva de la CNOT</h2>
+                    <p>Usando nuestra receta \\(CU = |0\\rangle\\langle0| \\otimes \\hat{I} + |1\\rangle\\langle1| \\otimes \\hat{U}\\) y sustituyendo \\(\\hat{U}\\) por \\(\\hat{X}\\), obtenemos la fórmula para la CNOT.</p>
+                    <p><b>Fórmula (Control en \\(q_1\\), Objetivo en \\(q_0\\)):</b></p>
+                    $$ \\text{CNOT} = |0\\rangle\\langle0| \\otimes \\hat{I} + |1\\rangle\\langle1| \\otimes \\hat{X} $$`
+            },
+            {
+                question: "¿Cuál es la matriz \\(4 \\times 4\\) para la compuerta \\(\\text{CNOT}_{1,0}\\) (control en \\(q_1\\), objetivo en \\(q_0\\))?",
+                options: [
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & 1 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 1 & 0 & 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\\\ 0 & 0 & 1 & 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & -1 \\end{pmatrix}\\)"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esta es la matriz Identidad.",
+                    "Incorrecto. Esta es la matriz para \\(\\text{CNOT}_{0,1}\\) (control en \\(q_0\\)).",
+                    "¡Correcto! Esta matriz coincide con la tabla de verdad: las dos primeras columnas (para \\(|00\\rangle\\) y \\(|01\\rangle\\)) son la identidad, y las dos últimas (para \\(|10\\rangle\\) y \\(|11\\rangle\\)) están intercambiadas.",
+                    "Incorrecto. Esta es la matriz para la compuerta CZ."
+                ],
+                hint: "La matriz debe intercambiar la columna de \\(|10\\rangle\\) con la de \\(|11\\rangle\\).",
+                theoryHTML: `<h2>Solución (Control en \\(q_1\\))</h2>
+                    <p><b>3. Suma Final:</b></p>
+                    $$ \\text{CNOT} = \\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 0 & 0 \\\\ 0 & 0 & 0 & 0 \\end{pmatrix} + \\begin{pmatrix} 0 & 0 & 0 & 0 \\\\ 0 & 0 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\\\ 0 & 0 & 1 & 0 \\end{pmatrix} = \\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\\\ 0 & 0 & 1 & 0 \\end{pmatrix} $$`
+            },
+            {
+                question: "¿Cuál es la matriz \\(4 \\times 4\\) para la compuerta \\(\\text{CNOT}_{0,1}\\) (control en \\(q_0\\), objetivo en \\(q_1\\))?",
+                options: [
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 1 & 0 & 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\\\ 0 & 0 & 1 & 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & -1 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\end{pmatrix}\\)"
+                ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! Esta matriz intercambia las columnas correspondientes a \\(|01\\rangle\\) y \\(|11\\rangle\\), lo cual es la lógica correcta para un control en \\(q_0\\).",
+                    "Incorrecto. Esta es la matriz para \\(\\text{CNOT}_{1,0}\\) (control en \\(q_1\\)).",
+                    "Incorrecto. Esta es la matriz para la compuerta CZ.",
+                    "Incorrecto. Esta es la matriz para la compuerta SWAP."
+                ],
+                hint: "Esta matriz debe intercambiar la columna de \\(|01\\rangle\\) con la de \\(|11\\rangle\\).",
+                theoryHTML: `<h2>Solución (Control en \\(q_0\\))</h2>
+                    <p><b>3. Suma Final:</b></p>
+                    $$ \\text{CNOT}_{0,1} = \\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 1 & 0 & 0 \\end{pmatrix} $$
+                    <p>¡Observa que la matriz es diferente! El orden del control y el objetivo es crucial.</p>`
+            },
+            {
+                question: "Al analizar la CNOT como una permutación de amplitudes, ¿qué hace la \\(\\text{CNOT}_{1,0}\\) (control en \\(q_1\\))?",
+                options: [
+                    "Intercambia \\(c_{00}\\) y \\(c_{01}\\)",
+                    "Intercambia \\(c_{01}\\) y \\(c_{10}\\)",
+                    "Intercambia \\(c_{10}\\) y \\(c_{11}\\)",
+                    "Intercambia \\(c_{01}\\) y \\(c_{11}\\)"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esto no es lo que hace la CNOT.",
+                    "Incorrecto. Esto es lo que hace la compuerta SWAP.",
+                    "¡Correcto! La \\(CNOT_{1,0}\\) aplica \\(X\\) al objetivo \\(q_0\\) solo cuando el control \\(q_1\\) es '1'. Esto corresponde a intercambiar las amplitudes de los estados base \\(|10\\rangle\\) y \\(|11\\rangle\\).",
+                    "Incorrecto. Esto es lo que hace la \\(\\text{CNOT}_{0,1}\\)."
+                ],
+                hint: "La condición 'control en \\(q_1\\)' significa que solo se ven afectados los estados que empiezan con '1'.",
+                theoryHTML: `<h2>CNOT con Control en \\(q_1\\) (el de abajo)</h2>
+                    <p><b>Acción sobre el Vector de Amplitudes:</b></p>
+                    $$ \\text{CNOT}_{1,0} \\begin{pmatrix} c_{00} \\\\ c_{01} \\\\ c_{10} \\\\ c_{11} \\end{pmatrix} = \\begin{pmatrix} c_{00} \\\\ c_{01} \\\\ \\boldsymbol{c_{11}} \\\\ \\boldsymbol{c_{10}} \\end{pmatrix} $$
+                    <p><b>La Regla de Permutación:</b></p>
+                    <p>La CNOT con control en \\(q_1\\) <b>intercambia</b> las amplitudes de los estados base \\(|10\\rangle\\) y \\(|11\\rangle\\).</p>`
+            },
+            {
+                question: "¿Qué famoso estado se crea al aplicar \\(H \\otimes I\\) y luego \\(\\text{CNOT}_{1,0}\\) al estado inicial \\(|00\\rangle\\)?",
+                options: [
+                    "El estado \\(|++\\rangle\\)",
+                    "El estado de Bell \\(|\\Phi^+\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |11\\rangle)\\)",
+                    "El estado de Bell \\(|\\Psi^+\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle + |10\\rangle)\\)",
+                    "El estado \\(|00\\rangle\\) (no cambia)"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. El estado \\(|++\\rangle\\) se crea aplicando \\(H \\otimes H\\).",
+                    "¡Correcto! \\(H \\otimes I\\) crea \\(\\frac{1}{\\sqrt{2}}(|00\\rangle + |10\\rangle)\\). La CNOT transforma el término \\(|10\\rangle\\) en \\(|11\\rangle\\), resultando en el estado de Bell.",
+                    "Incorrecto. Este estado se crea si el estado inicial es \\(|01\\rangle\\).",
+                    "Incorrecto. El estado cambia significativamente."
+                ],
+                hint: "Este es el circuito 'creador de entrelazamiento' más fundamental.",
+                theoryHTML: `<h2>La Magia de la CNOT: Creando Entrelazamiento</h2>
+                    <p><b>El Circuito Creador de Estados de Bell:</b></p>
+                    <ol>
+                        <li><b>Estado Inicial:</b> \\(|\\psi_0\\rangle = |00\\rangle\\).</li>
+                        <li><b>Aplicar H a \\(q_1\\):</b> \\(|\\psi_1\\rangle = (H \\otimes I)|00\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |10\\rangle)\\).</li>
+                        <li><b>Aplicar CNOT (control \\(q_1\\)):</b> \\(|\\psi_2\\rangle = \\text{CNOT}|\\psi_1\\rangle = \\frac{1}{\\sqrt{2}}(\\text{CNOT}|00\\rangle + \\text{CNOT}|10\\rangle)\\).</li>
+                    </ol>
+                    $$ = \\frac{1}{\\sqrt{2}}(|00\\rangle + |11\\rangle) = |\\Phi^+\\rangle $$`
+            },
+            {
+                question: "El circuito H-CNOT (control \\(q_1\\)) mapea la base computacional a la base de Bell. ¿Qué estado inicial produce el estado de Bell \\(|\\Psi^-\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle - |10\\rangle)\\)?",
+                options: [
+                    "\\(|00\\rangle\\)",
+                    "\\(|01\\rangle\\)",
+                    "\\(|10\\rangle\\)",
+                    "\\(|11\\rangle\\)"
+                ],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. \\(|00\\rangle\\) produce \\(|\\Phi^+\\rangle\\).",
+                    "Incorrecto. \\(|01\\rangle\\) produce \\(|\\Psi^+\\rangle\\).",
+                    "Incorrecto. \\(|10\\rangle\\) produce \\(|\\Phi^-\\rangle\\).",
+                    "¡Correcto! \\((H \\otimes I)|11\\rangle = |-\\rangle|1\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle - |11\\rangle)\\). Al aplicar CNOT, el término \\(|11\\rangle\\) se voltea a \\(|10\\rangle\\), dando el resultado correcto."
+                ],
+                hint: "Sigue la lógica: ¿qué estado inicial, al aplicarle H al \\(q_1\\), da un signo menos?",
+                theoryHTML: `<h2>Solución (Final)</h2>
+                    <p><b>3. Estado Inicial: \\(|11\\rangle\\)</b></p>
+                    <ul>
+                        <li><b>Paso 1 (Aplicar H a \\(q_1\\)):</b>
+                        $$ (H \\otimes I)|11\\rangle = (H|1\\rangle) \\otimes (I|1\\rangle) = |-\\rangle|1\\rangle = \\frac{1}{\\sqrt{2}}(|01\\rangle-|11\\rangle) $$</li>
+                        <li><b>Paso 2 (Aplicar CNOT):</b>
+                        $$ \\text{CNOT}\\left(\\frac{1}{\\sqrt{2}}(|01\\rangle-|11\\rangle)\\right) = \\frac{1}{\\sqrt{2}}(\\text{CNOT}|01\\rangle - \\text{CNOT}|11\\rangle) $$
+                        $$ = \\frac{1}{\\sqrt{2}}(|01\\rangle - |10\\rangle) = |\\Psi^-\\rangle $$</li>
+                    </ul>`
+            },
+            {
+                question: "Partiendo de \\(|00\\rangle\\), ¿por qué el circuito (B) visto en la teoría (H en \\(q_0\\), luego CNOT con control \\(q_1\\)) no crea entrelazamiento?",
+                options: [
+                    "Porque el estado final es \\(|++\\rangle\\).",
+                    "Porque la CNOT nunca se 'activa', ya que el control \\(q_1\\) siempre es \\(|0\\rangle\\).",
+                    "Porque la CNOT y la H se cancelan mutuamente.",
+                    "Porque la H en el objetivo destruye la superposición."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. El estado final es \\(|0\\rangle|+\\rangle\\).",
+                    "¡Correcto! El estado intermedio es \\(|0\\rangle|+\\rangle\\). Como el qubit de control (\\(q_1\\)) está en el estado \\(|0\\rangle\\), la CNOT actúa como la identidad, y el estado final sigue siendo separable.",
+                    "Incorrecto. No se cancelan.",
+                    "Incorrecto. La H en el objetivo crea la superposición, pero la CNOT no puede 'propagarla' sin un control en superposición."
+                ],
+                hint: "La CNOT necesita que su qubit de control esté en superposición para poder entrelazar.",
+                theoryHTML: `<h2>Solución (Caso B): Análisis</h2>
+                    <p><b>Estado Final:</b>
+                    $$ |\\psi_f\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |01\\rangle) = |0\\rangle \\otimes \\left(\\frac{|0\\rangle+|1\\rangle}{\\sqrt{2}}\\right) = |0\\rangle|+\\rangle $$</p>
+                    <p>Como se puede escribir como un producto tensorial, el estado es <b>separable</b>.</p>
+                    <p><b>Conclusión:</b> Poner la superposición en el qubit objetivo no funciona. Como el qubit de control se mantiene en \\(|0\\rangle\\), la CNOT nunca se "activa" para crear las correlaciones cuánticas.</p>`
+            },
+            {
+                question: "¿Cuál es la única acción de la compuerta CZ sobre los estados de la base computacional?",
+                options: [
+                    "Aplica una fase de -1 al estado \\(|00\\rangle\\).",
+                    "Aplica una fase de -1 al estado \\(|11\\rangle\\).",
+                    "Intercambia los estados \\(|10\\rangle\\) y \\(|11\\rangle\\).",
+                    "Aplica una fase de -1 a \\(|10\\rangle\\) y \\(|11\\rangle\\)."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. No afecta a \\(|00\\rangle\\).",
+                    "¡Correcto! Su única acción es aplicar un 'phase-flip' (multiplicar por -1) cuando ambos qubits están en el estado \\(|1\\rangle\\).",
+                    "Incorrecto. Eso es lo que hace la CNOT (control \\(q_1\\)).",
+                    "Incorrecto. Solo afecta al estado \\(|11\\rangle\\)."
+                ],
+                hint: "Recuerda la tabla de verdad: CZ\\(|11\\rangle \\to -|11\\rangle\\).",
+                theoryHTML: `<h2>La Compuerta Controlada-Z (CZ)</h2>
+                    <p><b>Acción sobre la Base Computacional (el control en \\(q_1\\) y el objetivo en \\(q_0\\)):</b></p>
+                    <ul>
+                        <li>CZ \\(|00\\rangle \\rightarrow |00\\rangle\\)</li>
+                        <li>CZ \\(|01\\rangle \\rightarrow |01\\rangle\\)</li>
+                        <li>CZ \\(|10\\rangle \\rightarrow |10\\rangle\\)</li>
+                        <li>CZ \\(|11\\rangle \\rightarrow -|11\\rangle\\) <i>(Control es 1, se aplica Z a \\(|1\\rangle \\to -|1\\rangle\\))</i></li>
+                    </ul>`
+            },
+            {
+                question: "¿Cuál es la matriz \\(4 \\times 4\\) de la compuerta CZ?",
+                options: [
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\\\ 0 & 0 & 1 & 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & -1 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 1 & 1 \\\\ 0 & 0 & 1 & -1 \\end{pmatrix}\\)"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esta es la CNOT (control \\(q_1\\)).",
+                    "Incorrecto. Esta es la SWAP.",
+                    "¡Correcto! Es una matriz diagonal que solo modifica el último estado base, \\(|11\\rangle\\), multiplicándolo por -1.",
+                    "Incorrecto. Esta no es una matriz válida que hayamos visto."
+                ],
+                hint: "La matriz debe ser la Identidad, excepto por la entrada correspondiente a \\(|11\\rangle\\).",
+                theoryHTML: `<h2>Solución: Matriz de la Compuerta CZ</h2>
+                    <p><b>3. Suma Final:</b></p>
+                    $$ CZ = \\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & -1 \\end{pmatrix} $$
+                    <p>La matriz es una matriz diagonal con un -1 en la última posición, reflejando que solo actúa sobre el estado \\(|11\\rangle\\).</p>`
+            },
+            {
+                question: "Una diferencia fundamental entre la CNOT y la CZ es que...",
+                options: [
+                    "La CNOT es unitaria, pero la CZ no lo es.",
+                    "La CNOT es simétrica, pero la CZ no lo es.",
+                    "La CZ es simétrica (control y objetivo son intercambiables), pero la CNOT no.",
+                    "La CNOT puede crear entrelazamiento, pero la CZ no."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Ambas son unitarias y, por tanto, compuertas cuánticas válidas.",
+                    "Incorrecto. Es al revés. La CNOT no es simétrica (\\(CNOT_{1,0} \\neq CNOT_{0,1}\\)).",
+                    "¡Correcto! Como \\(CZ_{1,0} = CZ_{0,1}\\), no se puede distinguir entre el control y el objetivo. Por eso su símbolo tiene dos puntos (\\(●\\)).",
+                    "Incorrecto. Ambas son compuertas de entrelazamiento."
+                ],
+                hint: "Piensa en qué pasa si inviertes el control y el objetivo en cada compuerta.",
+                theoryHTML: `<h2>La Simetría de la Compuerta CZ</h2>
+                    <p>A diferencia de la CNOT, la compuerta CZ es <b>simétrica</b>. ¡El qubit de control y el objetivo son intercambiables!</p>
+                    <p>Como \\(CZ_{1,0} = CZ_{0,1}\\), la compuerta no tiene un "control" y un "objetivo" definidos.</p>`
+            },
+            {
+                question: "¿Cuál es la forma de matriz de bloques general para una compuerta \\(CU_{1,0}\\) (control en \\(q_1\\)) que aplica una compuerta \\(U\\)?",
+                options: [
+                    "\\(\\begin{pmatrix} U & 0 \\\\ 0 & I \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} I & 0 \\\\ 0 & U \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} I & U \\\\ U & I \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 0 & I \\\\ U & 0 \\end{pmatrix}\\)"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esto aplicaría \\(U\\) si el control es \\(|0\\rangle\\) y la Identidad si es \\(|1\\rangle\\).",
+                    "¡Correcto! El bloque \\(I\\) (Identidad) corresponde a los casos \\(|00\\rangle, |01\\rangle\\) (control 0). El bloque \\(U\\) corresponde a los casos \\(|10\\rangle, |11\\rangle\\) (control 1).",
+                    "Incorrecto. Esta no es la forma general.",
+                    "Incorrecto. Esta no es la forma general."
+                ],
+                hint: "La matriz se divide en 4 bloques de 2x2. El bloque superior izquierdo es para 'control=0', el inferior derecho para 'control=1'.",
+                theoryHTML: `<h2>La Matriz General de una Compuerta \\(CU_{1,0}\\)</h2>
+                    <p>Construimos la matriz columna por columna:</p>
+                    $$ CU_{1,0} = \\begin{pmatrix}
+                    1 & 0 & 0 & 0 \\\\
+                    0 & 1 & 0 & 0 \\\\
+                    0 & 0 & a & c \\\\
+                    0 & 0 & b & d
+                    \\end{pmatrix} = \\begin{pmatrix}
+                    I & 0 \\\\
+                    0 & U
+                    \\end{pmatrix} $$
+                    <p>La matriz de \\(CU_{1,0}\\) es una matriz de bloques con la Identidad en la esquina superior izquierda y la matriz \\(U\\) en la inferior derecha.</p>`
+            },
+            {
+                question: "¿Qué identidad famosa permite 'construir' una compuerta CZ usando una CNOT (control en \\(q_1\\)) y compuertas Hadamard?",
+                options: [
+                    "\\(CZ = (H \\otimes H) \\cdot \\text{CNOT} \\cdot (H \\otimes H)\\)",
+                    "\\(CZ = (H \\otimes I) \\cdot \\text{CNOT} \\cdot (H \\otimes I)\\)",
+                    "\\(CZ = (I \\otimes H) \\cdot \\text{CNOT} \\cdot (I \\otimes H)\\)",
+                    "\\(CZ = \\text{CNOT} \\cdot (H \\otimes H)\\)"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esta identidad transforma \\(\\text{CNOT}_{0,1}\\) en \\(\\text{CNOT}_{1,0}\\).",
+                    "Incorrecto. Esto no produce una CZ.",
+                    "¡Correcto! Esta es la identidad del 'sándwich de Hadamard'. 'Envolver' el qubit *objetivo* (\\(q_0\\)) de una \\(\\text{CNOT}_{1,0}\\) con compuertas H la transforma en una CZ.",
+                    "Incorrecto. El orden y las compuertas son incorrectos."
+                ],
+                hint: "La transformación solo requiere 'envolver' el qubit objetivo.",
+                theoryHTML: `<h2>Una Identidad Poderosa: Conectando CNOT y CZ</h2>
+                    <p><b>La Identidad "Sándwich de Hadamard":</b></p>
+                    <p>Aplicar una compuerta Hadamard al qubit objetivo, antes y después de una CNOT, es equivalente a realizar una CZ.</p>
+                    $$ (\\hat{I} \\otimes \\hat{H}) \\cdot \\text{CNOT} \\cdot (\\hat{I} \\otimes \\hat{H}) = \\text{CZ} $$`
+            },
+            {
+                question: "¿Cuál es la matriz \\(4 \\times 4\\) de la compuerta SWAP?",
+                options: [
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\\\ 0 & 0 & 1 & 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 0 & 0 & 1 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 1 & 0 & 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 0 \\\\ 0 & 1 & 0 & 0 \\\\ 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & -1 \\end{pmatrix}\\)"
+                ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! Esta matriz intercambia la segunda columna (para \\(|01\\rangle\\)) con la tercera (para \\(|10\\rangle\\)), que es la definición de SWAP.",
+                    "Incorrecto. Esta es la CNOT (control \\(q_1\\)).",
+                    "Incorrecto. Esta es la CNOT (control \\(q_0\\)).",
+                    "Incorrecto. Esta es la CZ."
+                ],
+                hint: "La matriz debe intercambiar los estados \\(|01\\rangle\\) y \\(|10\\rangle\\).",
+                theoryHTML: `<h2>La Matriz de la Compuerta SWAP</h2>
+                    <p>Construimos la matriz observando cómo transforma los vectores de la base:</p>
+                    <ul>
+                        <li>\\(|00\\rangle \\to |00\\rangle\\)</li>
+                        <li>\\(|01\\rangle \\to |10\\rangle\\)</li>
+                        <li>\\(|10\\rangle \\to |01\\rangle\\)</li>
+                        <li>\\(|11\\rangle \\to |11\\rangle\\)</li>
+                    </ul>
+                    $$ \\text{SWAP} = \\begin{pmatrix}
+                    1 & 0 & 0 & 0 \\\\
+                    0 & 0 & 1 & 0 \\\\
+                    0 & 1 & 0 & 0 \\\\
+                    0 & 0 & 0 & 1
+                    \\end{pmatrix} $$`
+            },
+            {
+                question: "¿Cuál es la lógica de la compuerta Toffoli (CCNOT)?",
+                options: [
+                    "Aplica una \\(X\\) al objetivo si un control CUALQUIERA es \\(|1\\rangle\\).",
+                    "Aplica una \\(Z\\) al objetivo si AMBOS controles son \\(|1\\rangle\\).",
+                    "Aplica una \\(X\\) al objetivo si AMBOS controles son \\(|1\\rangle\\).",
+                    "Intercambia (SWAP) los dos objetivos si el control es \\(|1\\rangle\\)."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esa sería una lógica OR, no la de Toffoli.",
+                    "Incorrecto. La Toffoli aplica una \\(X\\) (NOT), no una \\(Z\\).",
+                    "¡Correcto! Esta es la implementación cuántica de una condición AND. Es una Controlada-Controlada-NOT.",
+                    "Incorrecto. Esta es la lógica de la compuerta Fredkin (CSWAP)."
+                ],
+                hint: "Su nombre alternativo es Controlada-Controlada-NOT (CCNOT).",
+                theoryHTML: `<h2>Control Múltiple: La Compuerta Toffoli (CCNOT)</h2>
+                    <p><b>La Lógica de la Toffoli:</b></p>
+                    <p>"Aplica una compuerta NOT (\\(\\hat{X}\\)) al qubit objetivo <b>si y solo si</b> el primer qubit de control <b>Y</b> el segundo qubit de control están ambos en el estado \\(|1\\rangle\\)."</p>
+                    <p>Es la implementación cuántica de una <b>condición AND</b>.</p>`
+            },
+            {
+                question: "¿Cuál es la lógica de la compuerta Fredkin (CSWAP)?",
+                options: [
+                    "Aplica una \\(X\\) al objetivo si AMBOS controles son \\(|1\\rangle\\).",
+                    "Aplica una SWAP a los objetivos si AMBOS controles son \\(|1\\rangle\\).",
+                    "Aplica una \\(Z\\) al objetivo si el control es \\(|1\\rangle\\).",
+                    "Aplica una SWAP a los dos objetivos si el qubit de control es \\(|1\\rangle\\)."
+                ],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. Esta es la lógica de la compuerta Toffoli (CCNOT).",
+                    "Incorrecto. La compuerta Fredkin estándar tiene un solo control.",
+                    "Incorrecto. Esta es la lógica de la compuerta CZ.",
+                    "¡Correcto! Es una Controlada-SWAP. Su lógica es: 'Si el control es 1, entonces intercambia los dos objetivos'."
+                ],
+                hint: "Su nombre alternativo es Controlada-SWAP (CSWAP).",
+                theoryHTML: `<h2>El Intercambio Controlado: La Compuerta Fredkin (CSWAP)</h2>
+                    <p>La <b>Compuerta Fredkin</b> es otra compuerta universal de 3 qubits. Es una <b>Compuerta SWAP Controlada</b>.</p>
+                    <p><b>La Lógica de la Fredkin:</b></p>
+                    <p>"<b>Si</b> el qubit de control es \\(|1\\rangle\\), <b>entonces</b> aplica una compuerta SWAP a los dos qubits objetivo."</p>`
+            },
+            {
+                question: "En Qiskit, ¿cómo se aplica una compuerta CNOT con control en el qubit 1 y objetivo en el qubit 0?",
+                options: [
+                    "<code>qc.cx(0, 1)</code>",
+                    "<code>qc.cx(1, 0)</code>",
+                    "<code>qc.cnot(0, 1)</code>",
+                    "<code>qc.cnot(1, 0)</code>"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esto pondría el control en el qubit 0 y el objetivo en el qubit 1.",
+                    "¡Correcto! El método es <code>.cx(control_qubit, target_qubit)</code>.",
+                    "Incorrecto. El método se llama <code>.cx()</code> (por Controlada-X).",
+                    "Incorrecto. El método se llama <code>.cx()</code>."
+                ],
+                hint: "El método de Qiskit es .cx(control, objetivo).",
+                theoryHTML: `<h2>La Compuerta CNOT (<code>.cx()</code>)</h2>
+                    <p>El método <code>.cx(control_qubit, target_qubit)</code> aplica una compuerta CNOT.</p>
+<pre># Creamos un circuito de 2 qubits
+qc_cnot = QuantumCircuit(2)
+
+# Aplicamos la CNOT con control en el qubit 1 y objetivo en el qubit 0
+qc_cnot.cx(1, 0)
+
+# Dibujamos el circuito
+display(qc_cnot.draw('mpl'))</pre>`
+            },
+            {
+                question: "En Qiskit, ¿qué compuerta de 3 qubits se añade con el método <code>.ccx()</code>?",
+                options: [
+                    "Compuerta CNOT",
+                    "Compuerta CZ",
+                    "Compuerta Toffoli",
+                    "Compuerta Fredkin"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esta se añade con <code>.cx()</code>.",
+                    "Incorrecto. Esta se añade con <code>.cz()</code>.",
+                    "¡Correcto! <code>.ccx</code> significa Controlada-Controlada-X, que es el otro nombre de la compuerta Toffoli.",
+                    "Incorrecto. Esta se añade con <code>.cswap()</code>."
+                ],
+                hint: "El nombre del método es una abreviatura de Controlada-Controlada-X.",
+                theoryHTML: `<h2>Otras Compuertas Controladas Importantes</h2>
+                    <p>Qiskit tiene métodos nativos para otras compuertas controladas comunes:</p>
+                    <ul>
+                        <li><b>Controlada-Z:</b> <code>.cz(control_qubit, target_qubit)</code></li>
+                        <li><b>SWAP:</b> <code>.swap(qubit_1, qubit_2)</code></li>
+                        <li><b>Toffoli (CCNOT):</b> <code>.ccx(control_qubit_1, control_qubit_2, target_qubit)</code></li>
+                    </ul>`
+            },
+            {
+                question: "Según el notebook de Qiskit, ¿qué identidad se puede usar para construir una compuerta SWAP?",
+                options: [
+                    "Tres compuertas CNOT alternadas.",
+                    "Tres compuertas CZ.",
+                    "Una compuerta Toffoli.",
+                    "Un 'sándwich de Hadamard' alrededor de una CZ."
+                ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! El notebook demuestra que \\(SWAP = CNOT_{0,1} \\cdot CNOT_{1,0} \\cdot CNOT_{0,1}\\).",
+                    "Incorrecto. Esta identidad no se muestra.",
+                    "Incorrecto. La Toffoli es una CCNOT, no una SWAP.",
+                    "Incorrecto. Esto se usa para construir una CNOT a partir de una CZ."
+                ],
+                hint: "La compuerta SWAP se puede descomponer en la compuerta de 2 qubits más fundamental.",
+                theoryHTML: `<h2>Descomponiendo Compuertas en Qiskit</h2>
+                    <p><b>Verificación: La Compuerta SWAP a partir de CNOTs</b></p>
+                    <p>En la teoría, vimos que una compuerta SWAP se puede implementar usando tres compuertas CNOT. Vamos a construir ese circuito y a demostrar que su operador unitario total es, de hecho, el de una SWAP.</p>
+<pre># 1. Creamos el circuito que implementa SWAP con 3 CNOTs
+qc_swap_from_cnots = QuantumCircuit(2, name="SWAP con CNOTs")
+
+# 2. Construimos la secuencia
+qc_swap_from_cnots.cx(0, 1)
+qc_swap_from_cnots.cx(1, 0)
+qc_swap_from_cnots.cx(0, 1)</pre>`
+            },
+            {
+                question: "Al simular 1000 mediciones del estado \\(|\\Phi^+\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |11\\rangle)\\), ¿qué resultados se esperan?",
+                options: [
+                    "Aprox. 500 '00' y 500 '01'.",
+                    "Aprox. 250 '00', 250 '01', 250 '10' y 250 '11'.",
+                    "Aprox. 500 '01' y 500 '10'.",
+                    "Aprox. 500 '00' y 500 '11'."
+                ],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. El estado \\(|\\Phi^+\\rangle\\) no tiene la componente \\(|01\\rangle\\).",
+                    "Incorrecto. Esta sería una superposición uniforme, no un estado de Bell.",
+                    "Incorrecto. Estos son los resultados esperados para el estado \\(|\\Psi^+\\rangle\\).",
+                    "¡Correcto! Los únicos dos resultados posibles son '00' y '11', con 50% de probabilidad cada uno. Esto demuestra la correlación perfecta."
+                ],
+                hint: "El estado de Bell \\(|\\Phi^+\\rangle\\) solo tiene amplitudes para los estados base donde los qubits coinciden.",
+                theoryHTML: `<h2>Análisis de Estados Entrelazados (Medición Parcial)</h2>
+<pre># --- Parte C: Medición completa con sample_counts ---
+print("\\n--- Simulación de 1000 Mediciones Completas ---")
+counts = bell_state.sample_counts(shots=1000)
+display(plot_histogram(counts))
+print("Observa que solo obtenemos '00' y '11', nunca '01' o '10'. ¡Correlación perfecta!")</pre>`
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let score = 0;
+
+        const questionCounterEl = document.getElementById('question-counter');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const feedbackPanelEl = document.getElementById('feedback-panel');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const quizContentEl = document.getElementById('quiz-content');
+        const scoreContainerEl = document.getElementById('score-container');
+        const scoreTextEl = document.getElementById('score-text');
+        const hintSectionEl = document.getElementById('hint-section');
+        const modalEl = document.getElementById('theory-modal');
+        const modalTextEl = document.getElementById('modal-text');
+
+        function displayQuestion() {
+            feedbackPanelEl.style.display = 'none';
+            optionsContainerEl.innerHTML = '';
+            hintSectionEl.innerHTML = '';
+
+            if (currentQuestionIndex >= quizData.length) {
+                showScore();
+                return;
+            }
+
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            questionCounterEl.textContent = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+            questionTextEl.innerHTML = currentQuestion.question;
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerHTML = option;
+                button.className = 'option-btn';
+                button.onclick = () => checkAnswer(index);
+                optionsContainerEl.appendChild(button);
+            });
+
+            if(currentQuestion.hint) {
+                const hintBtn = document.createElement('button');
+                hintBtn.textContent = 'Necesito una pista';
+                hintBtn.className = 'hint-btn';
+                const hintText = document.createElement('div');
+                hintText.id = 'hint-text';
+                hintText.innerHTML = currentQuestion.hint;
+                hintBtn.onclick = () => {
+                    hintText.style.display = 'block';
+                    hintBtn.style.display = 'none';
+                };
+                hintSectionEl.appendChild(hintBtn);
+                hintSectionEl.appendChild(hintText);
+            }
+
+            if (window.MathJax && MathJax.typesetPromise) {
+                 MathJax.typesetPromise([questionTextEl, optionsContainerEl, hintSectionEl]);
+            }
+
+            updateNavButtons();
+
+            if(userAnswers[currentQuestionIndex] !== null){
+                showPreviousAnswer();
+            }
+        }
+
+        function showPreviousAnswer(){
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const currentQuestion = quizData[currentQuestionIndex];
+            const correctIndex = currentQuestion.correctAnswer;
+            const optionButtons = optionsContainerEl.querySelectorAll('.option-btn');
+            const hintBtn = hintSectionEl.querySelector('.hint-btn');
+            if(hintBtn) hintBtn.style.display = 'none';
+
+            optionButtons.forEach((btn, i) => {
+                if (i === correctIndex) {
+                    btn.classList.add('correct');
+                } else if (i === userAnswer.selectedIndex) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+
+            feedbackPanelEl.innerHTML = `<p>${currentQuestion.feedback[userAnswer.selectedIndex]}</p>`;
+
+            if (currentQuestion.theoryHTML) {
+                const theoryBtn = document.createElement('button');
+                theoryBtn.textContent = 'Ver Teoría';
+                theoryBtn.className = 'theory-btn';
+                theoryBtn.onclick = () => showTheory(currentQuestion.theoryHTML);
+                feedbackPanelEl.appendChild(theoryBtn);
+            }
+
+            feedbackPanelEl.className = userAnswer.isCorrect ? 'correct-feedback' : 'incorrect-feedback';
+            feedbackPanelEl.style.display = 'block';
+
+            if (window.MathJax && MathJax.typesetPromise) {
+                 MathJax.typesetPromise([feedbackPanelEl]);
+            }
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(userAnswers[currentQuestionIndex] !== null) return;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedIndex === currentQuestion.correctAnswer;
+
+            userAnswers[currentQuestionIndex] = { selectedIndex, isCorrect };
+
+            if(isCorrect) {
+                score++;
+            }
+
+            showPreviousAnswer();
+        }
+
+        function showTheory(htmlContent) {
+            modalTextEl.innerHTML = htmlContent;
+            modalEl.style.display = 'flex';
+            if (window.MathJax && MathJax.typesetPromise) {
+                 MathJax.typesetPromise([modalTextEl]);
+            }
+        }
+
+        function closeModal() {
+            modalEl.style.display = 'none';
+        }
+
+        function updateNavButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === quizData.length -1) {
+                nextBtn.textContent = 'Finalizar';
+            } else {
+                 nextBtn.textContent = 'Siguiente';
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function showScore(){
+            quizContentEl.style.display = 'none';
+            document.querySelector('.navigation-controls').style.display = 'none';
+            scoreContainerEl.style.display = 'block';
+
+            scoreTextEl.textContent = `Tu puntuación es ${score} de ${quizData.length}.`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            score = 0;
+
+            scoreContainerEl.style.display = 'none';
+            quizContentEl.style.display = 'block';
+            document.querySelector('.navigation-controls').style.display = 'flex';
+
+            displayQuestion();
+        }
+
+        displayQuestion();
+    </script>
+
+</body>
+</html>

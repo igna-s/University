@@ -1,0 +1,4 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :-------: | :------- | :---------- |
+| 3 | `from qiskit.tools.events import TextProgressBar` | Deprecation -> The `TextProgressBar` class has been removed. | internal | qiskit.tools.events.TextProgressBar | `from qiskit.utils.optionals import HAS_TQM` <br> `if HAS_TQM:` <br> `from tqdm.notebook import tqdm as ProgressBar` |
+| 11 | `TextProgressBar().update(job)` | Deprecation -> The `TextProgressBar` class has been removed. | internal | TextProgressBar().update | `if HAS_TQM:` <br> `ProgressBar().update(job)` |

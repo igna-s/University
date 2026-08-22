@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Visual de Números Complejos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        canvas {
+            cursor: move;
+            touch-action: none;
+        }
+        .tab {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease-in-out;
+            flex-grow: 1;
+            text-align: center;
+        }
+        .tab.active {
+            border-bottom-color: #60a5fa;
+        }
+        .dark .tab.active {
+             color: #60a5fa;
+        }
+         .light .tab.active {
+             color: #2563eb;
+             border-bottom-color: #2563eb;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 28px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #3b82f6; }
+        input:checked + .slider:before { transform: translateX(22px); }
+        .dark .slider { background-color: #4a4a50; }
+        .dark input:checked + .slider { background-color: #60a5fa; }
+    </style>
+     <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white flex flex-col lg:flex-row h-screen overflow-hidden">
+
+    <!-- Panel de Controles -->
+    <div class="control-panel bg-white dark:bg-gray-800 p-4 lg:p-6 lg:w-[28rem] order-2 lg:order-1 flex-shrink-0 flex flex-col">
+        <h1 class="text-2xl font-bold mb-4 text-center">Calculadora de Complejos</h1>
+
+        <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4">
+            <div id="tab-explore" class="tab active">Explorar</div>
+            <div id="tab-sum" class="tab">Sumar</div>
+            <div id="tab-multiply" class="tab">Multiplicar</div>
+        </div>
+
+        <div class="flex-grow overflow-y-auto pr-2">
+            <!-- Contenido Pestaña Explorar -->
+            <div id="content-explore" class="tab-content active">
+                <div class="space-y-6">
+                    <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md">
+                        <h2 class="text-lg font-semibold mb-3 text-center">Forma Binomial (z = a + bi)</h2>
+                        <div class="flex justify-around items-center">
+                            <div class="flex flex-col items-center"><label for="exp-real-part" class="mb-1 text-sm">Real (a)</label><input type="number" id="exp-real-part" value="3" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                            <div class="flex flex-col items-center"><label for="exp-imag-part" class="mb-1 text-sm">Imaginaria (b)</label><input type="number" id="exp-imag-part" value="2" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md space-y-4">
+                        <div><p class="label-title text-gray-500 dark:text-gray-400">Módulo |z|</p><div id="exp-modulus-output" class="output-box bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"></div></div>
+                        <div><p class="label-title text-gray-500 dark:text-gray-400">Argumento arg(z)</p><div id="exp-argument-output" class="output-box bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"></div></div>
+                    </div>
+                    <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md space-y-4">
+                         <h2 class="text-lg font-semibold text-center">Forma Polar</h2>
+                        <div><p class="label-title text-gray-500 dark:text-gray-400">Trigonométrica: r(cos(θ) + i sin(θ))</p><div id="exp-polar-trig-output" class="output-box bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"></div></div>
+                        <div><p class="label-title text-gray-500 dark:text-gray-400">Exponencial: r·e<sup>iθ</sup></p><div id="exp-polar-exp-output" class="output-box bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido Pestaña Sumar -->
+            <div id="content-sum" class="tab-content">
+                 <div class="space-y-6">
+                    <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md">
+                        <h2 class="text-lg font-semibold mb-3 text-center text-blue-600 dark:text-blue-400">Número z₁</h2>
+                        <div class="flex justify-around items-center">
+                            <div class="flex flex-col items-center"><label for="sum-real1" class="mb-1 text-sm">Real (a₁)</label><input type="number" id="sum-real1" value="2" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                            <div class="flex flex-col items-center"><label for="sum-imag1" class="mb-1 text-sm">Imaginaria (b₁)</label><input type="number" id="sum-imag1" value="1" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md">
+                        <h2 class="text-lg font-semibold mb-3 text-center text-yellow-600 dark:text-yellow-400">Número z₂</h2>
+                        <div class="flex justify-around items-center">
+                            <div class="flex flex-col items-center"><label for="sum-real2" class="mb-1 text-sm">Real (a₂)</label><input type="number" id="sum-real2" value="1" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                            <div class="flex flex-col items-center"><label for="sum-imag2" class="mb-1 text-sm">Imaginaria (b₂)</label><input type="number" id="sum-imag2" value="3" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                        </div>
+                    </div>
+                     <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md">
+                        <h2 class="text-lg font-semibold mb-3 text-center text-green-600 dark:text-green-400">Resultado z₁ + z₂</h2>
+                        <div id="sum-result-output" class="output-box bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido Pestaña Multiplicar -->
+            <div id="content-multiply" class="tab-content">
+                <div class="space-y-6">
+                    <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md">
+                        <h2 class="text-lg font-semibold mb-3 text-center text-blue-600 dark:text-blue-400">Número z₁</h2>
+                        <div class="flex justify-around items-center">
+                            <div class="flex flex-col items-center"><label for="mul-real1" class="mb-1 text-sm">Real (a₁)</label><input type="number" id="mul-real1" value="2" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                            <div class="flex flex-col items-center"><label for="mul-imag1" class="mb-1 text-sm">Imaginaria (b₁)</label><input type="number" id="mul-imag1" value="1" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md">
+                        <h2 class="text-lg font-semibold mb-3 text-center text-yellow-600 dark:text-yellow-400">Número z₂</h2>
+                        <div class="flex justify-around items-center">
+                            <div class="flex flex-col items-center"><label for="mul-real2" class="mb-1 text-sm">Real (a₂)</label><input type="number" id="mul-real2" value="1" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                            <div class="flex flex-col items-center"><label for="mul-imag2" class="mb-1 text-sm">Imaginaria (b₂)</label><input type="number" id="mul-imag2" value="1.5" step="0.1" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded p-2 w-24 text-center"></div>
+                        </div>
+                    </div>
+                     <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md">
+                        <h2 class="text-lg font-semibold mb-3 text-center text-green-600 dark:text-green-400">Propiedades del Producto</h2>
+                        <div class="space-y-2">
+                           <div id="mul-modulus-output" class="output-box bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"></div>
+                           <div id="mul-argument-output" class="output-box bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"></div>
+                           <div id="mul-result-output" class="output-box bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md mt-6">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-semibold">Mostrar Etiquetas de Ejes</span>
+                    <label class="switch">
+                        <input type="checkbox" id="show-axis-labels-toggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+             <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md mt-6">
+                <div class="flex justify-between items-center">
+                    <span class="text-lg font-semibold">Modo Claro</span>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Canvas para la Visualización -->
+    <div class="flex-grow w-full h-full order-1 lg:order-2">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const tabs = { explore: document.getElementById('tab-explore'), sum: document.getElementById('tab-sum'), multiply: document.getElementById('tab-multiply'), };
+        const contents = { explore: document.getElementById('content-explore'), sum: document.getElementById('content-sum'), multiply: document.getElementById('content-multiply'), };
+        const inputs = {
+            exp: { a: document.getElementById('exp-real-part'), b: document.getElementById('exp-imag-part') },
+            sum: { a1: document.getElementById('sum-real1'), b1: document.getElementById('sum-imag1'), a2: document.getElementById('sum-real2'), b2: document.getElementById('sum-imag2') },
+            mul: { a1: document.getElementById('mul-real1'), b1: document.getElementById('mul-imag1'), a2: document.getElementById('mul-real2'), b2: document.getElementById('mul-imag2') },
+        };
+        const outputs = {
+            exp: { mod: document.getElementById('exp-modulus-output'), arg: document.getElementById('exp-argument-output'), trig: document.getElementById('exp-polar-trig-output'), exp: document.getElementById('exp-polar-exp-output') },
+            sum: { res: document.getElementById('sum-result-output') },
+            mul: { mod: document.getElementById('mul-modulus-output'), arg: document.getElementById('mul-argument-output'), res: document.getElementById('mul-result-output') },
+        };
+        const showAxisLabelsToggle = document.getElementById('show-axis-labels-toggle');
+        const themeToggle = document.getElementById('theme-toggle');
+
+        let currentMode = 'explore';
+        let scale = 40;
+        let origin = { x: 0, y: 0 };
+        let panOffset = { x: 0, y: 0 };
+        let isPanning = false;
+        let draggedVector = null;
+        let panStart = { x: 0, y: 0 };
+        const DRAG_RADIUS = 0.5;
+
+        const darkThemeColors = {
+            background: '#1a1a1a', grid: '#333333', axes: '#666666', text: '#e0e0e0',
+            z1: '#60a5fa', z2: '#facc15', sum: '#4ade80', product: '#4ade80',
+            angle1: '#60a5fa', angle2: '#facc15', angleSum: '#4ade80',
+            parallelogramLine: '#555555', axisLabel: '#b0b0b0'
+        };
+        const lightThemeColors = {
+            background: '#f3f4f6', grid: '#d1d5db', axes: '#6b7280', text: '#111827',
+            z1: '#2563eb', z2: '#d97706', sum: '#16a34a', product: '#16a34a',
+            angle1: '#2563eb', angle2: '#d97706', angleSum: '#16a34a',
+            parallelogramLine: '#9ca3af', axisLabel: '#4b5563'
+        };
+        let currentColors = darkThemeColors;
+
+        function worldToCanvas(x, y) { return { x: origin.x + panOffset.x + x * scale, y: origin.y + panOffset.y - y * scale }; }
+        function canvasToWorld(x, y) { return { x: (x - origin.x - panOffset.x) / scale, y: (origin.y + panOffset.y - y) / scale }; }
+
+        Object.keys(tabs).forEach(mode => {
+            tabs[mode].addEventListener('click', () => {
+                currentMode = mode;
+                Object.keys(tabs).forEach(m => {
+                    tabs[m].classList.toggle('active', m === mode);
+                    contents[m].classList.toggle('active', m === mode);
+                });
+                updateAll();
+            });
+        });
+
+        function updateAll() {
+            switch (currentMode) {
+                case 'explore': updateExplorer(); break;
+                case 'sum': updateSum(); break;
+                case 'multiply': updateMultiply(); break;
+            }
+            drawScene();
+        }
+
+        function updateExplorer() {
+            const a = parseFloat(inputs.exp.a.value);
+            const b = parseFloat(inputs.exp.b.value);
+            const modulus = Math.hypot(a, b);
+            const argumentRad = Math.atan2(b, a);
+            const argumentDeg = argumentRad * (180 / Math.PI);
+            outputs.exp.mod.textContent = modulus.toFixed(3);
+            outputs.exp.arg.textContent = `${argumentDeg.toFixed(2)}° | ${argumentRad.toFixed(3)} rad`;
+            const r = modulus.toFixed(2);
+            const theta = argumentRad.toFixed(2);
+            outputs.exp.trig.textContent = `${r}(cos(${theta}) + i·sin(${theta}))`;
+            outputs.exp.exp.innerHTML = `${r} · e<sup>i·${theta}</sup>`;
+        }
+        function updateSum() {
+            const a1=parseFloat(inputs.sum.a1.value), b1=parseFloat(inputs.sum.b1.value);
+            const a2=parseFloat(inputs.sum.a2.value), b2=parseFloat(inputs.sum.b2.value);
+            const res_a = a1 + a2, res_b = b1 + b2;
+            outputs.sum.res.textContent = `z = ${res_a.toFixed(2)} + ${res_b.toFixed(2)}i`;
+        }
+        function updateMultiply() {
+            const a1=parseFloat(inputs.mul.a1.value), b1=parseFloat(inputs.mul.b1.value);
+            const a2=parseFloat(inputs.mul.a2.value), b2=parseFloat(inputs.mul.b2.value);
+            const mod1 = Math.hypot(a1, b1), arg1 = Math.atan2(b1, a1);
+            const mod2 = Math.hypot(a2, b2), arg2 = Math.atan2(b2, a2);
+            const res_mod = mod1 * mod2, res_arg = arg1 + arg2;
+            const res_a = res_mod * Math.cos(res_arg), res_b = res_mod * Math.sin(res_arg);
+            const highlightClass = themeToggle.checked ? 'text-green-700' : 'text-green-400';
+            outputs.mul.mod.innerHTML = `|z₁|·|z₂| = ${mod1.toFixed(2)} · ${mod2.toFixed(2)} = <span class="${highlightClass} font-bold">${res_mod.toFixed(2)}</span>`;
+            outputs.mul.arg.innerHTML = `arg(z₁)+arg(z₂) = ${arg1.toFixed(2)} + ${arg2.toFixed(2)} = <span class="${highlightClass} font-bold">${res_arg.toFixed(2)}</span> rad`;
+            outputs.mul.res.innerHTML = `z = <span class="${highlightClass} font-bold">${res_a.toFixed(2)} + ${res_b.toFixed(2)}i</span>`;
+        }
+
+        function drawScene() {
+            ctx.fillStyle = currentColors.background;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            drawGrid();
+            switch (currentMode) {
+                case 'explore': drawExplorerScene(); break;
+                case 'sum': drawSumScene(); break;
+                case 'multiply': drawMultiplyScene(); break;
+            }
+        }
+        function drawGrid() {
+            const view_tl = canvasToWorld(0, 0), view_br = canvasToWorld(canvas.width, canvas.height);
+            const startX = Math.floor(view_tl.x)-1, endX = Math.ceil(view_br.x)+1;
+            const startY = Math.floor(view_br.y)-1, endY = Math.ceil(view_tl.y)+1;
+            ctx.strokeStyle = currentColors.grid; ctx.lineWidth = 1;
+            for (let i = startX; i <= endX; i++) { if (i === 0) continue; const p1 = worldToCanvas(i, startY), p2 = worldToCanvas(i, endY); ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); }
+            for (let j = startY; j <= endY; j++) { if (j === 0) continue; const p1 = worldToCanvas(startX, j), p2 = worldToCanvas(endX, j); ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); }
+            ctx.strokeStyle = currentColors.axes; ctx.lineWidth = 2;
+            const p1x = worldToCanvas(startX, 0), p2x = worldToCanvas(endX, 0); ctx.beginPath(); ctx.moveTo(p1x.x, p1x.y); ctx.lineTo(p2x.x, p2x.y); ctx.stroke();
+            const p1y = worldToCanvas(0, startY), p2y = worldToCanvas(0, endY); ctx.beginPath(); ctx.moveTo(p1y.x, p1y.y); ctx.lineTo(p2y.x, p2y.y); ctx.stroke();
+            if (showAxisLabelsToggle.checked) { drawAxisLabels(startX, endX, startY, endY); }
+        }
+        function drawAxisLabels(startX, endX, startY, endY) {
+            ctx.fillStyle = currentColors.axisLabel;
+            ctx.font = `${Math.min(14, scale / 2.5)}px Inter`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            for (let i = startX; i <= endX; i++) { if (i === 0 || Math.abs(i * scale) < 20) continue; const pos = worldToCanvas(i, 0); ctx.fillText(i, pos.x, pos.y + 8); }
+            ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+            for (let j = startY; j <= endY; j++) { if (j === 0 || Math.abs(j * scale) < 20) continue; const pos = worldToCanvas(0, j); ctx.fillText(`${j}i`, pos.x - 8, pos.y); }
+            ctx.font = `${Math.min(16, scale / 2)}px Inter`;
+            ctx.fillStyle = currentColors.text;
+            ctx.textAlign = 'left';
+            const realLabelPos = worldToCanvas(endX, 0);
+            ctx.fillText('Real', canvas.width - 50, realLabelPos.y - 15);
+            ctx.textAlign = 'center';
+            const imagLabelPos = worldToCanvas(0, endY);
+            ctx.fillText('Imaginario', imagLabelPos.x + 35, 20);
+        }
+        function drawVector(a, b, color, label) {
+            const end = worldToCanvas(a, b), start = worldToCanvas(0, 0);
+            ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(start.x, start.y); ctx.lineTo(end.x, end.y); ctx.stroke();
+            const angle = Math.atan2(end.y - start.y, end.x - start.x), headlen = 10;
+            ctx.beginPath(); ctx.moveTo(end.x, end.y);
+            ctx.lineTo(end.x - headlen * Math.cos(angle - Math.PI / 6), end.y - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(end.x - headlen * Math.cos(angle + Math.PI / 6), end.y - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath(); ctx.fill();
+            ctx.font = '16px Inter'; ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            const labelOffset = 18, labelX = end.x + labelOffset * Math.cos(angle), labelY = end.y + labelOffset * Math.sin(angle);
+            ctx.fillText(label, labelX, labelY);
+        }
+        function drawAngle(argumentRad, color, radiusScale = 1) {
+            const start = worldToCanvas(0,0), radius = radiusScale * scale;
+            ctx.strokeStyle = color; ctx.fillStyle = `${color}33`; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(start.x, start.y);
+            ctx.arc(start.x, start.y, radius, 0, -argumentRad, argumentRad > 0);
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+        }
+        function drawExplorerScene() {
+            const a=parseFloat(inputs.exp.a.value), b=parseFloat(inputs.exp.b.value);
+            const argumentRad = Math.atan2(b, a);
+            drawAngle(argumentRad, currentColors.angle1);
+            drawVector(a, b, currentColors.z1, `z = ${a.toFixed(1)} + ${b.toFixed(1)}i`);
+        }
+        function drawSumScene() {
+            const a1=parseFloat(inputs.sum.a1.value), b1=parseFloat(inputs.sum.b1.value);
+            const a2=parseFloat(inputs.sum.a2.value), b2=parseFloat(inputs.sum.b2.value);
+            const res_a = a1 + a2, res_b = b1 + b2;
+            ctx.strokeStyle = currentColors.parallelogramLine; ctx.lineWidth = 2; ctx.setLineDash([5, 5]);
+            let p1 = worldToCanvas(a1, b1), p2 = worldToCanvas(res_a, res_b);
+            ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+            p1 = worldToCanvas(a2, b2);
+            ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+            ctx.setLineDash([]);
+            drawVector(a1, b1, currentColors.z1, 'z₁');
+            drawVector(a2, b2, currentColors.z2, 'z₂');
+            drawVector(res_a, res_b, currentColors.sum, 'z₁+z₂');
+        }
+        function drawMultiplyScene() {
+            const a1=parseFloat(inputs.mul.a1.value), b1=parseFloat(inputs.mul.b1.value);
+            const a2=parseFloat(inputs.mul.a2.value), b2=parseFloat(inputs.mul.b2.value);
+            const mod1 = Math.hypot(a1, b1), arg1 = Math.atan2(b1, a1);
+            const mod2 = Math.hypot(a2, b2), arg2 = Math.atan2(b2, a2);
+            const res_mod = mod1 * mod2, res_arg = arg1 + arg2;
+            const res_a = res_mod * Math.cos(res_arg), res_b = res_mod * Math.sin(res_arg);
+            drawAngle(res_arg, currentColors.angleSum, 1.2);
+            drawAngle(arg1, currentColors.angle1, 1.0);
+            drawAngle(arg2, currentColors.angle2, 0.8);
+            drawVector(a1, b1, currentColors.z1, 'z₁');
+            drawVector(a2, b2, currentColors.z2, 'z₂');
+            drawVector(res_a, res_b, currentColors.product, 'z₁·z₂');
+        }
+
+        function handleResize() {
+            const parent = canvas.parentElement;
+            canvas.width = parent.clientWidth; canvas.height = parent.clientHeight;
+            origin.x = canvas.width/2; origin.y = canvas.height/2;
+            updateAll();
+        }
+        function getEventCoords(event) {
+            const rect = canvas.getBoundingClientRect();
+            if (event.touches) { return { x: event.touches[0].clientX - rect.left, y: event.touches[0].clientY - rect.top }; }
+            return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+        }
+        function handleInteractionStart(event) {
+            const coords = getEventCoords(event);
+            const worldPos = canvasToWorld(coords.x, coords.y);
+            let z1, z2;
+            switch(currentMode) {
+                case 'explore': z1={a:parseFloat(inputs.exp.a.value), b:parseFloat(inputs.exp.b.value)}; if (Math.hypot(worldPos.x-z1.a, worldPos.y-z1.b)<DRAG_RADIUS) draggedVector='z1_exp'; break;
+                case 'sum': z1={a:parseFloat(inputs.sum.a1.value), b:parseFloat(inputs.sum.b1.value)}; z2={a:parseFloat(inputs.sum.a2.value), b:parseFloat(inputs.sum.b2.value)}; if (Math.hypot(worldPos.x-z1.a, worldPos.y-z1.b)<DRAG_RADIUS) draggedVector='z1_sum'; else if (Math.hypot(worldPos.x-z2.a, worldPos.y-z2.b)<DRAG_RADIUS) draggedVector='z2_sum'; break;
+                case 'multiply': z1={a:parseFloat(inputs.mul.a1.value), b:parseFloat(inputs.mul.b1.value)}; z2={a:parseFloat(inputs.mul.a2.value), b:parseFloat(inputs.mul.b2.value)}; if (Math.hypot(worldPos.x-z1.a, worldPos.y-z1.b)<DRAG_RADIUS) draggedVector='z1_mul'; else if (Math.hypot(worldPos.x-z2.a, worldPos.y-z2.b)<DRAG_RADIUS) draggedVector='z2_mul'; break;
+            }
+            if (!draggedVector) { isPanning = true; panStart.x = event.clientX||event.touches[0].clientX; panStart.y = event.clientY||event.touches[0].clientY; }
+        }
+        function handleInteractionMove(event) {
+            event.preventDefault();
+            const coords = getEventCoords(event);
+            if (draggedVector) {
+                const worldPos = canvasToWorld(coords.x, coords.y);
+                const newA = worldPos.x.toFixed(2), newB = worldPos.y.toFixed(2);
+                switch(draggedVector) {
+                    case 'z1_exp': inputs.exp.a.value=newA; inputs.exp.b.value=newB; break;
+                    case 'z1_sum': inputs.sum.a1.value=newA; inputs.sum.b1.value=newB; break;
+                    case 'z2_sum': inputs.sum.a2.value=newA; inputs.sum.b2.value=newB; break;
+                    case 'z1_mul': inputs.mul.a1.value=newA; inputs.mul.b1.value=newB; break;
+                    case 'z2_mul': inputs.mul.a2.value=newA; inputs.mul.b2.value=newB; break;
+                }
+                updateAll();
+            } else if (isPanning) {
+                const currentX=event.clientX||event.touches[0].clientX, currentY=event.clientY||event.touches[0].clientY;
+                panOffset.x+=currentX-panStart.x; panOffset.y+=currentY-panStart.y;
+                panStart.x=currentX; panStart.y=currentY;
+                drawScene();
+            } else { canvas.style.cursor = 'move'; }
+        }
+        function handleInteractionEnd() { if(draggedVector)canvas.style.cursor='move'; draggedVector=null; isPanning=false; }
+        function handleZoom(event) {
+            event.preventDefault();
+            const zoomIntensity=0.1, wheel=event.deltaY<0?1:-1, zoom=Math.exp(wheel*zoomIntensity);
+            const rect = canvas.getBoundingClientRect();
+            const mousePos = { x: event.clientX-rect.left, y: event.clientY-rect.top };
+            const worldPosBeforeZoom=canvasToWorld(mousePos.x, mousePos.y);
+            scale *= zoom;
+            const worldPosAfterZoom=canvasToWorld(mousePos.x, mousePos.y);
+            panOffset.x += (worldPosAfterZoom.x-worldPosBeforeZoom.x)*scale;
+            panOffset.y += (worldPosAfterZoom.y-worldPosBeforeZoom.y)*scale;
+            drawScene();
+        }
+
+        window.addEventListener('resize', handleResize);
+        Object.values(inputs).forEach(group => Object.values(group).forEach(input => input.addEventListener('input', updateAll)));
+        showAxisLabelsToggle.addEventListener('change', drawScene);
+        themeToggle.addEventListener('change', () => {
+            document.documentElement.classList.toggle('dark', !themeToggle.checked);
+            currentColors = themeToggle.checked ? lightThemeColors : darkThemeColors;
+            // Need to update text colors in multiply output which are hardcoded
+            if (currentMode === 'multiply') {
+                updateMultiply();
+            }
+            drawScene();
+        });
+        canvas.addEventListener('wheel', handleZoom);
+        canvas.addEventListener('mousedown', handleInteractionStart);
+        canvas.addEventListener('mousemove', handleInteractionMove);
+        canvas.addEventListener('mouseup', handleInteractionEnd);
+        canvas.addEventListener('mouseleave', handleInteractionEnd);
+        canvas.addEventListener('touchstart', handleInteractionStart, { passive: false });
+        canvas.addEventListener('touchmove', handleInteractionMove, { passive: false });
+        canvas.addEventListener('touchend', handleInteractionEnd);
+        canvas.addEventListener('touchcancel', handleInteractionEnd);
+
+        handleResize();
+    </script>
+</body>
+</html>
+

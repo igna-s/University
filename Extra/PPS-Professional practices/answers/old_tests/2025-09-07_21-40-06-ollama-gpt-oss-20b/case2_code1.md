@@ -1,0 +1,6 @@
+| Line | Code | Scenario Id | Scenario | Artifact | Refactoring |
+| :-: | :- | :-: | :- | :- | :- |
+| 2 | `from qiskit.opflow import PauliSumOp` | DEP_QISKIT_OPFLOW | Deprecation -> `qiskit.opflow` module deprecated | `qiskit.opflow` | `from qiskit.quantum_info import SparsePauliOp` |
+| 3 | `from qiskit.primitives import BackendEstimator` | REM_QISKIT_PRIMITIVES_BACKENDESTIMATOR | Removal -> `qiskit.primitives.BackendEstimator` removed | `qiskit.primitives.BackendEstimator` | `from qiskit.primitives import Estimator` |
+| 13 | `H1 = PauliSumOp.from_list([("II", 1), ("IZ", 2), ("XI", 3)])` | DEP_CLASS_PAULISUMOP | Deprecation -> `PauliSumOp` class deprecated | `PauliSumOp` | `H1 = SparsePauliOp.from_list([("II", 1), ("IZ", 2), ("XI", 3)])` |
+| 17 | `estimator = BackendEstimator(` | REM_CLASS_BACKENDESTIMATOR_INSTANTIATION | Removal -> `BackendEstimator` class and its instantiation pattern removed, constructor arguments changed | `BackendEstimator` | `estimator = Estimator(options={"shots": 1024})` |

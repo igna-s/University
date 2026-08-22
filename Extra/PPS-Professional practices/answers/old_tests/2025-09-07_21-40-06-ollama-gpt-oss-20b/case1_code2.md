@@ -1,0 +1,5 @@
+| Line | Code | Scenario Id | Scenario | Artifact | Refactoring |
+| :-: | :- | :-: | :- | :- | :- |
+| 3 | `from qiskit import QuantumCircuit, qasm, execute` | * | Deprecation -> `execute()` function deprecated (optional) | qiskit.execute | `from qiskit import QuantumCircuit, qasm` |
+| 13 | `job = execute(qc, getMyBackend(), shots=1000)` | * | Deprecation -> `execute()` function deprecated (optional). The `execute` function is replaced by calling the `run()` method directly on a backend object. | qiskit.execute.execute | `job = getMyBackend().run(qc, shots=1000)` |
+| 14 | `result = job.result().get_counts(qc)` | * | Deprecation -> `get_counts(circuit)` argument deprecated (optional). The `get_counts` method no longer accepts a `QuantumCircuit` object as an argument for single-circuit jobs. | qiskit.result.Result.get_counts | `result = job.result().get_counts()` |

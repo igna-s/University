@@ -1,0 +1,835 @@
+\documentclass[12pt,a4paper]{article}
+
+% ── Paquetes ─────────────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{parskip}
+
+\geometry{margin=2.5cm}
+
+% ── Colores ───────────────────────────────────────────────────────────────────
+\definecolor{codeblue}{RGB}{0,90,160}
+\definecolor{codegray}{RGB}{100,100,100}
+\definecolor{codered}{RGB}{160,30,30}
+\definecolor{codegreen}{RGB}{0,120,60}
+\definecolor{backcolor}{RGB}{248,248,248}
+
+% ── Estilo de código ──────────────────────────────────────────────────────────
+\lstdefinestyle{cstyle}{
+  backgroundcolor=\color{backcolor},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{codeblue}\bfseries,
+  commentstyle=\color{codegray}\itshape,
+  stringstyle=\color{codered},
+  breaklines=true,
+  numbers=left,
+  numberstyle=\tiny\color{codegray},
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{codegray},
+  tabsize=4,
+  language=C
+}
+\lstset{style=cstyle}
+
+% ── Encabezado y pie ─────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small Sistemas Distribuidos y Paralelos}
+\lhead{\small Práctica 3 — MPI}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Formato de secciones ──────────────────────────────────────────────────────
+\titleformat{\section}{\large\bfseries\color{codeblue}}{Ejercicio \thesection.}{0.5em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+
+% ── Tabla auxiliar ────────────────────────────────────────────────────────────
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+
+% ── Portada ──────────────────────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+  {\Huge\bfseries Práctica 3\par}
+  \vspace{0.5cm}
+  {\LARGE Programación Paralela con MPI\par}
+  \vspace{1.5cm}
+  {\large Sistemas Distribuidos y Paralelos\par}
+  \vspace{3cm}
+  \begin{abstract}
+    \noindent
+    Este informe documenta el diseño e implementación de soluciones paralelas usando
+    MPI (Message Passing Interface) en C para los algoritmos secuenciales de la
+    Práctica 1. Por cada ejercicio se aplica la metodología de diseño de Foster
+    (Descomposición, Comunicación, Aglomeración, Mapeo), se analizan las ventajas
+    y desventajas de las herramientas utilizadas, y se estudian alternativas en
+    otros lenguajes de programación tanto compilados como interpretados.
+  \end{abstract}
+  \vfill
+  {\large \today\par}
+\end{titlepage}
+
+% ── Índice ───────────────────────────────────────────────────────────────────
+\tableofcontents
+\newpage
+
+% =============================================================================
+\section*{Marco Teórico: Metodología de Diseño Foster}
+\addcontentsline{toc}{section}{Marco Teórico: Metodología de Diseño Foster}
+% =============================================================================
+
+Todos los ejercicios de esta práctica siguen la \textbf{metodología de diseño Foster}
+para la paralelización sistemática de algoritmos:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Descomposición}: identificar las unidades de trabajo independientes.
+    Puede ser \textit{de datos} (se dividen los datos entre procesos) o
+    \textit{exploratoria} (se divide el espacio de búsqueda).
+  \item \textbf{Comunicación}: determinar qué datos deben compartirse entre procesos
+    y con qué topología (broadcast, scatter/gather, all-to-all, punto a punto).
+  \item \textbf{Aglomeración}: agrupar tareas finas en bloques más gruesos para
+    amortizar el overhead fijo de latencia de cada mensaje MPI.
+  \item \textbf{Mapeo}: asignar bloques de trabajo a procesos. Puede ser
+    \textit{estático} (asignación fija antes de la ejecución) o
+    \textit{dinámico} (asignación en tiempo de ejecución según disponibilidad).
+\end{enumerate}
+
+El patrón dominante en los ejercicios 1, 2, 3 y 5 es \textbf{SPMD} (\textit{Single
+Program Multiple Data}): todos los procesos ejecutan el mismo código y se bifurcan
+únicamente con \texttt{if (rank == 0)} para separar el rol coordinador del rol
+computador. El ejercicio 4 usa el patrón \textbf{Master-Worker} con distribución
+dinámica de tareas (\textit{Bag of Tasks}).
+
+\newpage
+
+% =============================================================================
+\section{Multiplicación de Matrices con MPI}
+% =============================================================================
+
+\subsection{Diseño Foster}
+
+\begin{tabular}{L{3cm} L{11cm}}
+\toprule
+\textbf{Fase} & \textbf{Descripción} \\
+\midrule
+Descomposición & De datos por filas de $A$. La fila $i$ de $C = A \times B$
+  solo depende de la fila $i$ de $A$ y de toda $B$ $\Rightarrow$ las $N$ filas de $C$
+  son completamente independientes entre sí. \\[4pt]
+Comunicación & \texttt{MPI\_Bcast} de $B$ completa ($O(N^2)$ datos),
+  \texttt{MPI\_Scatter} de $N/P$ filas de $A$, \texttt{MPI\_Gather} de $N/P$
+  filas de $C$. \\[4pt]
+Aglomeración & Bloque de $N/P$ filas contiguas por proceso. Granularidad
+  gruesa que minimiza el overhead de comunicación relativo al cómputo. \\[4pt]
+Mapeo & Estático. Cada proceso realiza exactamente $(N/P) \cdot N^2$
+  operaciones de punto flotante $\Rightarrow$ carga perfectamente uniforme. \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5cm}
+
+\subsection{Variantes implementadas}
+
+\textbf{a) mm\_naive optimizado (p3Ej1a.c):} El kernel local usa el orden de
+bucles \texttt{ikj} en lugar del clásico \texttt{ijk}. Con orden \texttt{ijk},
+el acceso a $B$ es por columnas (saltos de $N$ posiciones en memoria), generando
+\textit{cache misses} continuos. Con \texttt{ikj}, el factor $a_{ik}$ queda fijo
+mientras se recorre la fila $j$ de $B$ de forma secuencial, aprovechando las
+líneas de caché.
+
+\textbf{b) Autoproducto $C = A \cdot A$ (p3Ej1b.c):} La variante donde ambas
+operandas son la misma matriz. Se realiza un \texttt{MPI\_Bcast} de $A$ completa
+(para usarla como ``segunda operanda'') más un \texttt{MPI\_Scatter} de $A$ (para
+las filas locales). La validación es \textit{inline}: rank 0 computa $A \times A$
+secuencialmente con el mismo algoritmo \texttt{ikj} y compara con el resultado
+paralelo, sin necesitar un archivo de referencia externo.
+
+\textbf{c) Multiplicación por bloques (p3Ej1c.c):} La comunicación MPI es idéntica
+a la variante naive. La diferencia está en el kernel local: en lugar de procesar filas
+completas, se trabaja con sub-bloques de tamaño $\text{BS} \times \text{BS}$. Si
+$\text{BS}$ es apropiado para la jerarquía de caché, el sub-bloque permanece en L1/L2
+durante toda su utilización, reduciendo los \textit{cache misses} de forma
+significativa (principio de localidad temporal y espacial). La variante compilada con
+\texttt{-DUSE\_BLAS} aplica adicionalmente una transposición local del bloque de $B$
+para garantizar acceso secuencial a memoria.
+
+\subsection{Ventajas y desventajas de MPI en C}
+
+\begin{longtable}{L{4cm} L{10cm}}
+\toprule
+\textbf{Ventajas} & \textbf{Detalle} \\
+\midrule
+\endhead
+Control total de memoria & El programador decide exactamente qué datos residen en
+  cada proceso, evitando copias innecesarias. Crítico para matrices grandes. \\[4pt]
+Portabilidad & MPI funciona en clusters heterogéneos, supercomputadoras con
+  InfiniBand, y máquinas locales con Ethernet. Una misma compilación puede
+  ejecutarse en cualquier plataforma que tenga una implementación MPI
+  (OpenMPI, MPICH, Intel MPI). \\[4pt]
+Rendimiento predecible & La latencia y el \textit{throughput} de cada comunicación
+  son explícitos y medibles con \texttt{MPI\_Wtime}. No hay abstracciones ocultas. \\[4pt]
+Integración con BLAS/LAPACK & El código C puede llamar directamente a librerías
+  altamente optimizadas para el cómputo local (dgemm, etc.) sin capas
+  intermedias de conversión. \\
+\midrule
+\textbf{Desventajas} & \\
+\midrule
+Verbosidad & Inicializar comunicadores, calcular desplazamientos, gestionar
+  manualmente la memoria local de cada proceso y manejar el caso $N \% P \neq 0$
+  requiere decenas de líneas de código de ``infraestructura''. \\[4pt]
+Debugging difícil & Un deadlock o una condición de carrera en comunicaciones
+  puede colgar silenciosamente el programa. Las herramientas (Valgrind/MPI,
+  TotalView) son complejas de usar. \\[4pt]
+Sin tolerancia a fallos & Si un proceso muere, el job completo falla. MPI no
+  tiene recuperación nativa ante fallos de nodo. \\[4pt]
+Manejo manual del balance & Si los bloques no son uniformes (N no divisible por P),
+  hay que implementar lógica adicional con \texttt{MPI\_Scatterv}. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Alternativas en otros lenguajes}
+
+\begin{longtable}{L{2.5cm} L{3.5cm} L{7.5cm}}
+\toprule
+\textbf{Lenguaje} & \textbf{Herramienta} & \textbf{Análisis} \\
+\midrule
+\endhead
+Python (interpretado) & \texttt{mpi4py} + NumPy & MPI con sintaxis Pythónica. Las comunicaciones de
+  arrays NumPy evitan la serialización y se traducen directamente a operaciones
+  MPI en C subyacente. El overhead del intérprete es insignificante si el
+  cómputo local usa NumPy (\texttt{np.dot}) o SciPy (que llaman BLAS en C).
+  Ideal para prototipado rápido. Para producción a gran escala, el overhead del
+  intérprete en Python puro puede ser un factor 10--100x más lento que C. \\[4pt]
+Julia (compilado JIT) & \texttt{MPI.jl} & Julia compila JIT a código nativo
+  comparable a C. El paquete \texttt{MPI.jl} provee bindings completos a la
+  API de MPI. Es la alternativa más cercana a C en rendimiento con la
+  ergonomía de un lenguaje de alto nivel: manejo automático de tipos, arrays
+  multidimensionales nativos, y broadcasting. \\[4pt]
+Rust (compilado) & \texttt{rsmpi} & Rust garantiza ausencia de carreras de
+  datos en tiempo de compilación mediante su sistema de \textit{ownership}.
+  La librería \texttt{rsmpi} expone MPI con seguridad de tipos. Para código
+  nuevo donde la correctitud es crítica, Rust elimina una clase entera de bugs.
+  La curva de aprendizaje es empinada. \\[4pt]
+Java (compilado JVM) & MPJ Express, FastMPJ & Java elimina la gestión manual de
+  memoria pero el JVM agrega overhead de GC y boxing de tipos primitivos. Para
+  matrices de \texttt{double[]}, el rendimiento es aceptable pero nunca comparable
+  a C. Útil en entornos donde el ecosistema Java ya existe. \\[4pt]
+Go (compilado) & \texttt{gompi} & Go ofrece goroutines para paralelismo de
+  memoria compartida y \texttt{gompi} para paso de mensajes. Compila a nativo.
+  Para computación científica pura su ecosistema de álgebra lineal es más
+  limitado que el de C o Julia. \\
+\bottomrule
+\end{longtable}
+
+\textbf{Recomendación para matrices:} Para investigación/prototipado: Python con
+\texttt{mpi4py} + NumPy. Para producción en HPC: C/MPI + BLAS o Julia + \texttt{MPI.jl}.
+
+\newpage
+
+% =============================================================================
+\section{Estadísticas de Matrices: Mínimo, Máximo y Promedio}
+% =============================================================================
+
+\subsection{Diseño Foster}
+
+\begin{tabular}{L{3cm} L{11cm}}
+\toprule
+\textbf{Fase} & \textbf{Descripción} \\
+\midrule
+Descomposición & De datos. La matriz se trata como un arreglo lineal de $N^2$
+  elementos. Cada elemento contribuye de forma independiente al mínimo, máximo
+  y suma $\Rightarrow$ $N^2$ tareas atómicas completamente independientes. \\[4pt]
+Comunicación & \texttt{MPI\_Scatter} de $N^2/P$ elementos, luego
+  \texttt{MPI\_Reduce} con \texttt{MPI\_MIN}, \texttt{MPI\_MAX} y \texttt{MPI\_SUM}.
+  La comunicación de resultados parciales es $O(P)$, insignificante respecto
+  al scatter de datos. \\[4pt]
+Aglomeración & Bloque de $N^2/P$ elementos contiguos por proceso. Granularidad
+  gruesa: una sola llamada de scatter distribuye todo el trabajo. \\[4pt]
+Mapeo & Estático. Carga perfectamente uniforme: todos los procesos calculan
+  exactamente $N^2/P$ comparaciones. \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5cm}
+
+\subsection{Patrón clave: MPI\_Reduce}
+
+\texttt{MPI\_Reduce} es la operación colectiva que combina valores escalares de todos
+los procesos usando una operación predefinida (\texttt{MPI\_MIN}, \texttt{MPI\_MAX},
+\texttt{MPI\_SUM}, \texttt{MPI\_PROD}, etc.) y deposita el resultado en el proceso
+raíz. Internamente utiliza un árbol binario de comunicaciones en $O(\log P)$ pasos,
+siendo significativamente más eficiente que que rank 0 recibiera uno a uno de cada
+proceso ($O(P)$ pasos seriales).
+
+\subsection{Sobre el uso de \texttt{srand(42)}}
+
+La inicialización de la matriz se realiza con \texttt{srand(42)}, una semilla fija
+para el generador de números pseudo-aleatorios. Esto es intencional y tiene tres
+propósitos:
+
+\begin{itemize}
+  \item \textbf{Reproducibilidad}: cada ejecución del programa genera exactamente los
+    mismos datos. Un resultado diferente entre corridas indica un bug, no datos distintos.
+  \item \textbf{Validación automática}: rank 0 puede re-recorrer el mismo arreglo
+    secuencialmente (sin necesidad de guardarlo en disco) y comparar contra el resultado
+    paralelo, ya que la secuencia de \texttt{rand()} es determinista dado el mismo seed.
+  \item \textbf{Experimentos comparables}: al medir tiempo con $P = 1, 2, 4, 8, \ldots$
+    procesos, todos los experimentos operan sobre exactamente los mismos datos,
+    haciendo que la comparación de speedups sea justa.
+\end{itemize}
+
+En producción real se usaría \texttt{srand(time(NULL))} o un generador
+criptográficamente seguro, pero para ejercicios de validación académica la
+semilla fija es la práctica estándar.
+
+\subsection{Ventajas y desventajas}
+
+\begin{longtable}{L{4cm} L{10cm}}
+\toprule
+\textbf{Ventajas} & \textbf{Detalle} \\
+\midrule
+\endhead
+Mínima comunicación & Solo se transfieren $P$ valores escalares en el Reduce
+  $\Rightarrow$ eficiencia de comunicación muy alta. \\[4pt]
+Escalabilidad ideal & El problema es \textit{embarazosamente paralelo}: no hay
+  dependencias entre elementos. El speedup teórico se aproxima a $P$. \\[4pt]
+Operaciones MPI nativas & \texttt{MPI\_MIN}, \texttt{MPI\_MAX}, \texttt{MPI\_SUM}
+  son primitivas que los MPI modernos implementan con hardware especializado
+  (reducción en la red InfiniBand, por ejemplo). \\
+\midrule
+\textbf{Desventajas} & \\
+\midrule
+Scatter de datos & El scatter inicial transfiere $O(N^2)$ datos. Para matrices muy
+  grandes, esta distribución inicial puede dominar el tiempo total si el cómputo
+  por elemento es trivial (solo comparaciones). \\[4pt]
+Alternativa más simple & Para este problema específico, un enfoque de memoria
+  compartida (OpenMP) sería más eficiente en una sola máquina, ya que evita el
+  scatter inicial: la matriz ya está en memoria accesible por todos los hilos. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Alternativas en otros lenguajes}
+
+\begin{longtable}{L{2.5cm} L{3.5cm} L{7.5cm}}
+\toprule
+\textbf{Lenguaje} & \textbf{Herramienta} & \textbf{Análisis} \\
+\midrule
+\endhead
+Python & \texttt{mpi4py} + NumPy & \texttt{np.min()}, \texttt{np.max()},
+  \texttt{np.mean()} sobre el chunk local son $O(N^2/P)$ con código C subyacente.
+  El Reduce de \texttt{mpi4py} funciona directamente sobre escalares Python.
+  Código extremadamente conciso (5--10 líneas vs. 90 en C). \\[4pt]
+R (interpretado) & \texttt{Rmpi} o \texttt{pbdMPI} & R es un lenguaje diseñado
+  para estadística. Sus funciones \texttt{min()}, \texttt{max()}, \texttt{mean()}
+  son vectorizadas en C internamente. \texttt{pbdMPI} ofrece una API de MPI
+  simplificada. Muy productivo para análisis de datos; no competitivo para
+  HPC puro. \\[4pt]
+Julia & \texttt{MPI.jl} & Sintaxis idéntica al problema: \texttt{minimum(local)},
+  \texttt{MPI.Reduce} con \texttt{MPI.MIN}. Rendimiento equivalente a C. \\[4pt]
+Fortran (compilado) & MPI nativo & Fortran tiene soporte MPI de primera clase y
+  sigue siendo el estándar en computación científica numérica. Sus arrays
+  multidimensionales son nativos (no punteros) y sus compiladores (gfortran,
+  ifort) generan código altamente optimizado para operaciones numéricas. \\
+\bottomrule
+\end{longtable}
+
+\newpage
+
+% =============================================================================
+\section{Transposición de Matriz $N \times N$}
+% =============================================================================
+
+\subsection{Diseño Foster}
+
+\begin{tabular}{L{3cm} L{11cm}}
+\toprule
+\textbf{Fase} & \textbf{Descripción} \\
+\midrule
+Descomposición & De datos. Cada elemento $(i,j)$ de $A$ produce $T[j][i]$ $\Rightarrow$
+  $N^2$ tareas independientes. Pero la dificultad está en la comunicación:
+  el proceso que tiene la fila $i$ de $A$ debe entregarla a quien construye
+  la columna $i$ de $T$ (que está en otro proceso). \\[4pt]
+Comunicación & Redistribución total: \textbf{all-to-all}. Cada proceso envía datos a
+  todos los demás. Se usa \texttt{MPI\_Alltoall} con un paso previo de
+  empaquetado de sub-bloques. \\[4pt]
+Aglomeración & Cada proceso maneja $N/P$ filas de $A$ y produce $N/P$ filas de $T$.
+  Los sub-bloques de $N/P \times N/P$ elementos se intercambian via Alltoall. \\[4pt]
+Mapeo & Estático. Carga uniforme: cada proceso envía y recibe exactamente
+  $N^2/P$ elementos. \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5cm}
+
+\subsection{Algoritmo de empaquetado/desempaquetado}
+
+El paso no trivial del algoritmo es el empaquetado del \texttt{send\_buf} antes del
+Alltoall y el desempaquetado del \texttt{recv\_buf} después. Si el proceso $p$ tiene
+las filas $[p \cdot ln, (p+1) \cdot ln - 1]$ de $A$ (donde $ln = N/P$), para
+enviárselas al proceso $q$ necesita extraer el sub-bloque de $ln \times ln$ elementos
+correspondiente a las columnas $[q \cdot ln, (q+1) \cdot ln - 1]$:
+
+\[
+  \texttt{send\_buf}[q \cdot ln^2 + i \cdot ln + k] = A[i][q \cdot ln + k]
+  \quad \forall\, i,k \in [0, ln)
+\]
+
+Tras el Alltoall, el proceso $p$ recibe en \texttt{recv\_buf} los sub-bloques
+provenientes de cada proceso $q$, que corresponden a $A[q \cdot ln + i][p \cdot ln + k]$
+$= T[p \cdot ln + k][q \cdot ln + i]$, es decir, elementos de las filas locales de $T$.
+
+\subsection{Patrón clave: MPI\_Alltoall}
+
+\texttt{MPI\_Alltoall} es la operación colectiva más costosa en términos de
+comunicación: cada uno de los $P$ procesos envía un chunk diferente a cada otro
+proceso, totalizando $P^2$ mensajes implícitos. En términos de datos movidos,
+$O(N^2)$ elementos en total, distribuidos de forma simétrica. Es la operación
+apropiada cuando hay \textbf{dependencias cruzadas totales} entre la distribución
+inicial y la distribución final de los datos.
+
+\subsection{Ventajas y desventajas}
+
+\begin{longtable}{L{4cm} L{10cm}}
+\toprule
+\textbf{Ventajas} & \textbf{Detalle} \\
+\midrule
+\endhead
+Expresividad & \texttt{MPI\_Alltoall} encapsula en una sola llamada lo que
+  sería un doble bucle de \texttt{MPI\_Send}/\texttt{MPI\_Recv} entre todos
+  los pares, permitiendo al runtime optimizar el patrón de comunicación. \\[4pt]
+Escalabilidad & El runtime puede usar algoritmos de Alltoall optimizados para
+  la topología de la red (torus, árbol gordo, InfiniBand), imposibles de
+  replicar manualmente. \\
+\midrule
+\textbf{Desventajas} & \\
+\midrule
+Costo de comunicación & Es la operación colectiva de mayor volumen. Con $P$
+  procesos y matrices grandes, la red puede convertirse en el cuello de botella. \\[4pt]
+Empaquetado manual & La API de \texttt{MPI\_Alltoall} exige que los datos
+  estén contiguos en el buffer, por lo que el programador debe implementar
+  el empaquetado y desempaquetado de sub-bloques, lo que agrega complejidad
+  y posibilidad de errores de índices. \texttt{MPI\_Alltoallv} o tipos de datos
+  derivados (\texttt{MPI\_Type\_vector}) pueden evitar la copia manual pero
+  aumentan la complejidad del código. \\[4pt]
+Barrera implícita & \texttt{MPI\_Alltoall} es síncrona: todos los procesos deben
+  llegar a la llamada antes de que alguno pueda continuar. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Alternativas en otros lenguajes}
+
+\begin{longtable}{L{2.5cm} L{3.5cm} L{7.5cm}}
+\toprule
+\textbf{Lenguaje} & \textbf{Herramienta} & \textbf{Análisis} \\
+\midrule
+\endhead
+Python & \texttt{mpi4py} & \texttt{comm.Alltoall(sendbuf, recvbuf)} funciona directamente
+  sobre arrays NumPy. El empaquetado puede hacerse con operaciones de slicing
+  de NumPy (\texttt{arr[i::stride, :]}) que son significativamente más
+  expresivas que el doble bucle en C. \\[4pt]
+Julia & \texttt{MPI.jl} & Julia tiene indexing multidimensional nativo que hace que
+  el empaquetado sea más legible. El rendimiento es equivalente a C. \\[4pt]
+Chapel (compilado) & Nativo & Chapel es un lenguaje académico diseñado específicamente
+  para HPC. Sus distribuciones de arreglos (\texttt{Block}, \texttt{Cyclic})
+  abstraen completamente la distribución de datos: \texttt{var T = transpose(A)}
+  puede ejecutarse en paralelo sin que el programador gestione comunicaciones. \\[4pt]
+MATLAB/Octave & Parallel Computing Toolbox & \texttt{A'} traspone y el toolbox
+  puede distribuirlo con \texttt{codistributed}. Solo viable para prototipado
+  académico, no para producción. \\
+\bottomrule
+\end{longtable}
+
+\newpage
+
+% =============================================================================
+\section{N-Reinas Paralelo (Master-Worker / Bag of Tasks)}
+% =============================================================================
+
+\subsection{Diseño Foster}
+
+\begin{tabular}{L{3cm} L{11cm}}
+\toprule
+\textbf{Fase} & \textbf{Descripción} \\
+\midrule
+Descomposición & \textbf{Exploratoria}. El espacio de búsqueda es un árbol de
+  backtracking. Se cortan ramas en los niveles 1--2 del árbol para definir
+  tareas independientes (subtárboles). Dos tipos de tarea:
+  (1) primera reina en esquina, segunda en columna $b_1$ (Backtrack1);
+  (2) primera reina en posición interior $b_1$ (Backtrack2). \\[4pt]
+Comunicación & Dinámica. Master envía una tarea $\{tipo, b_1, b_2\}$ por vez a
+  cada worker mediante \texttt{MPI\_Send}, worker devuelve contadores
+  \{COUNT8, COUNT4, COUNT2\} con \texttt{MPI\_Send}. Señal de fin con
+  \texttt{TAG\_DONE}. \\[4pt]
+Aglomeración & Un subtárbol completo por tarea $\Rightarrow$ granularidad
+  media-alta. Evita overhead excesivo de comunicación si las tareas fueran
+  muy finas (por ejemplo, una sola colocación de reina). \\[4pt]
+Mapeo & \textbf{Dinámico centralizado} (Bag of Tasks). El master asigna tareas
+  a demanda: cuando un worker termina una, recibe la siguiente disponible. \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5cm}
+
+\subsection{a) Estrategia de descomposición más adecuada}
+
+Para el problema N-Reinas la estrategia más adecuada es la \textbf{descomposición
+exploratoria}, que consiste en dividir el árbol de backtracking en subtárboles
+independientes.
+
+La razón por la que una descomposición de datos convencional no aplica es que no
+existe un arreglo de entrada que distribuir: el ``trabajo'' está completamente
+implícito en las posibles combinaciones del tablero. Cada subtárbol puede explorarse
+de forma completamente independiente (no hay estado compartido entre ramas), lo que
+los convierte en tareas MPI naturales.
+
+La granularidad óptima se obtiene fijando las primeras 1--2 reinas del tablero:
+\begin{itemize}
+  \item Si se fijan muy pocas reinas (granularidad fina), el overhead de comunicación
+    por tarea es proporcionalmente alto.
+  \item Si se fijan muchas reinas (granularidad gruesa), el número de tareas se
+    reduce y puede haber desbalance si algunas ramas grandes caen en el mismo proceso.
+  \item Fijar las primeras 2 reinas genera entre 15 y 30 tareas para $N = 13$--$15$,
+    un número razonable para balancear con unos pocos workers.
+\end{itemize}
+
+\subsection{b) ¿Qué es una tarea? ¿Son uniformes? Problema del mapeo estático}
+
+Una \textbf{tarea} en este contexto es la exploración completa de un subtárbol del
+árbol de backtracking, definida por la posición fija de las primeras 1--2 reinas del
+tablero:
+
+\begin{itemize}
+  \item \textbf{Tipo 1 (Backtrack1)}: la primera reina está en la esquina ($\text{col} = 0$),
+    la segunda en la columna $b_1 \in [2, N-2]$. Genera $N-4$ tareas.
+  \item \textbf{Tipo 2 (Backtrack2)}: la primera reina está en la posición interior
+    $b_1$, explorando la simetría por reflexión. Genera $\lfloor N/2 \rfloor - 1$ tareas.
+\end{itemize}
+
+Las tareas \textbf{no son uniformes}. El tiempo de ejecución de cada tarea depende
+de cuántas ramas del subtárbol se podan y de cuántas soluciones contiene. Algunas
+posiciones iniciales generan rápidamente contradicciones (poda agresiva, tarea barata)
+mientras que otras habilitan miles de soluciones intermedias (tarea cara). La varianza
+entre tareas puede ser de varios órdenes de magnitud.
+
+\textbf{Problema del mapeo estático}: si se divide la lista de tareas en $P$ bloques
+consecutivos asignados de forma fija a cada proceso, el tiempo total queda determinado
+por el proceso que recibió las tareas más costosas. Un proceso puede quedar con múltiples
+tareas de tiempo exponencial mientras otro termina todas las suyas en milisegundos y
+queda inactivo. Esto puede hacer que el speedup real sea de $1.2\times$ en lugar del
+$P\times$ teórico.
+
+El \textbf{mapeo dinámico} (Bag of Tasks) resuelve este problema: el proceso más rápido
+toma automáticamente más tareas de la bolsa, garantizando que ningún worker quede ocioso
+mientras haya trabajo disponible.
+
+\subsection{c) Implementación Master-Worker}
+
+La implementación utiliza comunicación punto a punto con tres tipos de mensajes
+identificados por tags:
+
+\begin{itemize}
+  \item \texttt{TAG\_TASK} (1): master $\to$ worker, contiene el descriptor de tarea
+    $\{tipo, b_1, b_2\}$ como arreglo de 3 enteros.
+  \item \texttt{TAG\_RESULT} (2): worker $\to$ master, contiene los contadores
+    $\{COUNT8, COUNT4, COUNT2\}$ como arreglo de 3 \texttt{long int}.
+  \item \texttt{TAG\_DONE} (3): master $\to$ workers, señal de terminación
+    (tarea vacía con \texttt{tipo = -1}).
+\end{itemize}
+
+El master usa \texttt{MPI\_Recv(MPI\_ANY\_SOURCE)} para recibir del primer worker
+que termine, garantizando que no haya espera innecesaria. Los resultados parciales
+se acumulan con una suma simple ya que \textit{COUNT8, COUNT4, COUNT2} son
+independientes entre subtárboles.
+
+\subsection{Ventajas y desventajas}
+
+\begin{longtable}{L{4cm} L{10cm}}
+\toprule
+\textbf{Ventajas} & \textbf{Detalle} \\
+\midrule
+\endhead
+Balance de carga dinámico & El patrón Bag of Tasks garantiza que ningún proceso
+  quede ocioso mientras haya tareas disponibles, siendo óptimo para cargas
+  no uniformes. \\[4pt]
+Simplicidad del modelo & Los workers son completamente \textit{stateless}: no
+  necesitan conocer el estado global ni coordinarse entre sí. Cada worker
+  recibe una tarea, la ejecuta y devuelve el resultado. \\[4pt]
+Escalabilidad hasta cierto punto & Escala bien mientras la velocidad de
+  distribución del master supere la velocidad de consumo de los workers. \\
+\midrule
+\textbf{Desventajas} & \\
+\midrule
+Cuello de botella en el master & El master no computa ninguna tarea: dedica
+  todo su tiempo a coordinar. Con miles de workers, el master puede convertirse
+  en el factor limitante. \\[4pt]
+Latencia de granularidad fina & Si las tareas son muy cortas (microsegundos),
+  el overhead de un round-trip de mensajes MPI (Send + Recv) puede superar el
+  tiempo de cómputo de la tarea misma. \\[4pt]
+Punto único de fallo & Si el master falla, todo el trabajo se pierde. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Alternativas al patrón Master-Worker}
+
+Además del patrón Master-Worker, existen otras estrategias de implementación
+paralela aplicables a problemas de búsqueda y en general:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{SPMD con mapeo cíclico}: cada proceso toma las tareas con índices
+    $\{rank, rank+P, rank+2P, \ldots\}$. No requiere comunicación durante la
+    ejecución. El desbalance es menor que el estático contiguo (las tareas pesadas
+    y livianas se intercalan), pero no es tan perfecto como el dinámico.
+
+  \item \textbf{Work Stealing descentralizado}: cada proceso tiene su propia cola.
+    Cuando un proceso termina su cola, ``roba'' tareas de la cola de otro proceso.
+    No hay master centralizado $\Rightarrow$ escala a miles de procesos. Difícil
+    de implementar en MPI puro; más natural con MPI-3 RMA (acceso remoto a memoria).
+
+  \item \textbf{Master-Worker jerárquico}: múltiples masters, cada uno coordinando
+    un subconjunto de workers. Reduce el cuello de botella del master único. Útil
+    cuando $P > 100$.
+
+  \item \textbf{Pipeline con workers especializados}: si las tareas tienen etapas
+    diferenciadas (generación, exploración, verificación), cada tipo de worker
+    realiza una etapa y pasa resultados al siguiente tipo. No aplica directamente
+    a N-Reinas pero sí a problemas con fases definidas.
+\end{enumerate}
+
+\subsection{Alternativas en otros lenguajes}
+
+\begin{longtable}{L{2.5cm} L{3.5cm} L{7.5cm}}
+\toprule
+\textbf{Lenguaje} & \textbf{Herramienta} & \textbf{Análisis} \\
+\midrule
+\endhead
+Python & \texttt{multiprocessing.Pool} o \texttt{concurrent.futures} &
+  Para un solo nodo, la API de alto nivel \texttt{Pool.map()} implementa
+  Bag of Tasks automáticamente. Para múltiples nodos, \texttt{mpi4py} con
+  el mismo patrón. La facilidad de desarrollo compensa el overhead para
+  problemas de tamaño moderado. \\[4pt]
+Erlang/Elixir (interpretado) & OTP (Actor Model) & El modelo de actores de
+  Erlang es naturalmente un Bag of Tasks: los actores son procesos livianos
+  que se comunican por mensajes. La tolerancia a fallos es nativa (un actor
+  puede morir y reiniciarse sin afectar al sistema). Para búsqueda distribuida
+  a gran escala, el modelo de actores es más robusto que MPI. \\[4pt]
+Scala (compilado JVM) & Akka & Similar a Erlang pero sobre JVM. Akka Router
+  implementa Round-Robin o Smallest-Mailbox dispatch, equivalentes al Bag of
+  Tasks. El ecosistema Java/Scala es más amplio. \\[4pt]
+Go & \texttt{goroutines} + channels & El modelo de concurrencia de Go con
+  canales es conceptualmente similar al Bag of Tasks: un canal de tareas
+  y múltiples goroutines trabajadoras. Limitado a un nodo; para clusters
+  se necesitaría una capa de red adicional. \\
+\bottomrule
+\end{longtable}
+
+\newpage
+
+% =============================================================================
+\section{Merge Sort Paralelo (Árbol Binario de Fusiones)}
+% =============================================================================
+
+\subsection{Diseño Foster}
+
+\begin{tabular}{L{3cm} L{11cm}}
+\toprule
+\textbf{Fase} & \textbf{Descripción} \\
+\midrule
+Descomposición & De datos. El arreglo de $N$ enteros se divide en $P$ partes
+  iguales de $N/P$ elementos $\Rightarrow$ $P$ tareas independientes de
+  ordenamiento local. \\[4pt]
+Comunicación & Árbol binario de reducción en $\log_2 P$ rondas:
+  Ronda $r$: el proceso con $rank \mod 2^{r+1} = 0$ recibe de $rank + 2^r$
+  y fusiona. El proceso que envía termina su participación.
+  Comunicación estructurada y síncrona (\texttt{MPI\_Send/Recv}). \\[4pt]
+Aglomeración & $N/P$ elementos por proceso para el ordenamiento local,
+  luego fusiones de tamaño creciente ($2N/P$, $4N/P$, $\ldots$, $N$). \\[4pt]
+Mapeo & Estático para el sort local (todos hacen $N/P$ elementos). En las
+  fusiones la carga baja exponencialmente: los procesos de mayor rank terminan
+  pronto y quedan inactivos. \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5cm}
+
+\subsection{a) Implementación y análisis}
+
+El algoritmo de merge sort paralelo consta de dos fases:
+
+\textbf{Fase 1 -- Ordenamiento local:} Cada proceso ordena su fragmento de $N/P$
+elementos con \texttt{qsort}. Esta fase es completamente paralela: no hay comunicación
+y la carga es perfectamente uniforme. Complejidad: $O\!\left(\frac{N}{P} \log \frac{N}{P}\right)$.
+
+\textbf{Fase 2 -- Fusiones en árbol binario:} En cada ronda $r$ (de 0 a $\log_2 P - 1$),
+la mitad de los procesos activos se convierten en ``enviadores'' y la otra mitad en
+``fusionadores''. Un proceso envía cuando su rank satisface:
+\[
+  rank \bmod (2 \cdot 2^r) \neq 0 \quad \text{pero} \quad rank \bmod 2^r = 0
+\]
+El proceso que recibe fusiona dos arreglos ya ordenados en tiempo $O(n_1 + n_2)$.
+
+\textbf{Análisis de la fase de fusiones:}
+\begin{itemize}
+  \item Ronda 0: $P/2$ pares fusionan, cada uno $2 \cdot N/P$ elementos. Cómputo total: $P/2 \cdot 2N/P = N$.
+  \item Ronda 1: $P/4$ pares fusionan, cada uno $4 \cdot N/P$ elementos. Cómputo total: $N$.
+  \item $\vdots$
+  \item Ronda $\log_2 P - 1$: 1 proceso fusiona $N$ elementos. Cómputo: $N$.
+\end{itemize}
+
+Cada ronda tiene el mismo cómputo total $N$, pero recae sobre \textit{menos} procesos
+en cada ronda. El cuello de botella es rank 0, que en la última ronda hace solo $N$
+operaciones pero en secuencia (no paralelo). El tiempo de la fase de fusiones es
+$O(N \log P / 1) = O(N \log P)$ en el proceso 0, que es el mismo orden que el sort
+secuencial de referencia $O(N \log N)$ cuando $P$ es pequeño.
+
+\textbf{¿Por qué punto a punto y no \texttt{MPI\_Gather}?}
+\texttt{MPI\_Gather} acumula todos los fragmentos en rank 0, que tendría que fusionarlos
+todos solo (costo $O(N)$ en la fusión final). La estructura en árbol distribuye el
+trabajo de fusión entre múltiples procesos: en la ronda 0, la mitad de los procesos
+fusionan en paralelo, reduciendo el trabajo total de fusión.
+
+\subsection{Ventajas y desventajas}
+
+\begin{longtable}{L{4cm} L{10cm}}
+\toprule
+\textbf{Ventajas} & \textbf{Detalle} \\
+\midrule
+\endhead
+Sort local eficiente & \texttt{qsort} es altamente optimizado en la libc estándar.
+  El sort local escala perfectamente con $P$. \\[4pt]
+Sin comunicación en fase 1 & El sort local es completamente independiente
+  entre procesos. \\[4pt]
+Fusión en árbol distribuida & La carga de fusión se distribuye entre múltiples
+  procesos en las primeras rondas, siendo más eficiente que un único proceso
+  fusionando todo. \\
+\midrule
+\textbf{Desventajas} & \\
+\midrule
+Carga decreciente en fusiones & En las últimas rondas, la mayoría de los procesos
+  están inactivos. El speedup real es menor que $P$. \\[4pt]
+Memoria creciente en rank 0 & Rank 0 debe poder alocar el arreglo completo de
+  $N$ elementos al final. En la implementación, todos los procesos alocan $N$
+  enteros desde el inicio para simplicidad. \\[4pt]
+Comunicación de tamaño creciente & Los mensajes de fusión crecen exponencialmente:
+  $N/P, 2N/P, \ldots, N/2$. Los mensajes grandes pueden saturar la red. \\[4pt]
+Solo funciona con $P$ potencia de 2 & El árbol binario simétrico requiere que $P$
+  sea potencia de 2 para que la estructura de rondas sea correcta. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Alternativas en otros lenguajes}
+
+\begin{longtable}{L{2.5cm} L{3.5cm} L{7.5cm}}
+\toprule
+\textbf{Lenguaje} & \textbf{Herramienta} & \textbf{Análisis} \\
+\midrule
+\endhead
+Python & \texttt{mpi4py} + \texttt{heapq.merge} & El sort local puede hacerse con
+  \texttt{sorted()} (implementado en C, muy eficiente). La fusión con
+  \texttt{heapq.merge()} es $O(N \log P)$ por ser una fusión de $k$-vías en
+  lugar de binaria, pero requiere solo una ronda de \texttt{MPI\_Gather} y
+  una fusión final en rank 0. Para datos en memoria, más simple que el árbol. \\[4pt]
+Java & \texttt{Arrays.sort()} + MPJ Express & Java 8+ usa TimSort, que es
+  $O(N \log N)$ pero muy eficiente en datos parcialmente ordenados. La
+  fusión en árbol se implementaría igual que en C. El boxing de primitivos
+  (\texttt{int[]}) no aplica para arrays primitivos, por lo que el rendimiento
+  es competitivo. \\[4pt]
+Rust & \texttt{rayon} (local) + \texttt{rsmpi} (cluster) & En Rust la fase local
+  puede usar \texttt{rayon::par\_sort()} que aplica quicksort paralelo en memoria
+  compartida automáticamente, siendo más rápida que qsort en la fase 1. La
+  fase de fusiones se implementa con \texttt{rsmpi}. Combina paralelismo de
+  memoria compartida e intercomunicación de nodos. \\[4pt]
+Spark/Hadoop (distribuido) & \texttt{RDD.sortBy()} & Para volúmenes de datos que
+  no caben en RAM de un nodo, frameworks como Spark implementan ordenamiento
+  distribuido con mucho menos código. El programador no gestiona MPI.
+  Overhead significativo para pequeños $N$; ventajoso para $N > 10^9$. \\
+\bottomrule
+\end{longtable}
+
+\newpage
+
+% =============================================================================
+\section*{Conclusiones}
+\addcontentsline{toc}{section}{Conclusiones}
+% =============================================================================
+
+\subsection*{Receta general para paralelizar con MPI}
+
+\begin{enumerate}[leftmargin=*, label=\textbf{Paso \arabic*.}]
+  \item \textbf{¿El trabajo puede dividirse en partes independientes?}
+    Sí $\to$ descomposición de datos (Ej1, Ej2, Ej3, Ej5).
+    No $\to$ descomposición exploratoria (Ej4: árbol de backtracking).
+
+  \item \textbf{¿La carga es uniforme?}
+    Sí $\to$ mapeo estático, usar operaciones colectivas (Scatter/Gather/Reduce/Alltoall).
+    No $\to$ mapeo dinámico, usar punto a punto (Master-Worker o Work Stealing).
+
+  \item \textbf{¿Cuánta comunicación hay entre procesos?}
+    \begin{itemize}
+      \item Cada proceso solo necesita su parte $\to$ Scatter + cómputo + Gather.
+      \item Un dato compartido por todos $\to$ agregar Bcast al inicio.
+      \item Redistribución total $\to$ MPI\_Alltoall con empaquetado manual.
+      \item Reducción jerárquica $\to$ árbol de MPI\_Send/Recv o MPI\_Reduce.
+    \end{itemize}
+
+  \item \textbf{Optimizar el kernel local antes que la comunicación.}
+    La comunicación es una fracción menor del tiempo total solo si el cómputo
+    local es eficiente. El cambio de orden de bucles (ikj vs ijk) o el blocking
+    puede dar más ganancia que duplicar el número de procesos.
+
+  \item \textbf{Medir con \texttt{MPI\_Wtime()} y validar contra resultado secuencial.}
+    Siempre usar datos reproducibles (\texttt{srand} fijo) para poder comparar
+    entre distintas configuraciones de $P$.
+\end{enumerate}
+
+\subsection*{Comparación de patrones MPI}
+
+\begin{longtable}{L{3.5cm} L{2cm} L{2cm} L{2.5cm} L{3.5cm}}
+\toprule
+\textbf{Patrón} & \textbf{Escala} & \textbf{Balance} & \textbf{Comunicación} & \textbf{Cuándo usarlo} \\
+\midrule
+\endhead
+SPMD / Data Parallel & Alta & Bueno & Colectivas & Datos uniformemente divisibles \\
+Master-Worker & Media & Excelente & Punto a punto & Tareas no uniformes \\
+Pipeline & Media & Limitado & Punto a punto & Fases diferenciadas \\
+Árbol de reducción & Alta & Parcial & Punto a punto & Combinar resultados \\
+All-to-All & Media & Uniforme & Alltoall & Redistribución total de datos \\
+Work Stealing & Muy alta & Excelente & RMA / P2P & $P > 100$, tareas muy variables \\
+\bottomrule
+\end{longtable}
+
+\subsection*{Selección de lenguaje}
+
+\begin{itemize}
+  \item \textbf{Producción HPC} (supercomputadoras, clusters InfiniBand): \textbf{C/MPI} o
+    \textbf{Fortran/MPI}, potencialmente con BLAS/LAPACK para kernels numéricos.
+  \item \textbf{Investigación y prototipado}: \textbf{Python + mpi4py + NumPy}. El código
+    es 5--10x más conciso, el overhead es aceptable mientras NumPy realice el
+    cómputo pesado en C internamente.
+  \item \textbf{Rendimiento C + ergonomía moderna}: \textbf{Julia + MPI.jl}. Rendimiento
+    equivalente a C con un lenguaje de nivel más alto y un ecosistema científico rico.
+  \item \textbf{Correctitud crítica / sistemas embebidos}: \textbf{Rust + rsmpi}.
+    Las garantías del compilador eliminan carreras de datos y errores de gestión
+    de memoria en tiempo de compilación.
+  \item \textbf{Big Data distribuido} ($N > 10^9$, datos en disco): \textbf{Apache Spark}
+    o frameworks equivalentes; MPI no es el modelo adecuado para datos que no
+    caben en RAM.
+\end{itemize}
+
+\end{document}

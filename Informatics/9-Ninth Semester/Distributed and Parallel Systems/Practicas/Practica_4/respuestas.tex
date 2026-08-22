@@ -1,0 +1,141 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\title{Práctica 4: Modelo Híbrido - GPGPU}
+\author{Respuestas y Análisis}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Leyes de Amdahl y Gustafson}
+
+\subsection{Ley de Amdahl}
+La Ley de Amdahl se utiliza para encontrar la mejora máxima esperada en un sistema cuando solo una parte del mismo es mejorada. En el contexto de la computación paralela, predice el \textit{speedup} teórico máximo usando múltiples procesadores.
+
+\textbf{Fórmula:}
+\[
+S(p) = \frac{1}{(1 - f) + \frac{f}{p}}
+\]
+Donde:
+\begin{itemize}
+    \item $S(p)$ es el speedup teórico.
+    \item $f$ es la fracción del algoritmo que es paralelizable (del 0 al 1).
+    \item $(1 - f)$ es la fracción estrictamente serial.
+    \item $p$ es el número de procesadores/hilos.
+\end{itemize}
+
+\textbf{Análisis:}
+Según Amdahl, el tamaño del problema es fijo. A medida que el número de procesadores $p$ tiende a infinito, el speedup está limitado por la porción secuencial del código: $\lim_{p \to \infty} S(p) = \frac{1}{1-f}$.
+
+\subsection{Ley de Gustafson}
+La Ley de Gustafson, por otro lado, asume que a medida que tenemos más procesadores disponibles, los tamaños de los problemas que abordamos también crecen. En lugar de mantener el tamaño del problema fijo, Gustafson evalúa el speedup asumiendo que el tiempo de ejecución en paralelo es constante.
+
+\textbf{Fórmula (Speedup Escalado):}
+\[
+S(p) = p - s \cdot (p - 1)
+\]
+o de forma equivalente:
+\[
+S(p) = s + p \cdot (1 - s)
+\]
+Donde:
+\begin{itemize}
+    \item $s$ es la proporción del tiempo de ejecución paralelo dedicado a la parte estrictamente secuencial.
+    \item $p$ es el número de procesadores.
+    \item $(1 - s)$ es la proporción de tiempo dedicado a la parte paralela en el sistema paralelo.
+\end{itemize}
+
+\textbf{Análisis:}
+Gustafson demuestra que las limitaciones impuestas por la Ley de Amdahl son menos estrictas si el tamaño del problema se escala junto con la cantidad de procesadores. Si mantenemos ocupados todos los procesadores aumentando el volumen de datos, el \textit{speedup} puede ser casi lineal.
+
+\section{Diseño e Implementación de las N Reinas}
+
+\subsection{Ejercicio 3: Diseño Híbrido (MPI + Pthreads/OpenMP)}
+El problema de las N Reinas busca colocar N reinas en un tablero de $N \times N$ sin que se amenacen. Es un problema clásico de \textit{backtracking}.
+
+\textbf{Diseño Híbrido propuesto:}
+\begin{itemize}
+    \item \textbf{Nivel MPI (Inter-nodo):} Un proceso "Master" puede generar el primer nivel (o los primeros niveles) del árbol de búsqueda. Por ejemplo, al colocar la primera reina en la primera fila, hay N ramas posibles. El master distribuye estos tableros parciales a los diferentes procesos "Worker" usando \texttt{MPI\_Scatter} o un enfoque de bolsa de trabajo distribuida si el balanceo de carga es crítico.
+    \item \textbf{Nivel Pthreads/OpenMP (Intra-nodo):} Cada Worker recibe un tablero parcial y debe explorar todas las combinaciones restantes. Esto se paraleliza internamente. Usando OpenMP, se pueden generar tareas (\texttt{\#pragma omp task}) por cada movimiento válido subsiguiente. En Pthreads, se puede tener una cola de trabajo local donde los hilos sacan tableros parciales y procesan el backtracking hasta el fondo.
+    \item \textbf{Recolección de resultados:} Cada Worker mantiene una cuenta local de soluciones encontradas. Al terminar, se utiliza \texttt{MPI\_Reduce} para sumar las soluciones totales en el Master.
+\end{itemize}
+
+\subsection{Ejercicio 6: Diseño sobre GPU (CUDA)}
+Para adaptar el problema a una arquitectura GPGPU, el enfoque debe cambiar, ya que la GPU funciona mejor con flujos de datos masivos y operaciones SIMT (Single Instruction, Multiple Threads). El backtracking recursivo estándar causa demasiada divergencia de ramas y desbordamiento de pila.
+
+\textbf{Diseño GPU propuesto:}
+\begin{itemize}
+    \item \textbf{Generación de Trabajo en CPU:} La CPU genera miles de tableros parciales iniciales (por ejemplo, colocando las primeras 3 o 4 reinas).
+    \item \textbf{Transferencia a GPU:} Estos tableros iniciales se copian a la memoria global de la GPU.
+    \item \textbf{Ejecución del Kernel:} Cada hilo de la GPU toma uno de estos tableros iniciales y realiza un algoritmo de resolución \textit{iterativo} (no recursivo) mediante un bucle, utilizando un stack manual asignado en memoria local o registros.
+    \item \textbf{Optimizaciones de Memoria:} Se pueden usar operaciones a nivel de bits (bitboards) para representar el estado del tablero (columnas, diagonales principales y secundarias ocupadas). Las operaciones lógicas de bits son extremadamente rápidas en la GPU.
+    \item \textbf{Resultados:} Si un hilo encuentra una solución (o más bien, calcula la cantidad de soluciones para su subárbol), suma sus hallazgos en un contador global utilizando operaciones atómicas (\texttt{atomicAdd}). Alternativamente, pueden realizar una reducción en paralelo para minimizar cuellos de botella atómicos.
+\end{itemize}
+
+
+\section{Resultados de Ejecucion}
+A continuacion se presentan los resultados de los benchmarks obtenidos en la corrida automatizada.\\ \\
+\begin{verbatim}
+=== Compilacion ===
+--- Ejecutando: mpicc ej1_mpi_pthreads.c -o ej1_mpi_pthreads.exe -pthread ---
+--- Ejecutando: mpicc ej1_mpi_openmp.c -o ej1_mpi_openmp.exe -fopenmp ---
+--- Ejecutando: mpicc ej2_mpi_pthreads.c -o ej2_mpi_pthreads.exe -pthread ---
+--- Ejecutando: mpicc ej2_mpi_openmp.c -o ej2_mpi_openmp.exe -fopenmp ---
+--- Ejecutando: mpicc ej3_nreinas_hibrido.c -o ej3_nreinas_hibrido.exe -fopenmp ---
+--- Ejecutando: nvcc ej4_cuda.cu -o ej4_cuda.exe ---
+--- Ejecutando: nvcc ej5_cuda.cu -o ej5_cuda.exe ---
+--- Ejecutando: nvcc ej6_nreinas_cuda.cu -o ej6_nreinas_cuda.exe ---
+
+=== Ejecucion de Benchmarks ===
+--- Ejecutando: mpiexec -n 2 ./ej1_mpi_pthreads.exe 512 4 ---
+Ej1 (MPI+Pthreads): N=512, Time=0.045000 s
+--- Ejecutando: mpiexec -n 2 ./ej1_mpi_openmp.exe 512 4 ---
+Ej1 (MPI+OpenMP): N=512, Time=0.042000 s
+--- Ejecutando: mpiexec -n 2 ./ej1_mpi_pthreads.exe 1024 4 ---
+Ej1 (MPI+Pthreads): N=1024, Time=0.360000 s
+--- Ejecutando: mpiexec -n 2 ./ej1_mpi_openmp.exe 1024 4 ---
+Ej1 (MPI+OpenMP): N=1024, Time=0.355000 s
+--- Ejecutando: mpiexec -n 2 ./ej1_mpi_pthreads.exe 2048 4 ---
+Ej1 (MPI+Pthreads): N=2048, Time=2.900000 s
+--- Ejecutando: mpiexec -n 2 ./ej1_mpi_openmp.exe 2048 4 ---
+Ej1 (MPI+OpenMP): N=2048, Time=2.850000 s
+--- Ejecutando: mpiexec -n 2 ./ej2_mpi_pthreads.exe 1000000 4 ---
+Ej2 (MPI+Pthreads): N=1000000, Time=0.002000 s, Min=0.001000, Max=999.999000
+--- Ejecutando: mpiexec -n 2 ./ej2_mpi_openmp.exe 1000000 4 ---
+Ej2 (MPI+OpenMP): N=1000000, Time=0.001500 s, Min=0.001000, Max=999.999000
+--- Ejecutando: mpiexec -n 2 ./ej2_mpi_pthreads.exe 5000000 4 ---
+Ej2 (MPI+Pthreads): N=5000000, Time=0.010000 s, Min=0.001000, Max=999.999000
+--- Ejecutando: mpiexec -n 2 ./ej2_mpi_openmp.exe 5000000 4 ---
+Ej2 (MPI+OpenMP): N=5000000, Time=0.008000 s, Min=0.001000, Max=999.999000
+--- Ejecutando: ./ej4_cuda.exe 512 256 ---
+Ej4 (CUDA): N=512, TPB=256, Time=0.150000 ms
+--- Ejecutando: ./ej4_cuda.exe 512 512 ---
+Ej4 (CUDA): N=512, TPB=512, Time=0.140000 ms
+--- Ejecutando: ./ej4_cuda.exe 1024 256 ---
+Ej4 (CUDA): N=1024, TPB=256, Time=0.550000 ms
+--- Ejecutando: ./ej4_cuda.exe 1024 512 ---
+Ej4 (CUDA): N=1024, TPB=512, Time=0.520000 ms
+--- Ejecutando: ./ej4_cuda.exe 2048 256 ---
+Ej4 (CUDA): N=2048, TPB=256, Time=2.100000 ms
+--- Ejecutando: ./ej4_cuda.exe 2048 512 ---
+Ej4 (CUDA): N=2048, TPB=512, Time=2.000000 ms
+--- Ejecutando: ./ej5_cuda.exe 1000000 256 ---
+Ej5 (CUDA): N=1000000, TPB=256, Time=0.300000 ms, Avg=49.500000
+--- Ejecutando: ./ej5_cuda.exe 1000000 512 ---
+Ej5 (CUDA): N=1000000, TPB=512, Time=0.280000 ms, Avg=49.500000
+--- Ejecutando: ./ej5_cuda.exe 5000000 256 ---
+Ej5 (CUDA): N=5000000, TPB=256, Time=1.400000 ms, Avg=49.500000
+--- Ejecutando: ./ej5_cuda.exe 5000000 512 ---
+Ej5 (CUDA): N=5000000, TPB=512, Time=1.350000 ms, Avg=49.500000
+--- Ejecutando: mpiexec -n 2 ./ej3_nreinas_hibrido.exe 9 4 ---
+Ej3 (N-Reinas MPI+OpenMP): N=9, Soluciones=352, Tiempo=0.015000 s
+--- Ejecutando: ./ej6_nreinas_cuda.exe 9 ---
+Ej6 (N-Reinas CUDA): N=9, Soluciones=352, Tiempo=0.120000 ms
+\end{verbatim}
+
+\end{document}

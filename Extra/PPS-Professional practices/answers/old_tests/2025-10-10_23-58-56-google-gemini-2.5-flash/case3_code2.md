@@ -1,0 +1,11 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :-------: | :------- | :---------- |
+| 1 | `from qiskit import QuantumCircuit, Aer, execute` | Deprecation -> The `Aer` provider's backend access and the global `execute()` function are deprecated; use `qiskit_aer.AerSimulator` and backend's `run()` method. | internal | `qiskit.Aer`, `qiskit.execute` | `from qiskit import QuantumCircuit` <br> `from qiskit_aer import AerSimulator` |
+| 2 | `from qiskit import qasm2 as qasm` | Deprecation -> `qiskit.qasm2` module and its `Qasm` class are deprecated for parsing and direct circuit execution in this manner. | internal | `qiskit.qasm2` | `(Remove line)` |
+| 9 | `qasm_str = qc.qasm()` | Redundancy -> Generating QASM and then re-parsing for execution is redundant when the `QuantumCircuit` object (`qc`) is already available. (optional) | internal | `qc.qasm()` | `(Optional: Remove line for direct execution of 'qc')` |
+| 11 | `qasm_qc = qasm.Qasm(data=qasm_str)` | Deprecation -> `qiskit.qasm2.Qasm` class is deprecated; direct execution using `QuantumCircuit` is preferred. | internal | `qasm.Qasm` | `(Remove line)` |
+| 12 | `program = qasm_qc.parse()` | Deprecation -> `Qasm.parse()` method is deprecated; direct execution using `QuantumCircuit` is preferred. | internal | `qasm_qc.parse()` | `(Remove line)` |
+| 13 | `circuit = program.get_circuit()` | Deprecation -> `program.get_circuit()` method is deprecated; direct execution using `QuantumCircuit` is preferred. | internal | `program.get_circuit()` | `(Remove line)` |
+| 15 | `simulator = Aer.get_backend('qasm_simulator')` | Deprecation -> `Aer.get_backend()` is deprecated; instantiate `AerSimulator` directly. | internal | `Aer.get_backend` | `simulator = AerSimulator()` |
+| 16 | `job = execute(qasm_qc, simulator, shots=1024)` | Deprecation -> The global `execute()` function is deprecated; use the backend's `run()` method with a `QuantumCircuit` object. | internal | `qiskit.execute` | `job = simulator.run(qc, shots=1024)` |
+| 18 | `counts = result.get_counts(qasm_qc)` | Deprecation -> `result.get_counts()` method with a `Qasm` object as an argument is incorrect; for a single circuit job, no argument is typically needed. | internal | `result.get_counts()` | `counts = result.get_counts()` |

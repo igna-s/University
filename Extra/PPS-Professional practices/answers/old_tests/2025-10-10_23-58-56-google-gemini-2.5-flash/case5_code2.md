@@ -1,0 +1,9 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :-------: | :------- | :---------- |
+| 1 | `from qiskit import QuantumCircuit, Aer, execute` | Deprecation -> `Aer` and `execute` have been deprecated. Use `qiskit_aer.AerSimulator` and `backend.run()` instead of `execute`. | internal | Aer, execute | `from qiskit import QuantumCircuit` <br> `from qiskit_aer import AerSimulator` |
+| 2 | `from qiskit.quantum_info import Pauli, state_fidelity` | Deprecation -> `state_fidelity` has been deprecated. Use `qiskit.quantum_info.Statefidelity` instead. | internal | state_fidelity | `from qiskit.quantum_info import Pauli, Statefidelity` |
+| 6 | `pauli_z = Pauli('Z').to_matrix()` | Deprecation -> `Pauli.to_matrix()` has been deprecated. Use `Pauli.to_operator().data` instead. | internal | Pauli.to_matrix | `pauli_z = Pauli('Z').to_operator().data` |
+| 7 | `pauli_x = Pauli('X').to_matrix()` | Deprecation -> `Pauli.to_matrix()` has been deprecated. Use `Pauli.to_operator().data` instead. | internal | Pauli.to_matrix | `pauli_x = Pauli('X').to_operator().data` |
+| 16 | `simulator = Aer.get_backend('statevector_simulator')` | Deprecation -> `Aer.get_backend()` has been deprecated. Use `qiskit_aer.AerSimulator()` directly. | internal | Aer.get_backend | `simulator = AerSimulator()` |
+| 17 | `result = execute(qc, simulator).result()` | Deprecation -> `execute()` has been deprecated. Use `backend.run()` instead. | internal | execute | `result = simulator.run(qc).result()` |
+| 20 | `fidelity = state_fidelity(statevector, target_state)` | Deprecation -> `state_fidelity()` has been deprecated. Use `Statefidelity(statevector).fidelity(target_state)` instead. | internal | state_fidelity | `fidelity = Statefidelity(statevector).fidelity(target_state)` |

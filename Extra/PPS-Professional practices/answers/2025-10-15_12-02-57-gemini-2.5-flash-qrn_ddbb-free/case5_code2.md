@@ -1,0 +1,8 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :-------: | :------- | :---------- |
+| 1 | `from qiskit import QuantumCircuit, Aer, execute` | Deprecation -> Importing from qiskit.providers.aer is deprecated and will stop working in Qiskit 1.0. You should instead import from qiskit_aer, which is a drop-in replacement. | 548acfe8-db26-45b7-ab5c-c637c63ee4b0 | Aer | `from qiskit_aer import AerSimulator` |
+| 1 | `from qiskit import QuantumCircuit, Aer, execute` | Deprecation -> Qiskit’s execute() function is deprecated. | 7dcaf104-d552-4d87-994a-c7691846d9a9 | execute | |
+| 2 | `from qiskit.quantum_info import Pauli, state_fidelity` | Deprecation -> The qiskit.quantum_info.state_fidelity function is deprecated. | IK | state_fidelity | `from qiskit.quantum_info import Statevector` |
+| 20 | `simulator = Aer.get_backend('statevector_simulator')` | Deprecation -> Importing from qiskit.providers.aer is deprecated and will stop working in Qiskit 1.0. You should instead import from qiskit_aer, which is a drop-in replacement. | 548acfe8-db26-45b7-ab5c-c637c63ee4b0 | Aer.get_backend | `simulator = AerSimulator()` |
+| 21 | `result = execute(qc, simulator).result()` | Deprecation -> Qiskit’s execute() function is deprecated. | 7dcaf104-d552-4d87-994a-c7691846d9a9 | execute | `result = simulator.run(qc).result()` |
+| 24 | `fidelity = state_fidelity(statevector, target_state)` | Deprecation -> The qiskit.quantum_info.state_fidelity function is deprecated. | IK | state_fidelity | `fidelity = Statevector.from_label('0').fidelity(statevector)` |

@@ -1,0 +1,456 @@
+WEBVTT
+Kind: captions
+Language: es
+
+00:00:02.080 --> 00:00:04.309 align:start position:0%
+ 
+Como<00:00:02.360><c> siempre,</c><00:00:02.760><c> en</c><00:00:02.879><c> la</c><00:00:03.040><c> primera</c><00:00:03.520><c> diapositiva</c>
+
+00:00:04.309 --> 00:00:04.319 align:start position:0%
+Como siempre, en la primera diapositiva
+ 
+
+00:00:04.319 --> 00:00:08.230 align:start position:0%
+Como siempre, en la primera diapositiva
+va<00:00:05.200><c> el</c><00:00:05.319><c> nombre</c><00:00:05.520><c> de</c><00:00:05.640><c> la</c><00:00:05.759><c> asignatura,</c><00:00:06.720><c> el</c>
+
+00:00:08.230 --> 00:00:08.240 align:start position:0%
+va el nombre de la asignatura, el
+ 
+
+00:00:08.240 --> 00:00:10.629 align:start position:0%
+va el nombre de la asignatura, el
+título<00:00:08.639><c> del</c><00:00:08.840><c> plan</c><00:00:09.040><c> de</c><00:00:09.240><c> proyecto</c><00:00:09.840><c> y</c><00:00:10.080><c> los</c>
+
+00:00:10.629 --> 00:00:10.639 align:start position:0%
+título del plan de proyecto y los
+ 
+
+00:00:10.639 --> 00:00:13.669 align:start position:0%
+título del plan de proyecto y los
+integrantes<00:00:11.320><c> del</c><00:00:11.639><c> grupo</c><00:00:12.759><c> de</c><00:00:12.960><c> desarrollo</c><00:00:13.519><c> que</c>
+
+00:00:13.669 --> 00:00:13.679 align:start position:0%
+integrantes del grupo de desarrollo que
+ 
+
+00:00:13.679 --> 00:00:18.029 align:start position:0%
+integrantes del grupo de desarrollo que
+van<00:00:13.799><c> a</c><00:00:13.880><c> llevar</c><00:00:14.160><c> adelante</c><00:00:14.519><c> el</c><00:00:14.679><c> proyecto.</c>
+
+00:00:18.029 --> 00:00:18.039 align:start position:0%
+ 
+ 
+
+00:00:18.039 --> 00:00:20.189 align:start position:0%
+ 
+En<00:00:18.199><c> esta</c><00:00:18.560><c> diapositiva</c><00:00:19.480><c> indicarían</c><00:00:20.000><c> la</c>
+
+00:00:20.189 --> 00:00:20.199 align:start position:0%
+En esta diapositiva indicarían la
+ 
+
+00:00:20.199 --> 00:00:22.790 align:start position:0%
+En esta diapositiva indicarían la
+secuencia<00:00:20.720><c> o</c><00:00:20.880><c> la</c><00:00:22.039><c> o</c><00:00:22.160><c> el</c><00:00:22.279><c> conjunto</c><00:00:22.640><c> de</c>
+
+00:00:22.790 --> 00:00:22.800 align:start position:0%
+secuencia o la o el conjunto de
+ 
+
+00:00:22.800 --> 00:00:24.990 align:start position:0%
+secuencia o la o el conjunto de
+objetivos.<00:00:23.680><c> los</c><00:00:23.840><c> pueden</c><00:00:24.240><c> directamente</c>
+
+00:00:24.990 --> 00:00:25.000 align:start position:0%
+objetivos. los pueden directamente
+ 
+
+00:00:25.000 --> 00:00:28.470 align:start position:0%
+objetivos. los pueden directamente
+numerar<00:00:25.640><c> o</c><00:00:26.480><c> identificarlo</c><00:00:27.320><c> como</c>
+
+00:00:28.470 --> 00:00:28.480 align:start position:0%
+numerar o identificarlo como
+ 
+
+00:00:28.480 --> 00:00:31.429 align:start position:0%
+numerar o identificarlo como
+identificarlos<00:00:29.400><c> como</c><00:00:29.880><c> objetivo</c><00:00:30.359><c> general</c><00:00:30.800><c> y</c>
+
+00:00:31.429 --> 00:00:31.439 align:start position:0%
+identificarlos como objetivo general y
+ 
+
+00:00:31.439 --> 00:00:34.389 align:start position:0%
+identificarlos como objetivo general y
+luego<00:00:31.759><c> objetivos</c><00:00:32.759><c> particulares.</c><00:00:34.040><c> En</c><00:00:34.200><c> todos</c>
+
+00:00:34.389 --> 00:00:34.399 align:start position:0%
+luego objetivos particulares. En todos
+ 
+
+00:00:34.399 --> 00:00:36.709 align:start position:0%
+luego objetivos particulares. En todos
+los<00:00:34.520><c> casos,</c><00:00:34.840><c> dentro</c><00:00:35.120><c> del</c><00:00:35.360><c> obro</c><00:00:36.200><c> de</c><00:00:36.360><c> los</c>
+
+00:00:36.709 --> 00:00:36.719 align:start position:0%
+los casos, dentro del obro de los
+ 
+
+00:00:36.719 --> 00:00:39.190 align:start position:0%
+los casos, dentro del obro de los
+objetivos<00:00:37.280><c> tienen</c><00:00:37.480><c> que</c><00:00:37.600><c> quedar</c><00:00:37.879><c> claras</c><00:00:38.600><c> las</c>
+
+00:00:39.190 --> 00:00:39.200 align:start position:0%
+objetivos tienen que quedar claras las
+ 
+
+00:00:39.200 --> 00:00:41.069 align:start position:0%
+objetivos tienen que quedar claras las
+funcionalidades<00:00:40.039><c> y</c><00:00:40.280><c> los</c><00:00:40.440><c> requerimientos</c>
+
+00:00:41.069 --> 00:00:41.079 align:start position:0%
+funcionalidades y los requerimientos
+ 
+
+00:00:41.079 --> 00:00:47.990 align:start position:0%
+funcionalidades y los requerimientos
+para<00:00:41.360><c> cada</c><00:00:42.760><c> función.</c>
+
+00:00:47.990 --> 00:00:48.000 align:start position:0%
+ 
+ 
+
+00:00:48.000 --> 00:00:49.990 align:start position:0%
+ 
+Todo<00:00:48.199><c> lo</c><00:00:48.360><c> que</c><00:00:48.480><c> hayan</c><00:00:49.000><c> acordado</c><00:00:49.559><c> con</c><00:00:49.760><c> el</c>
+
+00:00:49.990 --> 00:00:50.000 align:start position:0%
+Todo lo que hayan acordado con el
+ 
+
+00:00:50.000 --> 00:00:52.590 align:start position:0%
+Todo lo que hayan acordado con el
+docente<00:00:50.399><c> a</c><00:00:50.559><c> cargo</c><00:00:51.000><c> del</c><00:00:51.600><c> del</c><00:00:51.840><c> proyecto</c><00:00:52.280><c> iría</c>
+
+00:00:52.590 --> 00:00:52.600 align:start position:0%
+docente a cargo del del proyecto iría
+ 
+
+00:00:52.600 --> 00:00:54.470 align:start position:0%
+docente a cargo del del proyecto iría
+acá<00:00:52.840><c> respecto</c><00:00:53.280><c> del</c><00:00:53.480><c> esquema</c><00:00:53.840><c> gráfico</c><00:00:54.280><c> del</c>
+
+00:00:54.470 --> 00:00:54.480 align:start position:0%
+acá respecto del esquema gráfico del
+ 
+
+00:00:54.480 --> 00:00:56.630 align:start position:0%
+acá respecto del esquema gráfico del
+proyecto<00:00:54.879><c> donde</c><00:00:55.120><c> puedan</c><00:00:55.440><c> identificar</c>
+
+00:00:56.630 --> 00:00:56.640 align:start position:0%
+proyecto donde puedan identificar
+ 
+
+00:00:56.640 --> 00:00:58.950 align:start position:0%
+proyecto donde puedan identificar
+claramente<00:00:57.239><c> las</c><00:00:57.480><c> partes</c><00:00:57.840><c> de</c><00:00:58.199><c> de</c><00:00:58.440><c> hardware,</c>
+
+00:00:58.950 --> 00:00:58.960 align:start position:0%
+claramente las partes de de hardware,
+ 
+
+00:00:58.960 --> 00:01:01.869 align:start position:0%
+claramente las partes de de hardware,
+los<00:00:59.399><c> requerimientos</c><00:01:00.039><c> de</c><00:01:00.920><c> alimentación,</c><00:01:01.760><c> por</c>
+
+00:01:01.869 --> 00:01:01.879 align:start position:0%
+los requerimientos de alimentación, por
+ 
+
+00:01:01.879 --> 00:01:04.950 align:start position:0%
+los requerimientos de alimentación, por
+lo<00:01:02.039><c> menos</c><00:01:02.239><c> en</c><00:01:02.440><c> general,</c><00:01:02.840><c> de</c><00:01:03.039><c> cada</c><00:01:03.359><c> parte</c><00:01:04.799><c> o</c><00:01:04.799><c> o</c>
+
+00:01:04.950 --> 00:01:04.960 align:start position:0%
+lo menos en general, de cada parte o o
+ 
+
+00:01:04.960 --> 00:01:07.310 align:start position:0%
+lo menos en general, de cada parte o o
+del<00:01:05.159><c> total</c><00:01:05.439><c> en</c><00:01:05.600><c> particular,</c><00:01:06.840><c> las</c>
+
+00:01:07.310 --> 00:01:07.320 align:start position:0%
+del total en particular, las
+ 
+
+00:01:07.320 --> 00:01:10.550 align:start position:0%
+del total en particular, las
+comunicaciones<00:01:08.240><c> y</c><00:01:08.439><c> la</c><00:01:09.600><c> algo</c><00:01:09.880><c> al</c><00:01:10.080><c> menos</c><00:01:10.280><c> de</c><00:01:10.439><c> la</c>
+
+00:01:10.550 --> 00:01:10.560 align:start position:0%
+comunicaciones y la algo al menos de la
+ 
+
+00:01:10.560 --> 00:01:13.870 align:start position:0%
+comunicaciones y la algo al menos de la
+interfaz<00:01:11.159><c> o</c><00:01:11.759><c> o</c><00:01:11.960><c> la</c><00:01:12.200><c> parte</c><00:01:12.560><c> web</c><00:01:13.040><c> del</c><00:01:13.320><c> proyecto</c>
+
+00:01:13.870 --> 00:01:13.880 align:start position:0%
+interfaz o o la parte web del proyecto
+ 
+
+00:01:13.880 --> 00:01:15.789 align:start position:0%
+interfaz o o la parte web del proyecto
+que<00:01:13.960><c> que</c><00:01:14.439><c> corresponda.</c>
+
+00:01:15.789 --> 00:01:15.799 align:start position:0%
+que que corresponda.
+ 
+
+00:01:15.799 --> 00:01:19.390 align:start position:0%
+que que corresponda.
+Si<00:01:16.960><c> si</c><00:01:17.159><c> es</c><00:01:17.320><c> posible</c><00:01:17.840><c> se</c><00:01:18.520><c> incluyen</c><00:01:19.040><c> algunas</c>
+
+00:01:19.390 --> 00:01:19.400 align:start position:0%
+Si si es posible se incluyen algunas
+ 
+
+00:01:19.400 --> 00:01:22.350 align:start position:0%
+Si si es posible se incluyen algunas
+menciones<00:01:19.720><c> de</c><00:01:19.920><c> funcionalidad</c><00:01:21.400><c> asociadas</c><00:01:22.119><c> a</c>
+
+00:01:22.350 --> 00:01:22.360 align:start position:0%
+menciones de funcionalidad asociadas a
+ 
+
+00:01:22.360 --> 00:01:24.469 align:start position:0%
+menciones de funcionalidad asociadas a
+cada<00:01:22.640><c> parte</c><00:01:23.079><c> del</c><00:01:23.600><c> del</c><00:01:23.880><c> proyecto</c><00:01:24.240><c> que</c><00:01:24.360><c> se</c>
+
+00:01:24.469 --> 00:01:24.479 align:start position:0%
+cada parte del del proyecto que se
+ 
+
+00:01:24.479 --> 00:01:31.149 align:start position:0%
+cada parte del del proyecto que se
+identifican<00:01:25.040><c> en</c><00:01:25.200><c> esta</c><00:01:25.439><c> diapositiva</c>
+
+00:01:31.149 --> 00:01:31.159 align:start position:0%
+ 
+ 
+
+00:01:31.159 --> 00:01:33.310 align:start position:0%
+ 
+un<00:01:31.360><c> poco</c><00:01:31.600><c> relacionado</c><00:01:32.119><c> con</c><00:01:32.240><c> la</c><00:01:32.399><c> diapositiva</c>
+
+00:01:33.310 --> 00:01:33.320 align:start position:0%
+un poco relacionado con la diapositiva
+ 
+
+00:01:33.320 --> 00:01:35.350 align:start position:0%
+un poco relacionado con la diapositiva
+anterior,<00:01:33.840><c> pero</c><00:01:34.000><c> a</c><00:01:34.159><c> nivel</c><00:01:34.399><c> de</c><00:01:34.560><c> listado,</c><00:01:35.159><c> a</c>
+
+00:01:35.350 --> 00:01:35.360 align:start position:0%
+anterior, pero a nivel de listado, a
+ 
+
+00:01:35.360 --> 00:01:37.590 align:start position:0%
+anterior, pero a nivel de listado, a
+nivel<00:01:35.560><c> de</c><00:01:35.720><c> lista,</c><00:01:36.200><c> ¿qué</c><00:01:36.439><c> cosas</c><00:01:36.960><c> de</c><00:01:37.159><c> hardware</c>
+
+00:01:37.590 --> 00:01:37.600 align:start position:0%
+nivel de lista, ¿qué cosas de hardware
+ 
+
+00:01:37.600 --> 00:01:40.749 align:start position:0%
+nivel de lista, ¿qué cosas de hardware
+piensan<00:01:38.079><c> utilizar</c><00:01:38.680><c> o</c><00:01:38.880><c> proponen</c><00:01:39.360><c> utilizar</c><00:01:40.520><c> el</c>
+
+00:01:40.749 --> 00:01:40.759 align:start position:0%
+piensan utilizar o proponen utilizar el
+ 
+
+00:01:40.759 --> 00:01:43.590 align:start position:0%
+piensan utilizar o proponen utilizar el
+software<00:01:41.240><c> que</c><00:01:41.720><c> se</c><00:01:41.840><c> va</c><00:01:41.960><c> a</c><00:01:42.040><c> desarrollar?</c><00:01:43.119><c> pueden</c>
+
+00:01:43.590 --> 00:01:43.600 align:start position:0%
+software que se va a desarrollar? pueden
+ 
+
+00:01:43.600 --> 00:01:46.630 align:start position:0%
+software que se va a desarrollar? pueden
+mencionar<00:01:44.680><c> dentro</c><00:01:44.920><c> del</c><00:01:45.119><c> software</c><00:01:45.640><c> las</c><00:01:46.119><c> APIs</c><00:01:46.439><c> o</c>
+
+00:01:46.630 --> 00:01:46.640 align:start position:0%
+mencionar dentro del software las APIs o
+ 
+
+00:01:46.640 --> 00:01:48.830 align:start position:0%
+mencionar dentro del software las APIs o
+las<00:01:46.799><c> bibliotecas</c><00:01:47.320><c> que</c>
+
+00:01:48.830 --> 00:01:48.840 align:start position:0%
+las bibliotecas que
+ 
+
+00:01:48.840 --> 00:01:51.670 align:start position:0%
+las bibliotecas que
+estiman<00:01:49.240><c> que</c><00:01:49.399><c> van</c><00:01:49.560><c> a</c><00:01:49.840><c> utilizar,</c><00:01:51.119><c> si</c><00:01:51.399><c> tienen</c>
+
+00:01:51.670 --> 00:01:51.680 align:start position:0%
+estiman que van a utilizar, si tienen
+ 
+
+00:01:51.680 --> 00:01:53.350 align:start position:0%
+estiman que van a utilizar, si tienen
+planificado<00:01:52.280><c> desarrollar</c><00:01:52.840><c> software</c>
+
+00:01:53.350 --> 00:01:53.360 align:start position:0%
+planificado desarrollar software
+ 
+
+00:01:53.360 --> 00:01:55.870 align:start position:0%
+planificado desarrollar software
+hardware,<00:01:53.759><c> ¿qué</c><00:01:53.880><c> va</c><00:01:54.000><c> a</c><00:01:54.079><c> hacer?</c><00:01:54.799><c> Y</c><00:01:55.240><c> eh</c><00:01:55.560><c> las</c>
+
+00:01:55.870 --> 00:01:55.880 align:start position:0%
+hardware, ¿qué va a hacer? Y eh las
+ 
+
+00:01:55.880 --> 00:01:59.910 align:start position:0%
+hardware, ¿qué va a hacer? Y eh las
+tareas<00:01:56.920><c> iniciales</c><00:01:57.520><c> al</c><00:01:57.759><c> menos</c><00:01:58.520><c> y</c><00:01:58.840><c> qué</c><00:01:59.520><c> parte</c><00:01:59.799><c> de</c>
+
+00:01:59.910 --> 00:01:59.920 align:start position:0%
+tareas iniciales al menos y qué parte de
+ 
+
+00:01:59.920 --> 00:02:02.350 align:start position:0%
+tareas iniciales al menos y qué parte de
+las<00:02:00.039><c> tareas</c><00:02:00.439><c> iniciales</c><00:02:01.560><c> dependen</c><00:02:01.960><c> de</c>
+
+00:02:02.350 --> 00:02:02.360 align:start position:0%
+las tareas iniciales dependen de
+ 
+
+00:02:02.360 --> 00:02:05.709 align:start position:0%
+las tareas iniciales dependen de
+hardware<00:02:02.840><c> o</c><00:02:03.039><c> no.</c><00:02:03.880><c> Sin</c><00:02:04.159><c> embargo,</c><00:02:04.439><c> esto</c><00:02:04.640><c> se</c><00:02:04.799><c> va</c><00:02:05.439><c> a</c>
+
+00:02:05.709 --> 00:02:05.719 align:start position:0%
+hardware o no. Sin embargo, esto se va a
+ 
+
+00:02:05.719 --> 00:02:07.469 align:start position:0%
+hardware o no. Sin embargo, esto se va a
+profundizar<00:02:06.240><c> un</c><00:02:06.399><c> poco</c><00:02:06.520><c> en</c><00:02:06.640><c> la</c><00:02:06.759><c> diapositiva</c>
+
+00:02:07.469 --> 00:02:07.479 align:start position:0%
+profundizar un poco en la diapositiva
+ 
+
+00:02:07.479 --> 00:02:11.110 align:start position:0%
+profundizar un poco en la diapositiva
+siguiente.
+
+00:02:11.110 --> 00:02:11.120 align:start position:0%
+ 
+ 
+
+00:02:11.120 --> 00:02:13.390 align:start position:0%
+ 
+Eh,<00:02:11.760><c> en</c><00:02:11.959><c> este</c><00:02:12.120><c> año</c><00:02:12.319><c> hemos</c><00:02:12.599><c> introducido</c><00:02:13.239><c> la</c>
+
+00:02:13.390 --> 00:02:13.400 align:start position:0%
+Eh, en este año hemos introducido la
+ 
+
+00:02:13.400 --> 00:02:15.390 align:start position:0%
+Eh, en este año hemos introducido la
+idea<00:02:13.640><c> de</c><00:02:13.840><c> que</c><00:02:14.160><c> directamente</c><00:02:14.680><c> en</c><00:02:14.800><c> el</c><00:02:14.959><c> plan</c><00:02:15.160><c> de</c>
+
+00:02:15.390 --> 00:02:15.400 align:start position:0%
+idea de que directamente en el plan de
+ 
+
+00:02:15.400 --> 00:02:18.589 align:start position:0%
+idea de que directamente en el plan de
+proyecto<00:02:16.440><c> se</c><00:02:16.680><c> menciona</c><00:02:17.200><c> explícitamente</c><00:02:18.360><c> qué</c>
+
+00:02:18.589 --> 00:02:18.599 align:start position:0%
+proyecto se menciona explícitamente qué
+ 
+
+00:02:18.599 --> 00:02:21.910 align:start position:0%
+proyecto se menciona explícitamente qué
+piensan<00:02:19.160><c> tener</c><00:02:19.440><c> y</c><00:02:19.680><c> presentar</c><00:02:20.160><c> en</c><00:02:20.400><c> octubre.</c>
+
+00:02:21.910 --> 00:02:21.920 align:start position:0%
+piensan tener y presentar en octubre.
+ 
+
+00:02:21.920 --> 00:02:24.270 align:start position:0%
+piensan tener y presentar en octubre.
+En<00:02:22.080><c> este</c><00:02:22.239><c> caso</c><00:02:22.480><c> pueden</c><00:02:22.720><c> poner</c><00:02:23.080><c> si</c><00:02:23.680><c> si</c><00:02:24.000><c> tienen</c>
+
+00:02:24.270 --> 00:02:24.280 align:start position:0%
+En este caso pueden poner si si tienen
+ 
+
+00:02:24.280 --> 00:02:27.030 align:start position:0%
+En este caso pueden poner si si tienen
+ya<00:02:25.000><c> alguna</c><00:02:25.319><c> idea</c><00:02:25.560><c> de</c><00:02:25.720><c> qué</c><00:02:26.040><c> depende</c><00:02:26.680><c> eso</c><00:02:26.879><c> que</c>
+
+00:02:27.030 --> 00:02:27.040 align:start position:0%
+ya alguna idea de qué depende eso que
+ 
+
+00:02:27.040 --> 00:02:30.190 align:start position:0%
+ya alguna idea de qué depende eso que
+van<00:02:27.160><c> a</c><00:02:27.319><c> presentar</c><00:02:27.720><c> en</c><00:02:27.920><c> octubre</c><00:02:28.760><c> y</c><00:02:29.519><c> también</c><00:02:30.040><c> el</c>
+
+00:02:30.190 --> 00:02:30.200 align:start position:0%
+van a presentar en octubre y también el
+ 
+
+00:02:30.200 --> 00:02:31.790 align:start position:0%
+van a presentar en octubre y también el
+avance<00:02:30.560><c> estimado</c><00:02:30.920><c> a</c><00:02:31.080><c> noviembre.</c><00:02:31.680><c> Por</c>
+
+00:02:31.790 --> 00:02:31.800 align:start position:0%
+avance estimado a noviembre. Por
+ 
+
+00:02:31.800 --> 00:02:33.550 align:start position:0%
+avance estimado a noviembre. Por
+supuesto,<00:02:32.360><c> en</c><00:02:32.560><c> diciembre</c><00:02:33.080><c> sería</c><00:02:33.400><c> la</c>
+
+00:02:33.550 --> 00:02:33.560 align:start position:0%
+supuesto, en diciembre sería la
+ 
+
+00:02:33.560 --> 00:02:37.670 align:start position:0%
+supuesto, en diciembre sería la
+presentación<00:02:34.239><c> final</c><00:02:34.640><c> del</c><00:02:35.519><c> proyecto.</c>
+
+00:02:37.670 --> 00:02:37.680 align:start position:0%
+presentación final del proyecto.
+ 
+
+00:02:37.680 --> 00:02:41.030 align:start position:0%
+presentación final del proyecto.
+Y<00:02:37.800><c> como</c><00:02:38.000><c> siempre,</c><00:02:38.239><c> al</c><00:02:38.400><c> final</c><00:02:38.879><c> se</c><00:02:39.480><c> agradece.</c>
+
+00:02:41.030 --> 00:02:41.040 align:start position:0%
+Y como siempre, al final se agradece.
+ 
+
+00:02:41.040 --> 00:02:43.519 align:start position:0%
+Y como siempre, al final se agradece.
+Amén.
+

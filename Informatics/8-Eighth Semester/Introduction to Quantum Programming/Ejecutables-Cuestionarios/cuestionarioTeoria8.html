@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario: Circuitos Cuánticos</title>
+
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['\\(', '\\)'], ['$', '$']],
+            displayMath: [['\\[', '\\]'], ['$$', '$$']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            box-sizing: border-box;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #0056b3; /* Ajustado al azul de la presentación */
+            margin: 0;
+        }
+
+        .quiz-header p {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-top: 8px;
+        }
+
+        #question-counter {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        #question-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            min-height: 80px;
+        }
+
+        #question-text code {
+            background-color: #ffecef;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 1.1rem;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        @media (min-width: 640px) {
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+
+        .option-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #0056b3;
+            background-color: #f7fafc;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background-color: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .hint-section {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .hint-btn {
+            background: none;
+            border: none;
+            color: #0056b3;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        #hint-text {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            color: #475569;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        #feedback-panel {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #feedback-panel.correct-feedback {
+            background-color: #e0f7fa; /* Ajustado al color de 'blockquote' */
+            border-left: 5px solid #225588; /* Ajustado al color de 'blockquote' */
+        }
+
+        #feedback-panel.incorrect-feedback {
+            background-color: #fff1f2;
+            border-left: 5px solid #f43f5e;
+        }
+
+        .theory-btn {
+            background-color: transparent;
+            color: #0056b3;
+            border: 2px solid #0056b3;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .theory-btn:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .navigation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 30px;
+        }
+
+        .nav-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #004494;
+        }
+
+        .nav-btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        #score-container {
+            text-align: center;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 16px;
+            text-align: left;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            color: #0056b3;
+            margin-top: 0;
+        }
+
+        /* Estilos para el código en el modal */
+        .modal-content pre {
+            background-color: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+        }
+
+        .modal-content code {
+            background-color: #ffecef;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+        }
+
+        .modal-close-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .option-btn code {
+          font-family: monospace;
+          background-color: #ffecef;
+          padding: 2px 4px;
+          border-radius: 4px;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Cuestionario</h1>
+            <p>Basado en la Teoría 8</p>
+        </div>
+
+        <div id="quiz-content">
+            <div id="question-counter"></div>
+            <div id="question-text"></div>
+            <div class="options-grid" id="options-container"></div>
+            <div class="hint-section" id="hint-section"></div>
+            <div id="feedback-panel"></div>
+        </div>
+
+        <div id="score-container" style="display: none;">
+             <h2>Cuestionario Finalizado</h2>
+             <p id="score-text" style="font-size: 1.2rem;"></p>
+             <button class="nav-btn" onclick="restartQuiz()">Volver a Intentar</button>
+        </div>
+
+
+        <div class="navigation-controls">
+            <button class="nav-btn" id="prev-btn" onclick="prevQuestion()">Anterior</button>
+            <button class="nav-btn" id="next-btn" onclick="nextQuestion()">Siguiente</button>
+        </div>
+    </div>
+
+    <div id="theory-modal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modal-text"></div>
+            <button class="modal-close-btn" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            // --- PREGUNTAS BASADAS EN LA PRESENTACIÓN (.md) ---
+            {
+                question: "¿Qué es un circuito cuántico, según la convención estándar?",
+                options: [
+                    "Un diagrama del hardware físico que se está utilizando.",
+                    "Una representación visual y matemática de un algoritmo cuántico.",
+                    "Un sinónimo de un vector de estado cuántico.",
+                    "Un tipo especial de compuerta de múltiples qubits."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. La presentación especifica que 'No es un diagrama de hardware físico'.",
+                    "¡Correcto! Es una convención para especificar una secuencia de operaciones de un algoritmo.",
+                    "Incorrecto. El circuito *opera sobre* un vector de estado, pero no es el vector en sí mismo.",
+                    "Incorrecto. Un circuito *contiene* compuertas, pero no es una compuerta."
+                ],
+                hint: "Piensa en el circuito como un 'lenguaje' para describir algoritmos, no como el hardware.",
+                theoryHTML: `<h2>Del Álgebra a los Algoritmos: El Circuito Cuántico</h2>
+                    <p><b>¿Qué es un Circuito Cuántico?</b></p>
+                    <blockquote>
+                     <p>Un circuito cuántico es la <b>representación visual y matemática</b> de un algoritmo cuántico. <b>No es un diagrama de hardware físico</b>, sino una convención para especificar una secuencia de operaciones.</p>
+                    </blockquote>
+                    <ul>
+                        <li>Los <b>cables</b> horizontales representan los <b>qubits</b>.</li>
+                        <li>El tiempo fluye de <b>izquierda a derecha</b>.</li>
+                        <li>Los <b>bloques</b> en los cables son las <b>compuertas cuánticas</b>.</li>
+                    </ul>`
+            },
+            {
+                question: "¿Por qué la operación de medición se realiza casi siempre al final de un circuito cuántico?",
+                options: [
+                    "Porque es la operación más costosa computacionalmente.",
+                    "Porque es irreversible y colapsa la superposición, perdiendo información cuántica.",
+                    "Porque las compuertas cuánticas no funcionan después de una medición.",
+                    "Porque solo se puede medir el estado $|0\\rangle$."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Aunque puede ser costosa, la razón principal es conceptual: la pérdida de información.",
+                    "¡Correcto! La medición es irreversible y destruye la superposición y el entrelazamiento, por lo que se deja para el final para no interrumpir el cómputo.",
+                    "Incorrecto. Técnicamente se pueden aplicar compuertas, pero el estado ya ha colapsado a un estado clásico (0 o 1), por lo que la computación cuántica se ha detenido.",
+                    "Incorrecto. Se puede medir cualquier estado, y el resultado será 0 o 1."
+                ],
+                hint: "La medición tiene una propiedad fundamental que la diferencia de las compuertas unitarias.",
+                theoryHTML: `<h2>La Puerta de Medición</h2>
+                    <p>La medición es una operación especial, distinta de las compuertas unitarias.</p>
+                    <p><b>Propiedades Clave:</b></p>
+                    <ul>
+                        <li><b>Colapso:</b> La medición colapsa la superposición de un qubit a un resultado clásico definitivo ($0$ o $1$).</li>
+                        <li><b>Irreversibilidad:</b> Una vez medido, el qubit pierde su información cuántica. Por esta razón, la medición se realiza casi siempre al <b>final</b> del circuito, para no interrumpir el cómputo.</li>
+                    </ul>`
+            },
+            {
+                question: "Para compuertas que ocurren <strong>en secuencia</strong> (en el mismo cable), ¿qué operación matemática se utiliza para combinarlas?",
+                options: [
+                    "Producto tensorial ($\\otimes$)",
+                    "Suma de matrices",
+                    "Producto matricial ($\\cdot$)",
+                    "Producto interno ($\\langle \\psi | \\phi \\rangle$)"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. El producto tensorial se usa para compuertas en paralelo.",
+                    "Incorrecto. Las compuertas no se suman.",
+                    "¡Correcto! Las operaciones secuenciales corresponden a la multiplicación de sus matrices (operadores).",
+                    "Incorrecto. El producto interno se usa para calcular amplitudes de probabilidad."
+                ],
+                hint: "Piensa en cómo se aplica una función después de otra: f(g(x)).",
+                theoryHTML: `<h2>Traducindo Circuitos a Álgebra</h2>
+                    <p><b>Las Dos Reglas de Traducción:</b></p>
+                    <ol>
+                        <li><b>Producto Tensorial ($\\otimes$):</b> Se usa para compuertas que ocurren <b>al mismo tiempo</b> (en la misma "columna" vertical).</li>
+                        <li><b>Producto Matricial ($\\cdot$):</b> Se usa para compuertas que ocurren <b>en secuencia</b> (en el mismo "cable").</li>
+                    </ol>`
+            },
+            {
+                question: "Si un circuito aplica primero la compuerta $\\hat{U}_1$ y luego la compuerta $\\hat{U}_2$, ¿cuál es el operador total del circuito, $\\hat{U}_{circuito}$?",
+                options: [
+                    "$\\hat{U}_{circuito} = \\hat{U}_1 \\cdot \\hat{U}_2$",
+                    "$\\hat{U}_{circuito} = \\hat{U}_2 \\cdot \\hat{U}_1$",
+                    "$\\hat{U}_{circuito} = \\hat{U}_1 \\otimes \\hat{U}_2$",
+                    "$\\hat{U}_{circuito} = \\hat{U}_1 + \\hat{U}_2$"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Este es el error más común. El orden de aplicación en el álgebra es inverso al del circuito.",
+                    "¡Correcto! El operador total se obtiene multiplicando los operadores de cada paso en orden inverso, ya que la compuerta que se aplica primero ($\\hat{U}_1$) es la que actúa primero sobre el estado inicial: $(\\hat{U}_2 \\cdot \\hat{U}_1) |\\psi_{inicial}\\rangle$.",
+                    "Incorrecto. El producto tensorial es para operaciones en paralelo.",
+                    "Incorrecto. Las compuertas se multiplican, no se suman."
+                ],
+                hint: "El orden de aplicación en el álgebra es el inverso al del diagrama de circuito (de derecha a izquierda).",
+                theoryHTML: `<h2>Ejemplo de Traducción</h2>
+                    <p><b>Construyendo el Operador del Circuito Total:</b></p>
+                    <p>Toda la secuencia de compuertas puede ser "compilada" en un único operador unitario, $\\hat{U}_{circuito}$. Este se obtiene multiplicando los operadores de cada paso en <b>orden inverso</b>:</p>
+                    $$\\hat{U}_{circuito} = \\underbrace{(Z \\otimes I)}_{\\text{Paso 2}} \\cdot \\underbrace{(X \\otimes H)}_{\\text{Paso 1}}$$
+                    <p><b>Calculando el Estado Final:</b></p>
+                    $$|\\psi_{final}\\rangle = \\hat{U}_{circuito} |\\psi_{inicial}\\rangle$$`
+            },
+            {
+                question: "¿Cuándo se puede usar el método de 'agrupar por cable' basado en la propiedad $(A \\otimes B)(C \\otimes D) = (AC) \\otimes (BD)$?",
+                options: [
+                    "Siempre, es una propiedad matemática universal.",
+                    "Solo si el circuito contiene compuertas CNOT.",
+                    "Solo si el circuito está compuesto únicamente por compuertas de 1 qubit.",
+                    "Nunca, es solo una curiosidad teórica."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Aunque la propiedad es universal, no se puede aplicar si hay compuertas que 'cruzan' los cables.",
+                    "Incorrecto. Es justamente lo contrario. Si hay una CNOT, esta separación no es posible.",
+                    "¡Correcto! Si no hay compuertas de múltiples qubits (como CNOT), los 'cables' evolucionan independientemente y podemos calcular el operador de cada cable por separado y luego combinarlos.",
+                    "Incorrecto. Es un método de cálculo válido bajo esta condición."
+                ],
+                hint: "Piensa en qué tipo de compuerta 'rompe' la independencia de los cables.",
+                theoryHTML: `<h2>¡Advertencia Crucial!</h2>
+                    <p>Este método de "agrupar por cable" <b>solo funciona</b> si el circuito está compuesto <b>únicamente por compuertas de 1 qubit</b>.</p>
+                    <p>Si el circuito contiene compuertas de múltiples qubits (como una CNOT), esta separación no es posible y debemos usar el método de multiplicar por columnas.</p>`
+            },
+            {
+                question: "¿Cuál es la acción de la compuerta Hadamard (H) sobre el estado $|1\\rangle$?",
+                options: [
+                    "$|+\\rangle = \\frac{|0\\rangle+|1\\rangle}{\\sqrt{2}}$",
+                    "$|-\\rangle = \\frac{|0\\rangle-|1\\rangle}{\\sqrt{2}}$",
+                    "$|1\\rangle$",
+                    "$-|1\\rangle$"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Este es el resultado de aplicar H al estado $|0\\rangle$.",
+                    "¡Correcto! La compuerta Hadamard transforma los estados de la base computacional a la base de Hadamard.",
+                    "Incorrecto. La Hadamard cambia el estado.",
+                    "Incorrecto. Esto es (casi) lo que hace la compuerta Z."
+                ],
+                hint: "La Hadamard crea superposiciones. H|0> da el estado '+', y H|1> da el estado '-'.",
+                theoryHTML: `<h2>La Compuerta Hadamard (H)</h2>
+                    <ul>
+                       <li><b>Acción:</b> La compuerta fundamental para <b>crear superposiciones</b>. Transforma los estados de la base computacional a la base de Hadamard y viceversa.</li>
+                    </ul>
+                    $$H|0\\rangle = |+\\rangle \\quad , \\quad H|1\\rangle = |-\\rangle$$
+                    $$H = \\frac{1}{\\sqrt{2}}\\begin{pmatrix} 1 & 1 \\\\ 1 & -1 \\end{pmatrix}$$`
+            },
+            {
+                question: "La compuerta de Fase $P(\\phi)$ se define por la matriz $\\begin{pmatrix} 1 & 0 \\\\ 0 & e^{i\\phi} \\end{pmatrix}$. ¿A qué compuerta equivale $P(\\pi)$?",
+                options: [
+                    "Compuerta S",
+                    "Compuerta T",
+                    "Compuerta Z",
+                    "Compuerta X"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. La compuerta S es $P(\\pi/2)$.",
+                    "Incorrecto. La compuerta T es $P(\\pi/4)$.",
+                    "¡Correcto! Usando la identidad de Euler, $e^{i\\pi} = -1$. Por lo tanto, $P(\\pi)$ es la matriz de Z.",
+                    "Incorrecto. La compuerta X es un bit-flip, no una rotación de fase de este tipo."
+                ],
+                hint: "Recuerda la identidad de Euler: $e^{i\\pi} = -1$.",
+                theoryHTML: `<h2>La Puerta de Fase (P)</h2>
+                    <p>La compuerta $P(\\phi)$ aplica una fase al estado $|1\\rangle$:</p>
+                    $$P(\\phi) = \\begin{pmatrix} 1 & 0 \\\\ 0 & e^{i\\phi} \\end{pmatrix}$$
+                    <hr>
+                    <h2>Casos Particulares de la Puerta P</h2>
+                    <ul>
+                        <li><b>Compuerta S ($P(\\pi/2)$):</b> ...</li>
+                        <li><b>Compuerta T ($P(\\pi/4)$):</b> ...</li>
+                        <li><b>Compuerta Z ($P(\\pi)$):</b>
+                            <p>Usando la identidad de Euler, $e^{i\\pi} = \\cos(\\pi) + i\\sin(\\pi) = -1$.</p>
+                            $$Z = P(\\pi) = \\begin{pmatrix} 1 & 0 \\\\ 0 & e^{i\\pi} \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & -1 \\end{pmatrix}$$
+                        </li>
+                    </ul>`
+            },
+            {
+                question: "La compuerta T (que rota $\\pi/4$) a menudo se llama la 'compuerta $\\pi/8$'. ¿Por qué?",
+                options: [
+                    "Porque la rotación es en realidad de $\\pi/8$ radianes.",
+                    "Es un error histórico, la rotación es $\\pi/4$.",
+                    "A causa de un factor de fase global $e^{i\\pi/8}$ que no tiene efecto físico.",
+                    "Porque es la mitad de una compuerta S, que es $\\pi/4$."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. La rotación efectiva (la diferencia de fase entre |0> y |1>) es $\\pi/4$.",
+                    "Incorrecto. No es un error, sino una confusión causada por la fase global.",
+                    "¡Correcto! El nombre '$\\pi/8$' proviene de este factor de fase global, que no es observable. La rotación relativa observable es $\\pi/4$.",
+                    "Incorrecto. La compuerta S es $\\pi/2$. $T^2 = S$."
+                ],
+                hint: "El nombre confuso proviene de un término que no afecta los resultados de las mediciones.",
+                theoryHTML: `<h2>Nota: La Confusa Nomenclatura de la Compuerta T</h2>
+                    <p>A menudo se la conoce como la <b>compuerta $\\pi/8$</b>. ¿Por qué?</p>
+                    <p>La razón es que la matriz T se puede reescribir factorizando una fase global:</p>
+                    $$T = \\begin{pmatrix} 1 & 0 \\\\ 0 & e^{i\\pi/4} \\end{pmatrix} = \\underbrace{e^{i\\pi/8}}_{\\text{Fase Global}} \\cdot \\underbrace{\\begin{pmatrix} e^{-i\\pi/8} & 0 \\\\ 0 & e^{i\\pi/8} \\end{pmatrix}}_{\\text{Matriz de Rotación } R_z(\\pi/4)}$$
+                    <p>El nombre "$\\pi/8$" proviene de este <b>factor de fase global</b> $e^{i\\pi/8}$.</p>`
+            },
+            {
+                question: "¿A qué compuerta equivale la secuencia $HZH$ (Hadamard, luego Z, luego Hadamard)?",
+                options: [
+                    "$I$ (Identidad)",
+                    "$Y$",
+                    "$X$",
+                    "$-Z$"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. La operación tiene un efecto neto.",
+                    "Incorrecto. Revisa las identidades de 'sándwich'.",
+                    "¡Correcto! Esta es una identidad fundamental. Cambiar a la base X (con H), aplicar un phase-flip (con Z), y volver a la base Z (con H) es equivalente a un bit-flip (X).",
+                    "Incorrecto."
+                ],
+                hint: "Esta es una de las 'relaciones de sándwich' que transforma una compuerta Z en una X.",
+                theoryHTML: `<h2>Resumen de Identidades Útiles</h2>
+                    <ul>
+                        <li><b>Inversas Propias ($U^2 = I$):</b> $X^2 = Y^2 = Z^2 = H^2 = I$</li>
+                        <li><b>Relaciones de Composición:</b> $Z = S^2 = T^4$</li>
+                        <li><b>Relaciones de "Sándwich":</b>
+                            <p>$$X = HZH \\quad , \\quad Z = HXH$$</p>
+                        </li>
+                    </ul>`
+            },
+            {
+                question: "Si aplicas el operador $H \\otimes I$ al estado inicial $|00\\rangle$, ¿cuál es el estado final?",
+                options: [
+                    "$\\frac{1}{\\sqrt{2}}(|00\\rangle + |01\\rangle)$",
+                    "$\\frac{1}{\\sqrt{2}}(|00\\rangle + |11\\rangle)$",
+                    "$\\frac{1}{\\sqrt{2}}(|00\\rangle + |10\\rangle)$",
+                    "$\\frac{1}{2}(|00\\rangle + |01\\rangle + |10\\rangle + |11\\rangle)$"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. La H se aplicó al primer qubit (izquierda), no al segundo.",
+                    "Incorrecto. Este es un estado de Bell, que no se puede crear solo con una H.",
+                    "¡Correcto! $(H \\otimes I)|00\\rangle = (H|0\\rangle) \\otimes (I|0\\rangle) = |+\\rangle \\otimes |0\\rangle = \\frac{1}{\\sqrt{2}}(|0\\rangle+|1\\rangle) \\otimes |0\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |10\\rangle)$.",
+                    "Incorrecto. Para esto, necesitarías aplicar $H \\otimes H$."
+                ],
+                hint: "Aplica H al primer qubit y la Identidad (I) al segundo, luego calcula el producto tensorial.",
+                theoryHTML: `<h2>La Perspectiva Global: El Estado del Sistema Completo</h2>
+                    <p><b>Ejemplo: Aplicando $H \\otimes I$ al estado $|00\\rangle$</b></p>
+                    <ul>
+                        <li><b>Acción Algebraica:</b>
+                        $$(H \\otimes I)|00\\rangle = (H|0\\rangle) \\otimes (I|0\\rangle) = |+\\rangle \\otimes |0\\rangle$$</li>
+                        <li><b>Expansión en la Base Global:</b>
+                        $$= \\left(\\frac{|0\\rangle+|1\\rangle}{\\sqrt{2}}\\right) \\otimes |0\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |10\\rangle)$$</li>
+                    </ul>`
+            },
+            {
+                question: "¿Qué operador se aplica al estado $|0\\rangle^{\\otimes N}$ para crear una superposición uniforme de todos los $2^N$ estados base?",
+                options: [
+                    "$X^{\\otimes N}$",
+                    "$H^{\\otimes N}$",
+                    "$Z^{\\otimes N}$",
+                    "Una sola compuerta H en el primer qubit."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esto solo voltearía todos los bits a $|1\\rangle^{\\otimes N}$.",
+                    "¡Correcto! Aplicar una Hadamard a cada qubit transforma $|0\\rangle...|0\\rangle$ en $|+\\rangle...|+\\rangle$, que al expandirse es la superposición uniforme de todos los estados.",
+                    "Incorrecto. Esto no tendría ningún efecto sobre el estado $|0\\rangle^{\\otimes N}$.",
+                    "Incorrecto. Esto solo crearía una superposición de dos estados: $|00...0\\rangle$ y $|10...0\\rangle$ (asumiendo la H en el qubit de mayor índice)."
+                ],
+                hint: "La compuerta Hadamard es la herramienta fundamental para crear superposiciones.",
+                theoryHTML: `<h2>Aplicando Compuertas a Múltiples Qubits en Paralelo</h2>
+                    <p>Para crear una <b>Superposición Uniforme</b> de todos los estados posibles, partiendo de $N$ qubits todos en el estado $|0\\rangle$, aplicamos una <b>Hadamard</b> a cada uno de ellos.</p>
+                    $$H^{\\otimes N} |0\\rangle^{\\otimes N} = (H|0\\rangle) \\otimes \\dots \\otimes (H|0\\rangle) = |+\\rangle^{\\otimes N}$$`
+            },
+            {
+                question: "¿Cuál es la limitación clave de los circuitos que solo usan compuertas de 1 qubit (incluso aplicadas en paralelo)?",
+                options: [
+                    "No pueden crear superposiciones.",
+                    "No pueden aplicar fases.",
+                    "Nunca pueden crear entrelazamiento.",
+                    "No son universales para la computación clásica."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Sí pueden, la compuerta H crea superposiciones.",
+                    "Incorrecto. Sí pueden, las compuertas Z, S, T y P aplican fases.",
+                    "¡Correcto! Cada qubit evoluciona de forma independiente. Para crear entrelazamiento (correlaciones cuánticas), se necesitan compuertas de múltiples qubits (como CNOT).",
+                    "Incorrecto. Un circuito con solo compuertas X (NOT) ya puede realizar operaciones clásicas."
+                ],
+                hint: "Estas compuertas no pueden generar correlaciones cuánticas entre los qubits.",
+                theoryHTML: `<h2>La Limitación Clave:</h2>
+                    <p>Las compuertas de 1 qubit (incluso aplicadas en paralelo) <b>nunca pueden crear entrelazamiento</b>. Cada qubit evoluciona de forma independiente.</p>
+                    <p>Para crear entrelazamiento, necesitamos compuertas que actúen sobre múltiples qubits a la vez.</p>`
+            },
+            {
+                question: "En un estado entrelazado como $|\\Phi^+\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |11\\rangle)$, ¿cuál es el estado del primer qubit?",
+                options: [
+                    "El primer qubit está en el estado $|+\\rangle$.",
+                    "El primer qubit está en el estado $|0\\rangle$.",
+                    "La pregunta no tiene sentido; el qubit no tiene un estado individual definido.",
+                    "El primer qubit está en una mezcla 50/50 de $|0\\rangle$ y $|1\\rangle$."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Eso sería cierto para un estado separable como $|+\\rangle|\\psi\\rangle$.",
+                    "Incorrecto. No está definido como $|0\\rangle$.",
+                    "¡Correcto! En un estado entrelazado, los subsistemas no tienen estados puros individuales. La información está en las correlaciones. Se necesita una 'matriz de densidad' para describirlo.",
+                    "Incorrecto. Esto describe una incertidumbre clásica, pero la descripción formal (el ket) ya no es suficiente."
+                ],
+                hint: "Esta es la diferencia fundamental entre un estado separable y uno entrelazado.",
+                theoryHTML: `<h2>Estado Global vs. Estado Individual</h2>
+                    <p>¿Podemos siempre describir el estado individual de un qubit si conocemos el estado global?</p>
+                    <p><b>La respuesta es NO, y es la razón por la que el entrelazamiento es tan especial.</b></p>
+                    <ul>
+                        <li><b>En un estado separable</b> como $|+\\rangle|-\\rangle$, la respuesta es SÍ.</li>
+                        <li><b>En un estado entrelazado</b> como $|\\Phi^+\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |11\\rangle)$, la pregunta "¿en qué estado está el primer qubit?" <b>no tiene sentido</b>. El primer qubit no tiene un estado definido e independiente.</li>
+                    </ul>`
+            },
+            // --- PREGUNTAS BASADAS EN EL JUPYTER NOTEBOOK (.ipynb) ---
+            {
+                question: "En Qiskit, si tienes un <code>Statevector</code> llamado <code>v</code> y un <code>Operator</code> llamado <code>X</code>, ¿cómo aplicas el operador al estado?",
+                options: [
+                    "<code>v.apply(X)</code>",
+                    "<code>X.evolve(v)</code>",
+                    "<code>v.evolve(X)</code>",
+                    "<code>v + X</code>"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. No existe el método <code>apply</code>.",
+                    "Incorrecto. La evolución se aplica *al* estado, por lo que <code>v</code> es el objeto que llama al método.",
+                    "¡Correcto! El método <code>evolve</code> del <code>Statevector</code> toma un operador (o un circuito) y devuelve el nuevo estado evolucionado.",
+                    "Incorrecto. Los estados y operadores no se suman."
+                ],
+                hint: "El estado 'evoluciona' bajo la acción del operador.",
+                theoryHTML: `<h2>Evolucionando un vector de estado</h2>
+                    <p>Podemos aplicar una operación unitaria a un vector de estado utilizando el método <code>evolve</code>.</p>
+<pre># v es un Statevector, X es un Operator
+v = Statevector([1, 0])
+v = v.evolve(X)
+display(v.draw("latex"))</pre>`
+            },
+            {
+                question: "En Qiskit, ¿cuál es el operador para calcular el <b>producto tensorial</b> entre dos operadores <code>H</code> e <code>Id</code>?",
+                options: [
+                    "<code>H @ Id</code>",
+                    "<code>H * Id</code>",
+                    "<code>H & Id</code>",
+                    "<code>H ^ Id</code>"
+                ],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. El operador <code>@</code> se usa para el producto matricial (composición).",
+                    "Incorrecto. <code>*</code> no se usa para operaciones de operadores.",
+                    "Incorrecto.",
+                    "¡Correcto! El operador <code>^</code> es el atajo en Qiskit para el producto tensorial (<code>.tensor()</code>). Representa operaciones en paralelo."
+                ],
+                hint: "Busca el operador que representa operaciones en paralelo, no secuenciales.",
+                theoryHTML: `<h2>Producto tensorial</h2>
+                    <p>Las clases <code>Statevector</code> y <code>Operator</code> tienen un método <code>tensor</code> (y su operador equivalente <code>^</code>) para calcular el producto tensorial.</p>
+<pre>H = Operator.from_label("H")
+Id = Operator.from_label("I")
+X = Operator.from_label("X")
+# también podemos usar el operador ^
+display((H ^ Id ^ X).draw("latex"))</pre>`
+            },
+            {
+                question: "En Qiskit, ¿cuál es el operador para la <b>composición</b> (producto matricial) de dos operadores, como en $Z \\cdot X$?",
+                options: [
+                    "<code>Z @ X</code>",
+                    "<code>Z ^ X</code>",
+                    "<code>X @ Z</code>",
+                    "<code>Z * X</code>"
+                ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! El operador <code>@</code> de Python se usa en Qiskit para el producto matricial. $Z \\cdot X$ (aplicar X primero, luego Z) se escribe <code>Z @ X</code>.",
+                    "Incorrecto. El operador <code>^</code> se usa para el producto tensorial (paralelo).",
+                    "Incorrecto. Esto representaría $X \\cdot Z$ (aplicar Z primero, luego X). El orden importa.",
+                    "Incorrecto."
+                ],
+                hint: "Recuerda que el orden de la multiplicación matricial importa.",
+                theoryHTML: `<h2>Combinando Operadores en Qiskit</h2>
+                    <p>La clase <code>Operator</code> nos permite combinar compuertas de dos formas principales:</p>
+                    <ol>
+                        <li><b>Composición (Producto Matricial):</b> Para compuertas en secuencia... Se utiliza el operador <code>@</code>.
+<pre># U_total = U_final · U_inicial
+U_total_cable = U_final @ U_inicial</pre>
+                        </li>
+                        <li><b>Producto Tensorial:</b> Para compuertas simultáneas... Se utiliza el operador <code>^</code>.</li>
+                    </ol>`
+            },
+            {
+                question: "Si tienes un objeto <code>QuantumCircuit</code> llamado <code>qc</code>, ¿cómo obtienes su matriz unitaria total como un objeto <code>Operator</code>?",
+                options: [
+                    "<code>qc.get_operator()</code>",
+                    "<code>Operator.from_circuit(qc)</code>",
+                    "<code>qc.to_matrix()</code>",
+                    "<code>Statevector(qc)</code>"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. No existe el método <code>get_operator()</code>.",
+                    "¡Correcto! Esta es la forma explícita de construir un <code>Operator</code> a partir de un <code>QuantumCircuit</code>. También funciona <code>Operator(qc)</code>.",
+                    "Incorrecto. No existe el método <code>to_matrix()</code>.",
+                    "Incorrecto. <code>Statevector(qc)</code> no es una operación válida; un circuito es un operador, no un estado."
+                ],
+                hint: "Se utiliza un método de la clase <code>Operator</code> para 'importar' el circuito.",
+                theoryHTML: `<h2>Obteniendo el Operador de un Circuito</h2>
+                    <p>Una vez que hemos construido un <code>QuantumCircuit</code>, a menudo queremos analizar la matriz unitaria total que representa.</p>
+<pre># Opción 1 (Explícita y recomendada)
+op_from_method = Operator.from_circuit(mi_circuito)
+
+# Opción 2 (Concisa)
+op_from_constructor = Operator(mi_circuito)</pre>`
+            },
+            {
+                question: "El método <code>v.measure()</code> de un <code>Statevector</code> <code>v</code> devuelve dos valores. ¿Cuáles son?",
+                options: [
+                    "La probabilidad de '0' y la probabilidad de '1'.",
+                    "El resultado de la medición (ej: '0') y el estado colapsado post-medición (ej: $|0\\rangle$).",
+                    "Solo el resultado de la medición (ej: '0').",
+                    "El estado final y la compuerta que se debería aplicar para revertirlo."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. No devuelve las probabilidades, sino el resultado de *una* simulación.",
+                    "¡Correcto! Devuelve una tupla con el resultado clásico y el nuevo <code>Statevector</code> en el que colapsó el sistema.",
+                    "Incorrecto. Devuelve dos valores, no solo uno.",
+                    "Incorrecto. La medición no es reversible."
+                ],
+                hint: "El método simula el acto físico de medir, que tiene dos consecuencias: un resultado y un colapso.",
+                theoryHTML: `<h2>Simulación de mediciones cuánticas con Qiskit</h2>
+                    <p>El método <code>measure</code> simula una medición de base estándar.
+                    Devuelve el resultado de esa medición y el nuevo vector de estado cuántico del sistema tras la medición.</p>
+<pre># ejecutar varias veces para observar
+medicion, estado_post = v.measure()
+print(f"Medición: {medicion}\\nEstado post medición:")
+display(estado_post.draw("latex"))</pre>`
+            },
+            {
+                question: "¿Qué método de <code>Statevector</code> usarías para simular 1000 mediciones y obtener un diccionario de resultados como <code>{'0': 502, '1': 498}</code>?",
+                options: [
+                    "<code>v.measure(shots=1000)</code>",
+                    "<code>v.sample_counts(1000)</code>",
+                    "<code>v.get_histogram(1000)</code>",
+                    "Un bucle <code>for</code> que llame a <code>v.measure()</code> 1000 veces."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. <code>measure()</code> solo simula una medición.",
+                    "¡Correcto! <code>sample_counts</code> es el método diseñado para simular múltiples 'shots' (disparos) y devolver las estadísticas.",
+                    "Incorrecto. No existe el método <code>get_histogram</code> en <code>Statevector</code> (la función <code>plot_histogram</code> se usa *después*).",
+                    "Incorrecto. Aunque funcionaría, <code>sample_counts</code> es la forma mucho más eficiente y directa."
+                ],
+                hint: "El nombre del método se refiere a 'muestrear' las 'cuentas' (counts) de los resultados.",
+                theoryHTML: `<h2>Simulación de mediciones cuánticas con Qiskit</h2>
+                    <p>El método <code>sample_counts</code> de <code>Statevector</code> simula múltiples mediciones a partir del mismo estado cuántico. Por ejemplo, el siguiente código muestra el resultado de medir el vector <code>v</code> $1000$ veces.</p>
+<pre>from qiskit.visualization import plot_histogram
+
+statistics = v.sample_counts(1000)
+plot_histogram(statistics)</pre>`
+            },
+            {
+                question: "En un <code>Statevector</code> de 3 qubits, ¿cómo medirías <strong>solamente</strong> el qubit de la derecha (índice 0)?",
+                options: [
+                    "<code>v.measure()</code>",
+                    "<code>v.measure([2])</code>",
+                    "<code>v.measure([0])</code>",
+                    "No es posible hacer medición parcial en un <code>Statevector</code>."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Por defecto, <code>measure()</code> mide todos los qubits.",
+                    "Incorrecto. Esto mediría el qubit de la izquierda (índice 2).",
+                    "¡Correcto! El método <code>measure</code> acepta una lista de índices de los qubits a medir. Qiskit numera de derecha a izquierda, por lo que el qubit de la derecha es el 0.",
+                    "Incorrecto. Sí es posible."
+                ],
+                hint: "Qiskit numera los qubits de derecha a izquierda, empezando por 0.",
+                theoryHTML: `<h2>Medidas parciales</h2>
+                    <p>Por defecto, <code>measure</code> mide todos los qubits del vector de estados.
+                    Alternativamente, podemos proporcionar una <b>lista de enteros</b> como argumento, lo que hace que sólo se midan esos índices de qubits.</p>
+<pre># ...mide el qubit número 0, que es el qubit más a la derecha.
+result, state = w.measure([0])</pre>`
+            },
+            {
+                question: "En un <code>QuantumCircuit</code> <code>qc</code>, ¿qué método se usa para añadir una compuerta definida por una matriz <code>U_matrix</code> al qubit 0?",
+                options: [
+                    "<code>qc.add_gate(U_matrix, 0)</code>",
+                    "<code>qc.unitary(U_matrix, [0])</code>",
+                    "<code>qc.operator(U_matrix, 0)</code>",
+                    "<code>qc.append(U_matrix, 0)</code>"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. No existe el método <code>add_gate</code>.",
+                    "¡Correcto! El método <code>.unitary()</code> está diseñado para esto. Requiere la matriz, una <em>lista</em> de qubits, y opcionalmente una etiqueta.",
+                    "Incorrecto. <code>operator</code> no es un método para añadir compuertas.",
+                    "Incorrecto. <code>append</code> se usa para añadir otras <code>Instructions</code> o <code>Gates</code>, no matrices directamente."
+                ],
+                hint: "El nombre del método refleja la propiedad matemática de la compuerta (ser unitaria).",
+                theoryHTML: `<h2>Añadiendo Compuertas Arbitrarias: qc.unitary()</h2>
+                    <p>La forma más directa es con el método <code>.unitary()</code> de un objeto <code>QuantumCircuit</code>.</p>
+                    <p><b>Sintaxis:</b> <code>qc.unitary(operador, qubits, label='mi_etiqueta')</code></p>
+<pre># 3. La agregamos al qubit 0 con una etiqueta personalizada
+qc.unitary(H_matrix, [0], label='H_manual')</pre>`
+            },
+            {
+                question: "En Qiskit, ¿cómo se crea un <code>Statevector</code> para el estado $|+i\\rangle = \\frac{1}{\\sqrt{2}}(|0\\rangle + i|1\\rangle)$ usando <code>from_label</code>?",
+                options: [
+                    "<code>Statevector.from_label('+i')</code>",
+                    "<code>Statevector.from_label('r')</code>",
+                    "<code>Statevector.from_label('i')</code>",
+                    "<code>Statevector.from_label('+')</code>"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esta etiqueta no está definida.",
+                    "¡Correcto! Qiskit usa las etiquetas 'r' (de 'right') y 'l' (de 'left') para los estados propios del eje Y, $|+i\\rangle$ y $|-i\\rangle$ respectivamente.",
+                    "Incorrecto. Esta etiqueta no está definida.",
+                    "Incorrecto. Esto crea el estado $|+\\rangle$."
+                ],
+                hint: "Las etiquetas para los estados del eje Y son 'r' y 'l' (right/left).",
+                theoryHTML: `<h2>Producto tensorial</h2>
+                    <p>Otras etiquetas permitidas son "+" y "-" para los estados más y menos, así como <b>"r"</b> y <b>"l"</b> (abreviatura de "derecha" e "izquierda") para los estados</p>
+                    $$
+                    \\vert {+i} \\rangle = \\frac{1}{\\sqrt{2}} \\vert 0 \\rangle + \\frac{i}{\\sqrt{2}} \\vert 1 \\rangle
+                    \\qquad\\text{y}\\qquad
+                    \\vert {-i} \\rangle = \\frac{1}{\\sqrt{2}} \\vert 0 \\rangle - \\frac{i}{\\sqrt{2}} \\vert 1 \\rangle.
+                    $$
+<pre>minus_i = Statevector.from_label("l")</pre>`
+            },
+            {
+                question: "¿Cómo se comprueba si un <code>Operator</code> <code>S</code> de Qiskit es Hermitiano?",
+                options: [
+                    "<code>S.is_hermitian()</code>",
+                    "<code>S == S.adjoint()</code>",
+                    "<code>S.is_unitary()</code>",
+                    "<code>S == S.transpose()</code>"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. La clase <code>Operator</code> no tiene un método directo <code>.is_hermitian()</code>.",
+                    "¡Correcto! Un operador es Hermitiano si es igual a su propio adjunto (conjugado transpuesto). En Qiskit, el adjunto se calcula con <code>.adjoint()</code>.",
+                    "Incorrecto. Ser unitario ($U^\\dagger U = I$) no es lo mismo que ser Hermitiano ($A^\\dagger = A$). Aunque algunas compuertas (como H, X, Z) son ambas.",
+                    "Incorrecto. Esto comprueba si la matriz es simétrica, pero no si es Hermitiana (que requiere la conjugada transpuesta)."
+                ],
+                hint: "La definición de un operador Hermitiano es que es igual a su adjunto (conjugado transpuesto).",
+                theoryHTML: `<h2>Verificación de Propiedades de Operadores</h2>
+                    <p>Para la <b>hermiticidad</b>, no hay un método directo. La comprobamos usando la definición: un operador $\\hat{A}$ es hermitiano si es igual a su propio adjunto ($\\hat{A}^\\dagger = \\hat{A}$).</p>
+                    <p>En Qiskit, el adjunto se calcula con el método <b><code>.adjoint()</code></b>.</p>
+<pre># Verifiquemos la hermiticidad del operador Pauli-Z (Z)
+is_Z_hermitian = (Z == Z.adjoint())
+print(f"¿Es Z hermitiana? {is_Z_hermitian}")</pre>`
+            },
+            {
+                question: "En un <code>QuantumCircuit</code> de 2 qubits, aplicas <code>qc.h(1)</code>. ¿A qué operador total equivale esto?",
+                options: [
+                    "$H \\otimes I$ (H en q1, I en q0)",
+                    "$I \\otimes H$ (I en q1, H en q0)",
+                    "$H \\otimes H$",
+                    "Solo $H$"
+                ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! Qiskit usa la convención $|q_1 q_0\\rangle$. Aplicar <code>h(1)</code> significa aplicar H al qubit 1 (izquierda) y la Identidad (I) al qubit 0 (derecha), resultando en $H \\otimes I$.",
+                    "Incorrecto. Esto correspondería a aplicar <code>qc.h(0)</code>. Recuerda la numeración de Qiskit.",
+                    "Incorrecto. Esto requeriría aplicar <code>qc.h(0)</code> y <code>qc.h(1)</code>.",
+                    "Incorrecto. El operador debe tener las dimensiones del espacio total ($4 \\times 4$), por lo que debe incluir el qubit que no se tocó (con una Identidad)."
+                ],
+                hint: "Recuerda la convención de Qiskit: el qubit 0 es el de la derecha, y el 1 es el de la izquierda.",
+                theoryHTML: `<h2>Construyendo Circuitos de Múltiples Qubits con Qiskit</h2>
+<pre># Creamos un circuito con 2 qubits
+qc = QuantumCircuit(2)
+
+# Aplicamos una compuerta H al qubit 1 (el cable de abajo)
+qc.h(1)
+
+# El qubit 0 (el cable de arriba) queda sin tocar, lo que equivale a aplicarle la Identidad (I)
+display(qc.draw('mpl'))
+
+# ...
+print("\\nEstado final después de aplicar H ⊗ I:")
+</pre>
+                <p>(Nota: La visualización de Qiskit pone q0 arriba y q1 abajo, pero el álgebra es $q_1 \\otimes q_0$)</p>`
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let score = 0;
+
+        const questionCounterEl = document.getElementById('question-counter');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const feedbackPanelEl = document.getElementById('feedback-panel');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const quizContentEl = document.getElementById('quiz-content');
+        const scoreContainerEl = document.getElementById('score-container');
+        const scoreTextEl = document.getElementById('score-text');
+        const hintSectionEl = document.getElementById('hint-section');
+        const modalEl = document.getElementById('theory-modal');
+        const modalTextEl = document.getElementById('modal-text');
+
+
+        function displayQuestion() {
+            feedbackPanelEl.style.display = 'none';
+            optionsContainerEl.innerHTML = '';
+            hintSectionEl.innerHTML = '';
+
+            if (currentQuestionIndex >= quizData.length) {
+                showScore();
+                return;
+            }
+
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            questionCounterEl.textContent = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+            questionTextEl.innerHTML = currentQuestion.question;
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerHTML = option;
+                button.className = 'option-btn';
+                button.onclick = () => checkAnswer(index);
+                optionsContainerEl.appendChild(button);
+            });
+
+            // Add Hint functionality
+            if(currentQuestion.hint) {
+                const hintBtn = document.createElement('button');
+                hintBtn.textContent = 'Necesito una pista';
+                hintBtn.className = 'hint-btn';
+                const hintText = document.createElement('div');
+                hintText.id = 'hint-text';
+                hintText.innerHTML = currentQuestion.hint;
+                hintBtn.onclick = () => {
+                    hintText.style.display = 'block';
+                    hintBtn.style.display = 'none';
+                };
+                hintSectionEl.appendChild(hintBtn);
+                hintSectionEl.appendChild(hintText);
+            }
+
+            // --- CORRECCIÓN ---
+            // Usar typesetPromise() para manejar de forma asíncrona el renderizado
+            if (window.MathJax && MathJax.typesetPromise) {
+                 MathJax.typesetPromise([questionTextEl, optionsContainerEl, hintSectionEl]);
+            }
+
+            updateNavButtons();
+
+            if(userAnswers[currentQuestionIndex] !== null){
+                showPreviousAnswer();
+            }
+        }
+
+        function showPreviousAnswer(){
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const currentQuestion = quizData[currentQuestionIndex];
+            const correctIndex = currentQuestion.correctAnswer;
+            const optionButtons = optionsContainerEl.querySelectorAll('.option-btn');
+            const hintBtn = hintSectionEl.querySelector('.hint-btn');
+            if(hintBtn) hintBtn.style.display = 'none';
+
+
+            optionButtons.forEach((btn, i) => {
+                if (i === correctIndex) {
+                    btn.classList.add('correct');
+                } else if (i === userAnswer.selectedIndex) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+
+            feedbackPanelEl.innerHTML = `<p>${currentQuestion.feedback[userAnswer.selectedIndex]}</p>`;
+
+            if (currentQuestion.theoryHTML) {
+                const theoryBtn = document.createElement('button');
+                theoryBtn.textContent = 'Ver Teoría';
+                theoryBtn.className = 'theory-btn';
+                theoryBtn.onclick = () => showTheory(currentQuestion.theoryHTML);
+                feedbackPanelEl.appendChild(theoryBtn);
+            }
+
+            feedbackPanelEl.className = userAnswer.isCorrect ? 'correct-feedback' : 'incorrect-feedback';
+            feedbackPanelEl.style.display = 'block';
+
+            // --- CORRECCIÓN ---
+            // Usar typesetPromise() para el panel de feedback
+            if (window.MathJax && MathJax.typesetPromise) {
+                 MathJax.typesetPromise([feedbackPanelEl]);
+            }
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(userAnswers[currentQuestionIndex] !== null) return;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedIndex === currentQuestion.correctAnswer;
+
+            userAnswers[currentQuestionIndex] = { selectedIndex, isCorrect };
+
+            if(isCorrect) {
+                score++;
+            }
+
+            showPreviousAnswer();
+        }
+
+        function showTheory(htmlContent) {
+            modalTextEl.innerHTML = htmlContent;
+            modalEl.style.display = 'flex';
+
+            // --- CORRECCIÓN ---
+            // Usar typesetPromise() para el contenido del modal
+            if (window.MathJax && MathJax.typesetPromise) {
+                 MathJax.typesetPromise([modalTextEl]);
+            }
+        }
+
+        function closeModal() {
+            modalEl.style.display = 'none';
+        }
+
+        function updateNavButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === quizData.length -1) {
+                nextBtn.textContent = 'Finalizar';
+            } else {
+                 nextBtn.textContent = 'Siguiente';
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function showScore(){
+            quizContentEl.style.display = 'none';
+            document.querySelector('.navigation-controls').style.display = 'none';
+            scoreContainerEl.style.display = 'block';
+
+            scoreTextEl.textContent = `Tu puntuación es ${score} de ${quizData.length}.`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            score = 0;
+
+            scoreContainerEl.style.display = 'none';
+            quizContentEl.style.display = 'block';
+            document.querySelector('.navigation-controls').style.display = 'flex';
+
+            displayQuestion();
+        }
+
+        // Iniciar el cuestionario
+        displayQuestion();
+    </script>
+
+</body>
+</html>

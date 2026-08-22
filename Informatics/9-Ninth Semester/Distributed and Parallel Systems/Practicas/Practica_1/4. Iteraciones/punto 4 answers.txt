@@ -1,0 +1,31 @@
+Análisis de Iteraciones y Direccionamiento
+
+a. Estrategias de Direccionamiento (direccionamiento.c)
+------------------------------------------------------
+| Estrategia                   | Tiempo (s) |
+|------------------------------|------------|
+| Direccionamiento a[i]        | 2.4212     |
+| Direccionamiento puntero *p  | 0.5141     |
+
+¿Qué estrategia es más rápida?
+La estrategia con puntero (`unsigned long *p`) y uso de `register` es significativamente más rápida.
+
+¿Por qué?
+1. Cálculo de dirección: En la estrategia `a[i]`, para cada acceso el procesador debe calcular la dirección sumando la base del arreglo al desplazamiento (`base + i * sizeof(unsigned long)`). En una compilación sin optimizar (`-O0`), esto se repite en cada iteración. En cambio, con `*p++`, solo se suma el tamaño al puntero actual, lo cual es una operación aritmética simple.
+2. Hint del compilador: El uso de la palabra clave `register` sugiere al compilador que mantenga el puntero en un registro de la CPU en lugar de la memoria, reduciendo el tráfico de datos y acelerando el acceso.
+
+b. Problema de Overflow en Suma de Gauss (Gauss.c)
+-------------------------------------------------
+Analizando el comportamiento para N=2147483648 (2^31):
+
+¿Por qué es correcta para N=2147483647 e incorrecta para N=2147483648?
+1. Overflow del contador: La variable `i` se declara como `int`, cuyo valor máximo es 2147483647 ($2^{31}-1$). Al intentar llegar a 2147483648, `i` desborda y se convierte en negativo según la representación de complemento a dos, rompiendo la lógica de la sumatoria.
+2. Precisión de tipos: Al calcular la fórmula de Gauss `((N*(N+1))/2)`, el producto intermedio `N*(N+1)` desborda el tipo `unsigned long` de 32 bits ($2^{32}-1$). Para $N=2^{31}$, el resultado del producto es $2^{62}+2^{31}$, lo cual se trunca a $2^{31}$ en 32 bits, resultando en un valor erróneo tras la división.
+
+Uso de atol(): En Windows, `long` es generalmente de 32 bits. Para $N=2^{31}$ se está justo en el límite de lo que puede representar un tipo signado de 32 bits, pero el contador del bucle `i` es un `int` (32 bits signado), lo que garantiza el fallo al superar $INT\_MAX$.
+
+¿Cómo podría solucionarlo?
+La solución consiste en utilizar tipos de datos de 64 bits para manejar los rangos necesarios:
+1. Cambiar `unsigned long` por `unsigned long long` para $N$ y `sum`.
+2. Cambiar `int i` por `long long i` o `unsigned long long i`.
+3. Utilizar `atoll()` en lugar de `atol()` para leer el parámetro de entrada.

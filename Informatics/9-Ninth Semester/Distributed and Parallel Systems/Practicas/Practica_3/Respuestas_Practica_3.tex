@@ -1,0 +1,254 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=2
+}
+
+\title{Respuestas - Práctica 3\\Sistemas Distribuidos (MPI)}
+\author{Concurrencia - Sistemas Distribuidos y Paralelos}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introducción}
+En esta práctica se paralelizaron los algoritmos de la Práctica 1 utilizando paso de mensajes con la especificación \textbf{MPI (Message Passing Interface)}. Los experimentos se ejecutaron en arquitecturas locales simulando un entorno concurrente con $N$ hasta 2048 (para matrices) y procesos $P \in \{1, 2, 4, 8\}$ utilizando \texttt{mpirun}. Se empleó el compilador \texttt{mpicc} con bandera de optimización \texttt{-O2}. 
+
+\tableofcontents
+
+\newpage
+
+% ============================
+% RESUMEN GENERAL
+% ============================
+\section*{Tabla Resumen de Speedup ($P=8$ procesos)}
+
+\begin{center}
+\begin{tabular}{|l|l|r|r|r|}
+\hline
+\textbf{Algoritmo} & \textbf{Tamaño (N)} & \textbf{Tiempo P=1 (s)} & \textbf{Tiempo P=8 (s)} & \textbf{Speedup P=8} \\
+\hline
+mm\_naive            & 2048 & 109.213 & 36.100 & 3.02$\times$ \\
+mm\_sq (C=A$\cdot$A) & 2048 & 6.618 & 2.914 & 2.27$\times$ \\
+mmblk (BS=64)        & 2048 & 13.123 & 3.114 & 4.21$\times$ \\
+mmblk\_blas (BS=64)  & 2048 & 7.129 & 1.610 & 4.42$\times$ \\
+Stats (Min/Max/Prom) & 2048 & 0.037 & 0.050 & 0.74$\times$ \\
+Traspuesta           & 2048 & 0.213 & 0.102 & 2.08$\times$ \\
+N-Reinas             & 14   & 0.052 & 0.032 & 1.62$\times$ \\
+Merge Sort           & $2^{22}$ & 0.558 & 0.178 & 3.13$\times$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\newpage
+
+% ============================
+% EJERCICIO 1: ÁLGEBRA DE MATRICES
+% ============================
+\section{Álgebra de Matrices Distribuido}
+
+\subsection*{Estrategia de Diseño de Foster}
+\begin{enumerate}
+    \item \textbf{Particionamiento:} Se particionan los datos en bloques contiguos de filas. Como la memoria es distribuida, las matrices completas solo existen globalmente en el disco; cada proceso carga únicamente su partición.
+    \item \textbf{Comunicación:} Los procesos independientes se envían las filas (usando \texttt{MPI\_Scatter}/\texttt{MPI\_Bcast}) y el resultado es aglomerado por el proceso maestro mediante \texttt{MPI\_Gather}. 
+    \item \textbf{Aglomeración:} Se agrupan filas en bloques de tamaño $N/P$ para reducir la latencia de enviar demasiados mensajes pequeños sobre la red.
+    \item \textbf{Mapeo:} Estático. Cada proceso computa una carga estricta asignada por su identificador local (Rank $0$ hasta $P-1$).
+\end{enumerate}
+
+\subsection*{a. Multiplicación mm\_naive}
+
+Cada proceso toma $N/P$ filas de la matriz $A$ y la matriz $B$ completa, iterando de forma trivial para calcular su subconjunto de resultados.
+
+\begin{center}
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Procesos (P)} & \textbf{N=1024 (s)} & \textbf{N=2048 (s)} \\
+\hline
+1 & 4.683 & 109.213 \\
+2 & 3.317 & 71.717 \\
+4 & 2.464 & 46.468 \\
+8 & 1.661 & 36.100 \\
+\hline
+\end{tabular}
+\end{center}
+Con $P=8$ se logra un speedup de hasta $3.02\times$ sobre N=2048. La escalabilidad no es lineal ($8\times$) en un entorno local debido a la limitación en los recursos de caché compartida entre procesos, además del coste estricto de \emph{broadcastear} e inicializar localmente los datos de MPI.
+
+\subsection*{b. Multiplicación C = A$\cdot$A}
+Se computa el cuadrado de una matriz. Cada proceso local toma las filas necesarias de $A$ y las disemina con \texttt{MPI\_Allgather} si es necesario para tener acceso a $A^T$ y lograr el producto.
+
+\begin{center}
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Procesos (P)} & \textbf{N=1024 (s)} & \textbf{N=2048 (s)} \\
+\hline
+1 & 0.875 & 6.618 \\
+2 & 0.489 & 3.757 \\
+4 & 0.397 & 2.995 \\
+8 & 0.371 & 2.914 \\
+\hline
+\end{tabular}
+\end{center}
+Nuevamente, vemos cómo la optimización interna del espacio secuencial supera ampliamente a \texttt{mm\_naive}.
+
+\subsection*{c. Algoritmo mmblk y mmblk\_blas}
+
+Integración de procesamiento de caché amigable distribuyendo el impacto usando bloques (BS=64) y también apoyándose en OpenBLAS.
+\begin{center}
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+\textbf{Procesos} & \textbf{mmblk (N=2048 - BS=64)} & \textbf{Speedup P} & \textbf{mmblk\_blas (N=2048 - BS=64)} & \textbf{Speedup P} \\
+\hline
+1 & 13.123 s & 1.00 & 7.129 s & 1.00 \\
+2 & 7.459 s & 1.76 & 4.042 s & 1.76 \\
+4 & 4.555 s & 2.88 & 2.606 s & 2.73 \\
+8 & 3.114 s & 4.21 & 1.610 s & 4.42 \\
+\hline
+\end{tabular}
+\end{center}
+Utilizando rutinas BLAS sobre los bloques locales (\texttt{cblas\_dgemm}) el proceso secuencial mejora $\sim 2\times$ (de 13s a 7s), mientras que sumado a MPI ($P=8$) logramos reducir la ejecución total a módicos $1.6$ segundos, haciendo notar la extrema aceleración algorítmica y de hardware subyacente.
+
+\newpage
+
+% ============================
+% EJERCICIO 2: MIN, MAX, PROM
+% ============================
+\section{Estadísticas de Matrices (Min, Max, Prom)}
+
+\begin{center}
+\begin{tabular}{|l|r|r|r|}
+\hline
+\textbf{Procesos (P)} & \textbf{N=512 (s)} & \textbf{N=1024 (s)} & \textbf{N=2048 (s)}\\
+\hline
+1 & 0.0014 s & 0.0067 s & 0.0370 s \\
+2 & 0.0012 s & 0.0058 s & 0.0237 s \\
+4 & 0.0007 s & 0.0063 s & 0.0246 s \\
+8 & 0.0010 s & 0.0123 s & 0.0507 s \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Análisis de los Resultados:} Para un problema fuertemente anclado a la memoria con bajo impacto computacional, diseminar el control entre 8 procesos ($0.050$ seg) resultó temporalmente contraproducente comparado a hacerlo en un proceso ($0.037$ seg) en $N=2048$. 
+Esto ocurre mediante la Ley de Amdahl modificada para entornos distribuidos: la latencia de serialización y comunicación de mensajes globales (\texttt{MPI\_Reduce}) arrolla completamente la minúscula ventaja matemática ganada durante el cálculo estadístico distribuido en arrays de bajo tamaño.
+
+% ============================
+% EJERCICIO 3: TRASPUESTA
+% ============================
+\section{Traspuesta de Matriz (MPI\_Alltoall)}
+
+Mediante la instrucción \texttt{MPI\_Alltoall} cada proceso disemina eficientemente las partes triangulares de un array.
+
+\begin{center}
+\begin{tabular}{|l|r|r|r|}
+\hline
+\textbf{Procesos (P)} & \textbf{N=1024 (s)} & \textbf{N=2048 (s)} \\
+\hline
+1 & 0.047 & 0.213  \\
+2 & 0.021 & 0.070  \\
+4 & 0.015 & 0.064  \\
+8 & 0.020 & 0.102  \\
+\hline
+\end{tabular}
+\end{center}
+
+El mejor sweet-spot a escala experimental en esta PC resultó ser P=4. Más allá de eso, el límite lo marca el ancho de banda cruzado entre procesos intentando acceder a memoria contigua al mismo exacto tiempo en la bus de memoria del hardware local.
+
+% ============================
+% EJERCICIO 4: N-REINAS
+% ============================
+\section{N-Reinas Paralelo (Bag of Tasks)}
+
+\subsection*{a. Estrategia de Descomposición}
+La estrategia de descomposición más adecuada para este problema es la \textbf{descomposición exploratoria (o de espacio de búsqueda)}. Al tratarse de un algoritmo de \textit{backtracking}, el paralelismo surge de explorar diferentes árboles (o sub-árboles de estados) de tableros de manera concurrente. Otra forma de verlo es como una \textbf{descomposición de tareas} dinámica (Master/Worker - Bag of Tasks), donde el árbol de estados se va generando y cada rama o prefijo pre-calculado del tablero se convierte en una tarea independiente.
+
+\subsection*{b. Tareas, Uniformidad y Mapeo Estático}
+\begin{itemize}
+    \item \textbf{¿Qué es una tarea?}: En el contexto de N-Reinas, una tarea es la evaluación exhaustiva de un sub-árbol de búsqueda. Por ejemplo, recibir las posiciones prefijadas de las primeras $k$ reinas (donde es sabido que no entran en colisión) y determinar, mediante recursión \textit{DFS}, cuántas soluciones válidas existen a partir de allí en ese subespacio determinado.
+    \item \textbf{¿Son uniformes las tareas?}: \textbf{No, son altamente irregulares y no uniformes}. Una rama del árbol de estados puede requerir explorar miles de derivaciones profundas si las posiciones son prometedoras y elásticas, mientras que otra puede sufrir una poda inmediata al nivel de las primeras reinas por colisiones evidentes, finalizando velozmente en microsegundos.
+    \item \textbf{Problema del Mapeo Estático}: Si aplicamos un mapeo estático (ej. el proceso 1 recibe siempre el cuadrante inicial 1, el proceso 2 el cuadrante 2, etc.), se producirá un fuertísimo \textbf{desbalanceo de carga}. Procesos asignados a sub-árboles de rápida poda quedarán ociosos prematuramente (inactivos sin nada más que medir), mientras que procesos asignados a ramas válidas quedarán sobrecargados trabajando mucho tiempo más. Por esto resulta imperativo en estas ocasiones utilizar planificación compartida dinámica mediante un repositorio central de tareas (\textit{Bag of Tasks}).
+\end{itemize}
+
+\subsection*{Resultados Empíricos}
+\textbf{Arquitectura (Master/Worker):} Aquí MPI se aprovecha conceptualmente con un nodo central Master que aglutina las búsquedas iniciales y delega dinámicamente la ejecución de las ramas nodales resultantes hacia workers hambrientos de proceso.
+
+\begin{center}
+\begin{tabular}{|l|r|r|r|}
+\hline
+\textbf{Procesos (P)} & \textbf{N=12 (s)} & \textbf{N=13 (s)} & \textbf{N=14 (s)}\\
+\hline
+1 (sec) & 0.0017 & 0.0094 & 0.0529 \\
+2       & 0.0017 & 0.0095 & 0.0542 \\
+4       & 0.0007 & 0.0034 & 0.0179 \\
+8       & 0.0009 & 0.0033 & 0.0320 \\
+\hline
+\end{tabular}
+\end{center}
+Se localizaron todas las $73,712$ combinaciones formales posibles dentro del tablero N=13 y $365,596$ para N=14. La diseminación dinámica \texttt{Bag of Tasks} ayuda a solucionar el terrible desbalance que tiene el formato en árbol (donde ciertos cuadrantes iniciales mueren instintivamente y otros continúan). Con P=4 sobre N=14 vemos el tiempo cortado por $3\times$.
+
+% ============================
+% EJERCICIO 5: MERGE SORT
+% ============================
+\section{Merge Sort Paralelo}
+Bajo un entorno de variables recursivas \textbf{Merge Sort} brilla debido a su simetría algorítmica, permitiendo crear árboles lógicos formales donde cada nodo paralelo distribuye responsabilidades en un espacio local de memoria y empaqueta el contenido ordenado al root en un barrido O(N log N).
+
+\begin{center}
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Procesos (P)} & \textbf{N=$2^{20}$} ($1,048,576$) & \textbf{N=$2^{22}$} ($4,194,304$) \\
+\hline
+1 & 0.128 s & 0.558 s \\
+2 & 0.072 s & 0.343 s \\
+4 & 0.049 s & 0.223 s \\
+8 & 0.046 s & 0.178 s \\
+\hline
+\end{tabular}
+\end{center}
+
+Se ordenaron listas aleatorias validándose posteriormente con métodos secuenciales de biblioteca sin irregularidades. Observamos cómo MPI escala impecablemente aquí logrando una tasa total de compresión de $0.178$s con 8 subprocesos.
+
+\newpage
+% ============================
+% ANÁLISIS GENERAL ENTRE HERRAMIENTAS
+% ============================
+\section{Análisis y Comparación Distribuida (MPI vs Secuencial)}
+
+\subsection*{Reflexiones sobre Message Passing vs Shared Memory}
+\begin{itemize}
+    \item \textbf{Costo de Serialización:} A diferencia de la Práctica 2, donde OpenMP reusaba punteros del stack en fracciones de nanosegundos (\textit{Shared Memory}), la familia genérica de rutinas de \textbf{MPI} introduce un altísimo overhead explícito. Cada \texttt{MPI\_Send} serializa, transfiere e inyecta memorias dentro del kernel. 
+    \item Esto es evidente en el Ejercicio 2 (Min-Max) y Ejercicio 3 (Traspuesta), los cuales lograban SpeedUp en los TP pasados gracias a que OpenMP repartía los datos inmediatamente en variables L2 compartidas; aquí colapsó.
+    \item A pesar del sacrificio transaccional, \textbf{MPI} nos entregó el abanico para programar abstracciones horizontales: este mismo código que hoy corrimos superando métricas de forma local, escalará virtualmente en clusters conectados por \emph{InfiniBand} sin tener que modificar el fuente lógico de trabajo.  
+\end{itemize}
+
+\subsection*{Alternativas al Lenguaje C (Nativas, Interpretadas y Compiladas)}
+
+\begin{itemize}
+    \item \textbf{C++ / Rust (Compilados, Nativos):} C++ brinda soporte directo de MPI mediante interfaces OOP e iteradores eficientes, manteniendo la misma performance en \textit{bare-metal} que nos proveyó C. Rust, por el otro lado, con sus verificaciones estrictas computadas en el nivel de compilación (\textit{borrow checker}) e implementaciones abstractadas como \texttt{mpi-rs}, ofrece una fuerte garantía frente a fugas de memoria y \textit{race conditions}, solucionando uno de los principales dolores de cabeza de manejar MPI crudo, a costa de una curva de aprendizaje inicial algo pronunciada.
+    \item \textbf{Python (Ej. mpi4py) (Interpretado):} Python permite la velocísima construcción de prototipos gracias a su excelente sintaxis. El módulo \texttt{mpi4py} realiza \textit{wrappers} o empanaderos sobre las directivas de MPI. \textbf{Ventajas:} Extremamente fácil de usar, código conciso y un ecosistema gigantesco de IA/Cálculo científico. \textbf{Desventajas:} Alto costo estructural por ser un entorno interpretado atado al GIL y al tipado dinámico. Si no utilizamos matrices de NumPy, atando las variables al backend compilado de C/C++, la altísima sobrecarga y lentitud algorítmica arruinaría cualquier nivel de speedup lograble mediante \texttt{mpirun}. En este caso, C nativo lo supera astronómicamente frente a mero cómputo for-genérico iterativo.
+    \item \textbf{Java (Ej. MPJ Express) (Máquina Virtual / JIT):} Ofrece un entorno seguro contra \textit{segfaults} y recolección de basura con portabilidad nativa inter-hardware. A través de implementaciones específicas como \texttt{MPJ Express} se pueden correr y vincular interactivamente aplicaciones de tipo MPI. Sin embargo, su desempeño general se ve afectado por tener que empaquetar objetos/mensajes transitoriamente a través de la red y el Overhead nato de su Máquina Virtual (JVM), lo cual reduce enormemente su capacidad de responder con baja latencia en entornos masivamente paralelos y fuertemente acoplados frente al C nativo que poseemos de base.
+    \item \textbf{Go / Golang (Compilado, Concurrencia Nativa):} Este lenguaje utiliza \textit{"Goroutines"} para crear concurrencia local mediante facilísimo pasaje de mensajes en canales internos, logrando paralelos algorítmicos bellísimos integradamente. Aunque se disponen de bindings para librerias OpenMPI o \texttt{MPICH}, por lo general no posee ni la milésima parte de de adopción industrial en ecosistemas de Alto Rendimiento como C o Fortran; de todos modos funciona velozmente y en escalas abstractas su código se parece mucho a un C pulido.
+\end{itemize}
+
+\subsection*{Uso de Motores de Inteligencia Artificial como Apoyo}
+Durante el desarrollo lógico de la práctica se utilizaron puntualmente modelos conversacionales analíticos (ej. \textit{ChatGPT} y \textit{Gemini}) para acelerar la comprensión algorítmica y el desarrollo fundacional:
+\begin{itemize}
+    \item \textbf{Similitudes Compartidas:} Ambos motores comprenden en gran profundidad las especificaciones estandarizadas de C 11 y las convenciones clásicas de MPI (tipos, ranks, sizes, status de envío); siendo completamente capaces de escupir plantillas maestras como el paradigma de una Bolsa de Tareas (\textit{Bag of Tasks}) o rutinas de particionamiento como \texttt{MPI\_Scatter}/\texttt{Gather} sin cometer fallos sintácticos en sus respuestas iniciales. Ambos motores advierten comúnmente sobre asegurar previsiones contra bloques de latencia \textit{deadlocks} e introducen correctamente funciones como \texttt{MPI\_Barrier} cuando son cuestionados acerca de cómo establecer mediciones locales verídicas en cada proceso.
+    \item \textbf{Diferencias y Conflictos:} Al momento de llegar a consultas puntuales sobre arreglos en la optimización de uso de memoria (\textit{cache-friendly}), históricamente, se encontró que un motor tendía a ser bastante esquemático y abstracto en la provisión paralela de rutinas vinculantes pesadas BLAS, mientras que el otro respondía empíricamente enseñando a estructurar la inicialización contigua formal de memoria global para arreglos gigantes reduciendo potenciales fugas y \textit{seg-faults} que aparecían en ejecuciones de 2048 de matriz N. En algunos \textit{prompts} complejos (particularmente el requerimiento del \textit{MergeSort distribuido}), las IA podían generar enfoques marcadamente bifurcados: un motor propuso una recolección estricta usando un hiper-árbol de fusión algorítmico, mientras el competidor insistía en recolectar de golpe todo desprolijamente enviando al proceso maestro la inmensidad de los dados de array desestabilizando a éste al requerirlo a un solo llamado \texttt{MPI\_Gather(N)} que acababa saturando las mangueras de los cachés. Esto demostró que por el momento, es irremplazable sostener validación humana presencial del entorno distribuido conociendo la arquitectura subyacente para poder filtrar entre los diferentes modelos.
+\end{itemize}
+
+\end{document}

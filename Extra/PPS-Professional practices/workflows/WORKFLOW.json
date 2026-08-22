@@ -1,0 +1,1713 @@
+{
+  "name": "Workflow Final",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "rag_ddbb",
+          "mode": "id"
+        },
+        "embeddingBatchSize": 50,
+        "options": {}
+      },
+      "id": "875b0392-c3e6-4e78-89c4-9c656dc95353",
+      "name": "Qdrant Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "position": [
+        1456,
+        64
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "qdrantApi": {
+          "id": "sFfERYppMeBnFNeA",
+          "name": "Local QdrantApi database"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:v1.5"
+      },
+      "id": "6cb538e5-9695-48ae-95f4-e96f8141f076",
+      "name": "Embeddings Ollama",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "position": [
+        1376,
+        272
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "id": "725652e6-472b-491d-920c-8a9d536dbb4e",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        1520,
+        272
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# Data Ingestion\n## Add data to the semantic database",
+        "height": 892,
+        "width": 1832,
+        "color": 4
+      },
+      "id": "f927f47a-8128-48b5-898e-7aa8f1992d00",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.user_prompt }}",
+        "options": {
+          "systemMessage": "={{ $json.system_prompt }}",
+          "returnIntermediateSteps": false
+        }
+      },
+      "id": "c258d5f0-653f-49f6-8bd4-bfd808a6be02",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        3856,
+        336
+      ],
+      "typeVersion": 2,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:v1.5"
+      },
+      "id": "82efc043-114e-498a-97fa-dbd44ddfb5b7",
+      "name": "Embeddings Ollama1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "position": [
+        4192,
+        720
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "breakpointThreshold": 0.65
+      },
+      "type": "@bitovi/n8n-nodes-semantic-text-splitter.semanticTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        432
+      ],
+      "id": "7f7a23dc-6755-4a86-9516-e297f923fbf0",
+      "name": "Semantic Text Splitter1"
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of $input.all()) {\n  if (item.binary && item.binary.data) {\n    // Cambiar el mimeType\n    item.binary.data.mimeType = 'text/plain';\n\n    // Cambiar el nombre del archivo (fileName)\n    if (item.binary.data.fileName) {\n      item.binary.data.fileName = item.binary.data.fileName.replace(/\\.md$/, '.txt');\n    }\n\n    // Cambiar la extensión del archivo (fileExtension)\n    item.binary.data.fileExtension = 'txt';\n  }\n}\nreturn $input.all();\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        192
+      ],
+      "id": "0de0b63f-992e-4a2f-a1f1-db91f090885f",
+      "name": "Md to Txt"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener el nombre del modelo del agente AI\nconst modelName = $('Globals').first().json['chat-bot-model'] || 'unknown-model';\n\n// Usar el timestamp global que viene del nodo anterior (en lugar de generar uno nuevo)\nconst timeStamp = $('Global TimeStamp').first().json.global_timestamp;\nif (!timeStamp) {\n  throw new Error('No se encontró el timestamp global');\n}\n\n// Usar path predeterminado si no está disponible en los datos\nconst answersPath = $('Globals').first()?.json?.['repo-github']?.['answers-path'] || '';\n\n// Crear el directorio base para TODOS los archivos\nconst baseDirectory = `${answersPath}${timeStamp}-${modelName}/`;\n\n// Procesar todos los items de entrada\nconst results = [];\nfor (const item of $input.all()) {\n  const newItem = {\n    json: {      \n      file_name: item.json.case.replace(/\\.py$/, '.md'),\n      path: baseDirectory,\n      result: item.json.result\n    }\n  };\n  results.push(newItem);\n}\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4656,
+        480
+      ],
+      "id": "b5f8aa4c-9d9f-4607-b582-1f9aedcd67f3",
+      "name": "Target Folder"
+    },
+    {
+      "parameters": {
+        "content": "## Seting Global Configuration and Start Workflows",
+        "height": 252,
+        "width": 680
+      },
+      "id": "945a357c-a238-4f61-bde3-e31f1bd98bb8",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        592,
+        592
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": "bge-m3:567m"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        576
+      ],
+      "id": "22e89f41-4e9d-4dfc-8a4b-cb2a668e312d",
+      "name": "Embeddings Ollamas"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e3a91689-1cb3-4ef9-9f8f-a835b210dfdd",
+              "name": "rag_chatbot_step",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "3b50c6cf-6999-4dcc-b9e8-9b48ec294800",
+              "name": "is_restricted",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "418f0c63-bfa1-4b1e-afc3-a439bc322048",
+              "name": "no_refactoring_chatbot_step",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "9a49b53b-a975-4399-8794-af34e0c12605",
+              "name": "repo-github.owner",
+              "value": "jose-manuel-suarez",
+              "type": "string"
+            },
+            {
+              "id": "0bc347af-0108-4b05-a195-6b8b8370b94f",
+              "name": "repo-github.name",
+              "value": "qiskit_rag",
+              "type": "string"
+            },
+            {
+              "id": "758ce39d-86f5-47c1-8482-a6c8edd62b15",
+              "name": "repo-github.data-ingestion-path",
+              "value": "data-ingestion/",
+              "type": "string"
+            },
+            {
+              "id": "9d6b6580-ac46-4b5f-88fa-095f285305c4",
+              "name": "repo-github.data-rag-chatbot-path",
+              "value": "data-rag-chatbot/",
+              "type": "string"
+            },
+            {
+              "id": "57acb4da-d073-4968-9fb4-4c0a9c7e384a",
+              "name": "repo-github.snippets-path",
+              "value": "data-rag-chatbot/snippets/",
+              "type": "string"
+            },
+            {
+              "id": "3ba41241-0620-49aa-b0d8-d183974dd539",
+              "name": "repo-github.prompts-path",
+              "value": "data-rag-chatbot/prompts/",
+              "type": "string"
+            },
+            {
+              "id": "90978372-5b87-42fe-abdf-87a73a2a2422",
+              "name": "repo-github.answers-path",
+              "value": "answers/",
+              "type": "string"
+            },
+            {
+              "id": "35383060-3cf8-4fbf-bf9f-06416a999809",
+              "name": "target-repo-url",
+              "value": "https://github.com/",
+              "type": "string"
+            },
+            {
+              "id": "6dc30f07-aa7a-476c-974b-57165d736746",
+              "name": "target-version",
+              "value": "1.0.0",
+              "type": "string"
+            },
+            {
+              "id": "ab20df8d-090f-488c-b4cd-8be228a2aa2f",
+              "name": "only_qrn_for_data_ingestion",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "0551a422-157a-4904-aff7-76cf9eeec885",
+              "name": "user_prompt_file",
+              "value": "user_prompt.md",
+              "type": "string"
+            },
+            {
+              "id": "62370c41-c776-44d2-8b4e-8115532cd675",
+              "name": "system_prompt_file",
+              "value": "system_prompt_free_w_qrn_w_tax.md",
+              "type": "string"
+            },
+            {
+              "id": "dd03c801-ce11-489b-806c-f5b25c859172",
+              "name": "chat-bot-model",
+              "value": "google-gemini-2.5-flash",
+              "type": "string"
+            },
+            {
+              "id": "c119a025-e395-4fd1-a987-5e8f8f3043fe",
+              "name": "database-knowledge-name",
+              "value": "Qdrant Vector Store",
+              "type": "string"
+            },
+            {
+              "id": "bb67a020-da99-4217-b31c-905721cedb12",
+              "name": "qdrant-collection",
+              "value": "rag_ddbb",
+              "type": "string"
+            },
+            {
+              "id": "7bc5dec5-6eac-4f78-bdbd-9d31f41331b7",
+              "name": "taxonomy-filename",
+              "value": "tax_gpt_1.0.0.md",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        816,
+        672
+      ],
+      "id": "2d4185c0-9d84-4daa-b2ea-97dcde75ecf7",
+      "name": "Globals"
+    },
+    {
+      "parameters": {
+        "content": "## Descra de Archivos",
+        "height": 400,
+        "width": 1248,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        32,
+        144
+      ],
+      "id": "29b386be-a0e2-431d-9a7a-bc2dcb58d359",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dc7edbcb-1ffd-4fa9-8269-a60a2430152e",
+              "leftValue": "={{ $json.rag_chatbot_step }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1152,
+        672
+      ],
+      "id": "ef3673f8-ab1b-4727-aa9d-dbf0e7670332",
+      "name": "Ingest or ChatBot Logic"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        528,
+        176
+      ],
+      "id": "16f200f0-5f9a-4bc2-b824-530eae8af65b",
+      "name": "Loop Over Files"
+    },
+    {
+      "parameters": {
+        "content": "# Data Processing\n## Pre-processing before invocation",
+        "height": 1036,
+        "width": 1728
+      },
+      "id": "862a8195-ffe3-4ae8-ab86-98305f090e82",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1856,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "value": "=https://github.com/{{ $json['repo-github'].owner }}",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "=https://github.com/{{ $json['repo-github'].owner }}/{{ $json['repo-github'].name }}",
+          "mode": "url"
+        },
+        "filePath": "={{ $json['repo-github']['snippets-path'] }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        2144,
+        416
+      ],
+      "id": "ad00de83-00fc-4f6d-b4f7-325697c5957e",
+      "name": "Snippets",
+      "webhookId": "0f576d05-825f-474f-9c59-0ecd17b0b0dc",
+      "credentials": {
+        "githubApi": {
+          "id": "uBKzF4rTCQm2nHgd",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "535abfda-dac7-490b-8c83-3a36c56dea3a",
+              "name": "snippet_name",
+              "value": "={{ $('Snippets').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "adc34deb-619c-47cc-a3ae-004c0143b811",
+              "name": "python_code",
+              "value": "={{ $data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2496,
+        416
+      ],
+      "id": "d0bb96b7-4340-457d-9428-3293b31ac1f7",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0f0c4f55-707d-4885-9647-d626a022dd50",
+              "leftValue": "={{ $json.snippet_name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "1adecdcb-93e2-46d1-9674-736523bad34d",
+              "leftValue": "={{ $json.snippet_name }}",
+              "rightValue": ".py",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            },
+            {
+              "id": "f60e1498-01f6-4b88-8579-a35ae78a05e8",
+              "leftValue": "={{ $json.python_code }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2672,
+        416
+      ],
+      "id": "fbe4e94d-d0d2-40ee-8e21-3212ff8dac1c",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "content": "# Chatbot",
+        "height": 864,
+        "width": 736,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3616,
+        176
+      ],
+      "id": "c19d053d-9582-4cd3-8c94-edf74e011bde",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "# Files Upload",
+        "height": 864,
+        "width": 608,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4384,
+        176
+      ],
+      "id": "33b75483-345f-45d2-9779-d7bf3da4245d",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2352,
+        640
+      ],
+      "id": "53c8ad71-4beb-4dba-8966-25a3ff33dcee",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 100,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        432
+      ],
+      "id": "4f78a27e-bb39-49a8-b0b0-c8362017f6ff",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "content": "# Preprosesing Mode Only (Deprecated)",
+        "height": 592,
+        "width": 736,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3616,
+        1120
+      ],
+      "id": "e5a00b6e-6fc1-497b-ba53-5644036511cd",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3696,
+        1504
+      ],
+      "id": "d4fead7b-1ec4-4b95-bcc7-6a3e568b1151",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=separame esto segun sus librerias de qiskit utilizadas, solo las de qiskit\n(Ejemlplo from quiskit import aer\nLinea 1 de aer\nLinea 2 de aer\n\nform quistit impor fakeprovider.......\nLinea 1 de Fake\n.....\n\n)\nSi una linea pertenece a mas de una categoria ponelo en ambas, devolver en formato json separando las distintas libreria , todo junto asi lo copio. Los saltos de lineas ponelos como /n\n\nCodigo a separar\nimport os\nfrom datetime import datetime\nfrom qiskit import QuantumCircuit, qasm, execute\nimport matplotlib.pyplot as plt\nfrom utils import getMyBackend\n\nqc = QuantumCircuit(2, 2)\nqc.h(0)\nqc.cx(0, 1)\nqc.measure(0, 0)\nqc.measure(1, 1)\n\njob = execute(qc, getMyBackend(), shots=1000)\nresult = job.result().get_counts(qc)\nplt.show()",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        3696,
+        1248
+      ],
+      "id": "e93d7f0a-e2dd-4fa2-9267-521960caa8e3",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "jsCode": "let fullString = $json.output;\n\n// 1. Limpia bloques de markdown (```json y ```)\nfullString = fullString.replace(/```json/g, \"\").replace(/```/g, \"\");\n\n// 2. Intenta parsear el objeto completo\nlet parsed;\ntry {\n  parsed = JSON.parse(fullString);\n} catch (e) {\n  throw new Error(\"No se pudo parsear la entrada como JSON: \" + e.message + \"\\nEntrada:\\n\" + fullString);\n}\n\n// 3. Transforma el objeto en un array de {library, lines}\nconst finalOutput = Object.entries(parsed).map(([key, value]) => {\n  return { library: key, lines: value };\n});\n\n// 4. Devuelve cada objeto como ítem separado en n8n\nreturn finalOutput.map(item => ({ json: item }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3984,
+        1392
+      ],
+      "id": "5ad447f1-129c-49df-a249-b2490a7305b2",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4176,
+        1456
+      ],
+      "id": "ef8001ae-0372-474d-933a-a277e6af7cb0",
+      "name": "Pedro"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "=https://github.com/{{ $('Globals').item.json['repo-github'].owner }}",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "=https://github.com/{{ $('Globals').item.json['repo-github'].owner }}/{{ $('Globals').item.json['repo-github'].name }}",
+          "mode": "url"
+        },
+        "filePath": "={{ $json.path }}{{ $json.file_name }}",
+        "fileContent": "={{ $json.result }}",
+        "commitMessage": "=execution: {{ $('Global TimeStamp').item.json.global_timestamp }} model: {{ $('Globals').item.json['chat-bot-model'] }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        4832,
+        832
+      ],
+      "id": "0a033fa6-a742-4ea5-9e28-92a3556838ee",
+      "name": "Create a file",
+      "webhookId": "d918fda6-8f2e-4085-b0c8-5480f955a594",
+      "credentials": {
+        "githubApi": {
+          "id": "uBKzF4rTCQm2nHgd",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3696,
+        704
+      ],
+      "id": "bbf121ae-bd9c-4d70-9b73-6e4c85855bac",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Jiu03YvUKNna6LEv",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const onlyQRN = $('Globals').first().json.only_qrn_for_data_ingestion;\n\nreturn $input.all().filter(item => {\n    if (onlyQRN) {\n      return item.json.name && item.json.name.startsWith('qrn_');\n    }\n    return true;\n  }\n);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        192
+      ],
+      "id": "0ff25938-8140-43ca-a808-721d0743a2b4",
+      "name": "Filters"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $json['target-repo-url'] }}{{ $json['repo-github'].owner }}",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $json['target-repo-url'] }}{{ $json['repo-github'].owner }}/{{ $json['repo-github'].name }}",
+          "mode": "url"
+        },
+        "filePath": "={{ $json['repo-github']['data-ingestion-path'] }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        64,
+        368
+      ],
+      "id": "e52e4fd7-b917-4d6c-9340-4ce2531bddc1",
+      "name": "List FIles",
+      "webhookId": "0c0fa06d-a9dc-4624-a270-7691afad516a",
+      "credentials": {
+        "githubApi": {
+          "id": "uBKzF4rTCQm2nHgd",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "23b5d8ac-8b72-47eb-a747-91185de2a75c",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "={{ $('Globals').item.json['target-version'] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "383502df-8925-416d-9a47-6b82dcad15bc",
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "file",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "92378746-aa14-4948-a861-674bf8e5ebc2",
+              "leftValue": "={{ $json.size }}",
+              "rightValue": 100,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        176
+      ],
+      "id": "8b3a4598-988c-4a2a-bded-e18f30d85bdf",
+      "name": "Objetive Version"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        640,
+        672
+      ],
+      "id": "1e702142-8cc8-417e-9c9f-84e6a9051a61",
+      "name": "Start"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b8cf3f0d-60ad-488c-bf0e-342fca61034d",
+              "name": "repo-github.owner",
+              "value": "jose-manuel-suarez",
+              "type": "string"
+            },
+            {
+              "id": "609c6d74-1353-450e-b3b3-8c26ddf3ae78",
+              "name": "repo-github.name",
+              "value": "qiskit_rag",
+              "type": "string"
+            },
+            {
+              "id": "c734f48d-2ac7-4094-8424-0fa6508c7546",
+              "name": "repo-github.data-ingestion-path",
+              "value": "data-ingestion/",
+              "type": "string"
+            },
+            {
+              "id": "0ea63c02-e8aa-4985-bc39-1fe4b84e6da3",
+              "name": "repo-github.data-rag-chatbot-path",
+              "value": "data-rag-chatbot/",
+              "type": "string"
+            },
+            {
+              "id": "f7494b16-c156-46db-87bc-c74f5d4a7bcb",
+              "name": "repo-github.snippets-path",
+              "value": "data-rag-chatbot/snippets/",
+              "type": "string"
+            },
+            {
+              "id": "cc3a374a-6468-4820-be03-f86972042d89",
+              "name": "repo-github.prompts-path",
+              "value": "data-rag-chatbot/prompts/",
+              "type": "string"
+            },
+            {
+              "id": "c0b17473-10f4-4517-a32c-4e5881ef8de1",
+              "name": "repo-github.answers-path",
+              "value": "data-rag-chatbot/answers/",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1904,
+        512
+      ],
+      "id": "210cdfec-ba68-4a41-94f9-b19f47c30f3e",
+      "name": "Global Github for Running"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $('Globals').item.json['target-repo-url'] }}{{ $('Globals').item.json['repo-github'].owner }}",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $('Globals').item.json['target-repo-url'] }}{{ $('Globals').item.json['repo-github'].owner }}/{{ $('Globals').item.json['repo-github'].name }}",
+          "mode": "url"
+        },
+        "filePath": "={{ $('Globals').item.json['repo-github']['data-ingestion-path'] }}{{ $json.name }}",
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        944,
+        192
+      ],
+      "id": "13f643cc-71e6-4851-a729-ff9dd4954e21",
+      "name": "Get File",
+      "webhookId": "0f576d05-825f-474f-9c59-0ecd17b0b0dc",
+      "credentials": {
+        "githubApi": {
+          "id": "uBKzF4rTCQm2nHgd",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.download_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2320,
+        416
+      ],
+      "id": "27a969c4-5c8d-411d-956c-e525b18bcac3",
+      "name": "HTTP Requests"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f325007d-8d5b-49c6-afd2-6546698dcb47",
+              "name": "case",
+              "value": "={{ $('Incrustacion Snippet en UserPrompt').item.json.case }}",
+              "type": "string"
+            },
+            {
+              "id": "a76f22bc-5b24-41bb-838c-30153d70c65b",
+              "name": "result",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4416,
+        336
+      ],
+      "id": "0b35808f-2750-4b43-bc23-5910c08efa26",
+      "name": "Naming"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "value": "=https://github.com/{{ $json['repo-github'].owner }}",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "=https://github.com/{{ $json['repo-github'].owner }}/{{ $json['repo-github'].name }}",
+          "mode": "url"
+        },
+        "filePath": "={{ $json['repo-github']['prompts-path'] }}"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        2144,
+        640
+      ],
+      "id": "2405b516-6913-4efe-be8e-8b137515b468",
+      "name": "Prompts",
+      "webhookId": "0c0fa06d-a9dc-4624-a270-7691afad516a",
+      "credentials": {
+        "githubApi": {
+          "id": "uBKzF4rTCQm2nHgd",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ba9edced-a07c-4057-a80f-a08c245394d7",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "={{ $('Globals').item.json.user_prompt_file }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "2bb7a83d-8082-49bc-adff-ea8da318b91c",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "={{ $('Globals').item.json.system_prompt_file }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2528,
+        640
+      ],
+      "id": "92071d77-c38a-4700-a41d-dda4f59b7bb3",
+      "name": "Filtro 2 prompts"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "535abfda-dac7-490b-8c83-3a36c56dea3a",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "adc34deb-619c-47cc-a3ae-004c0143b811",
+              "name": "path",
+              "value": "={{ $json.path }}",
+              "type": "string"
+            },
+            {
+              "id": "b39c2cb4-5f75-41f0-b4ef-66af5d306794",
+              "name": "content",
+              "value": "={{ $json.download_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2144,
+        848
+      ],
+      "id": "98a49fc9-4c28-4bbf-922e-e16da7d94823",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.content }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2368,
+        848
+      ],
+      "id": "8b7dc241-b9c5-4b09-bf5f-d84d936d4f56",
+      "name": "HTTP Requests1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener la versión objetivo desde los globales\nconst targetVersion = $('Globals').first().json['target-version'] || '1.0.0';\n// Obtener el taxonomy filename desde los globales\nconst taxonomyFilename = $('Globals').first().json['taxonomy-filename'] || 'taxonomia';\n\n// Tomar los dos registros del array y asignarlos a campos específicos\nconst items = $input.all();\nif (items.length >= 2) {\n  // Reemplazar {target-version} y {taxonomy-filename} en el system prompt\n  let systemPrompt = items[0].json.data.replace(/{target-version}/g, targetVersion);\n  systemPrompt = systemPrompt.replace(/{taxonomy-filename}/g, taxonomyFilename);\n  \n  // Solo reemplazar {target-version} en el user prompt\n  const userPrompt = items[1].json.data.replace(/{target-version}/g, targetVersion);\n  const newItem = {\n    system_prompt: systemPrompt,\n    user_prompt: userPrompt\n  }\n  return [newItem];\n} else {\n  throw new Error('Se esperaban al menos 2 registros de entrada');\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2560,
+        848
+      ],
+      "id": "643da125-9346-4d01-a1ee-b0365ce86f31",
+      "name": "Prompts sistema y usuario"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3200,
+        672
+      ],
+      "id": "9119966c-3469-494c-a118-71b728091270",
+      "name": "Loop Over each Snippet",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3952,
+        704
+      ],
+      "id": "35c33320-6c6f-41f1-a3b5-b234bc79e2d0",
+      "name": "Google Gemini 2.5 Flash",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JRi4yF1H4P3RVtWg",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2912,
+        672
+      ],
+      "id": "c6e66bf3-5e4b-44fd-ad9d-c449cea6d233",
+      "name": "Merge Ready"
+    },
+    {
+      "parameters": {
+        "model": "gpt-oss:20b",
+        "options": {}
+      },
+      "id": "1488a6ee-39fa-4a9b-aee8-b0b637677671",
+      "name": "Ollama Joaquín gpt-oss",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "position": [
+        3824,
+        592
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "ollamaApi": {
+          "id": "UURqPwJ9v0Q23FAw",
+          "name": "Joaquín Ollama Service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener el item de entrada\nconst item = $input.all()[0].json;\n\n// Extraer el código Python (quitando el wrapper JSON si es necesario)\nlet pythonCode = item.python_code;\n// Si python_code viene como string JSON, parsearlo para extraer el data\nif (typeof pythonCode === 'string' && pythonCode.includes('\"data\"')) {\n  try {\n    const parsedCode = JSON.parse(pythonCode);\n    pythonCode = parsedCode.data || pythonCode;\n  } catch (e) {\n    // Si falla el parseo, usar el valor original\n    pythonCode = pythonCode;\n  }\n}\n\n// Incrustar el snippet de Python en el user_prompt\nconst userPromptWithSnippet = item.user_prompt.replace(/{qiskit-snippet}/g, pythonCode);\n\n// Crear el nuevo item con los campos requeridos + timestamp global\nconst newItem = {\n  case: item.snippet_name,\n  system_prompt: item.system_prompt,\n  user_prompt: userPromptWithSnippet\n};\n\nreturn [newItem];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3472,
+        336
+      ],
+      "id": "f3cf065b-c130-434e-a6c5-c6121f66ce8c",
+      "name": "Incrustacion Snippet en UserPrompt"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generar timestamp global único para toda la ejecución\nconst now = new Date();\nconst globalTimestamp = now.toLocaleString('sv-SE', {\n  timeZone: 'America/Santiago'\n})\n.replace(' ', '_')\n.replace(/[:]/g, '-')\n.slice(0, 19);\n\n// Asignar a todos los items\nconst items = $input.all().map(item => {\n  return {\n    json: {\n      ...item.json,\n      global_timestamp: globalTimestamp\n    }\n  };\n});\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        672
+      ],
+      "id": "00d52ba9-5a65-4589-aee2-d4db68ca11c4",
+      "name": "Global TimeStamp"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "data",
+        "toolDescription": "Retrieve data from a semantic database to answer questions",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "rag_ddbb",
+          "mode": "id"
+        },
+        "topK": 10,
+        "options": {}
+      },
+      "id": "508254ed-2d4c-4a1d-a637-ae4d9a66aed5",
+      "name": "Qdrant Vector Store RAG",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "position": [
+        4096,
+        560
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "qdrantApi": {
+          "id": "sFfERYppMeBnFNeA",
+          "name": "Local QdrantApi database"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Recopilar todos los parámetros globales\nconst globals = $('Globals').first().json;\n// Usar el timestamp global que viene del nodo anterior (en lugar de generar uno nuevo)\nconst timeStamp = $('Global TimeStamp').first().json.global_timestamp;\nif (!timeStamp) {\n  throw new Error('No se encontró el timestamp global');\n}\n\n// Crear path base usando la misma lógica que Target Folder\nconst modelName = globals['chat-bot-model'] || 'unknown-model';\nconst answersPath = globals['repo-github']['answers-path'] || '';\nconst baseDirectory = `${answersPath}${timeStamp}-${modelName}/`;\n\n// Crear objeto de metadatos\nconst metadata = {\n  experiment: {\n    timestamp: timeStamp,\n    model: modelName,\n    version: globals['target-version'],\n    execution_id: timeStamp\n  },\n  configuration: {\n    rag_chatbot_step: globals.rag_chatbot_step,\n    is_restricted: globals.is_restricted,\n    no_refactoring_chatbot_step: globals.no_refactoring_chatbot_step,\n    only_qrn_for_data_ingestion: globals.only_qrn_for_data_ingestion\n  },\n  github: {\n    owner: globals['repo-github'].owner,\n    repository: globals['repo-github'].name,\n    paths: {\n      data_ingestion: globals['repo-github']['data-ingestion-path'],\n      data_rag_chatbot: globals['repo-github']['data-rag-chatbot-path'],\n      snippets: globals['repo-github']['snippets-path'],\n      prompts: globals['repo-github']['prompts-path'],\n      answers: globals['repo-github']['answers-path']\n    }\n  },\n  models: {\n    chat_model: globals['chat-bot-model'],\n    embedding_model: \"nomic-embed-text:v1.5\",\n    database: globals['database-knowledge-name'],\n    qdrant_collection: globals['qdrant-collection']\n  },\n  files: {\n    user_prompt_file: globals.user_prompt_file,\n    system_prompt_file: globals.system_prompt_file,\n    taxonomy_filename: globals['taxonomy-filename']\n  },\n  execution_parameters: {\n    target_repo_url: globals['target-repo-url'],\n    embedding_batch_size: 50,\n    breakpoint_threshold: 0.65,\n    chunk_overlap: 100\n  }\n};\n\n// Crear el item para el archivo de metadata\nconst newItem = {\n  json: {\n    file_name: \"metadata.json\",\n    path: baseDirectory,\n    result: JSON.stringify(metadata, null, 2)\n  }\n};\n\n// Retornar como array con un solo item\nreturn [newItem];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2912,
+        848
+      ],
+      "id": "45ffdb7d-daf3-4c08-9cf5-eb03cc6224ec",
+      "name": "Generate Metadata",
+      "executeOnce": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4496,
+        832
+      ],
+      "id": "c167db4e-8a4d-4bbc-b411-e26e223d54a8",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Embeddings Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store RAG",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Naming",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Md to Txt": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Target Folder": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Globals": {
+      "main": [
+        [
+          {
+            "node": "Global TimeStamp",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollamas": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Semantic Text Splitter1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ingest or ChatBot Logic": {
+      "main": [
+        [
+          {
+            "node": "Global Github for Running",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "List FIles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Files": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Filters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Snippets": {
+      "main": [
+        [
+          {
+            "node": "HTTP Requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Merge Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Filtro 2 prompts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Pedro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pedro": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Pedro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filters": {
+      "main": [
+        [
+          {
+            "node": "Get File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List FIles": {
+      "main": [
+        [
+          {
+            "node": "Objetive Version",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Objetive Version": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Globals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Global Github for Running": {
+      "main": [
+        [
+          {
+            "node": "Snippets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prompts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Files",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Md to Txt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Requests": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Naming": {
+      "main": [
+        [
+          {
+            "node": "Target Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompts": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a file": {
+      "main": [
+        [
+          {
+            "node": "Loop Over each Snippet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtro 2 prompts": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Requests1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Requests1": {
+      "main": [
+        [
+          {
+            "node": "Prompts sistema y usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompts sistema y usuario": {
+      "main": [
+        [
+          {
+            "node": "Merge Ready",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Loop Over each Snippet": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Incrustacion Snippet en UserPrompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini 2.5 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Ready": {
+      "main": [
+        [
+          {
+            "node": "Loop Over each Snippet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Incrustacion Snippet en UserPrompt": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Global TimeStamp": {
+      "main": [
+        [
+          {
+            "node": "Ingest or ChatBot Logic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store RAG": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Metadata": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Create a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f61e3eb7-29f5-437e-8ad5-33170c7a1676",
+  "meta": {
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "rqFH0MOq1BFwNvhc",
+  "tags": []
+}

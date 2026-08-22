@@ -1,0 +1,28 @@
+| Line | Code | Scenario | Scenario Id | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :---------: | :-------: | :------- | :---------- |
+| 11 | `qc.measure_all_qubits(0, 0);` | Deprecation -> `measure_all_qubits()` is deprecated. Use `QuantumCircuit.measure_all()` instead. | * | Internal Knowledge | `qc.measure_all_qubits` | `qc.measure_all()` |
+| 12 | `qc.medir(1, 1);` | Deprecation -> `medir()` is not a valid Qiskit method. It seems to be a typo for `measure`. | * | Internal Knowledge | `qc.medir` | `qc.measure(1, 1)` |
+
+
+```python
+import os;
+import mylib;
+
+# import QuantumCircuit funcionalities
+from qiskit import QuantumCircuit;
+
+    # import datetime funcionalities
+from datetime import datetime
+
+    # create a Quantum Circuit
+qc = QuantumCircuit(2, 2);
+qc.h(0);
+qc.cx(0, 1)
+qc.measure_all();
+qc.measure(1, 1);
+
+mylib.do_something();
+
+# print
+print("work done !")
+```

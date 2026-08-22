@@ -1,0 +1,5 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :-------: | :------- | :---------- |
+| 3 | `from qiskit import QuantumCircuit, qasm, execute` | Deprecation -> `qasm` module removed | 158a74c7-1246-4447-a50e-3fe19416599b | qiskit.qasm | `from qiskit import QuantumCircuit, execute` |
+| 3 | `from qiskit import QuantumCircuit, qasm, execute` | Deprecation -> `execute` function removed | 02c83a5a-c28d-46c6-acc2-4db931c4c15a | qiskit.execute | |
+| 12 | `job = execute(qc, getMyBackend(), shots=1000)` | Deprecation -> `execute` function removed. Use `Sampler` or `Estimator` instead. | 02c83a5a-c28d-46c6-acc2-4db931c4c15a | qiskit.execute | `from qiskit_ibm_runtime import QiskitRuntimeService, Sampler` <br> `service = QiskitRuntimeService()` <br> `backend = service.get_backend("ibm_brisbane")` <br> `sampler = Sampler(backend=backend)` <br> `job = sampler.run(qc, shots=1000)` |

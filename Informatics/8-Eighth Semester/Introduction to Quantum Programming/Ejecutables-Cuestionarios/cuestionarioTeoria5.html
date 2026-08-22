@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario: Medición y Autovalores</title>
+
+    <!-- Inclusión de MathJax para renderizar LaTeX -->
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['\\(', '\\)'], ['$', '$']],
+            displayMath: [['\\[', '\\]'], ['$$', '$$']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+
+    <!-- Estilos CSS para la aplicación -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            box-sizing: border-box;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #0056b3;
+            margin: 0;
+        }
+
+        .quiz-header p {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-top: 8px;
+        }
+
+        #question-counter {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        #question-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            min-height: 80px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        @media (min-width: 640px) {
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+
+        .option-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #0056b3;
+            background-color: #f7fafc;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background-color: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .hint-section {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .hint-btn {
+            background: none;
+            border: none;
+            color: #0056b3;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        #hint-text {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            color: #475569;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        #feedback-panel {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #feedback-panel.correct-feedback {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00BCD4;
+        }
+
+        #feedback-panel.incorrect-feedback {
+            background-color: #fff1f2;
+            border-left: 5px solid #f43f5e;
+        }
+
+        .theory-btn {
+            background-color: transparent;
+            color: #0056b3;
+            border: 2px solid #0056b3;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .theory-btn:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .navigation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 30px;
+        }
+
+        .nav-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #004494;
+        }
+
+        .nav-btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        #score-container {
+            text-align: center;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 16px;
+            text-align: left;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            color: #0056b3;
+            margin-top: 0;
+        }
+
+        .modal-close-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Cuestionario</h1>
+            <p>Basado en la Teoría 5</p>
+        </div>
+
+        <div id="quiz-content">
+            <div id="question-counter"></div>
+            <div id="question-text"></div>
+            <div class="options-grid" id="options-container"></div>
+            <div class="hint-section" id="hint-section"></div>
+            <div id="feedback-panel"></div>
+        </div>
+
+        <div id="score-container" style="display: none;">
+             <h2>Cuestionario Finalizado</h2>
+             <p id="score-text" style="font-size: 1.2rem;"></p>
+             <button class="nav-btn" onclick="restartQuiz()">Volver a Intentar</button>
+        </div>
+
+
+        <div class="navigation-controls">
+            <button class="nav-btn" id="prev-btn" onclick="prevQuestion()">Anterior</button>
+            <button class="nav-btn" id="next-btn" onclick="nextQuestion()">Siguiente</button>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="theory-modal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modal-text"></div>
+            <button class="modal-close-btn" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Según el postulado de la medición, los únicos resultados posibles de medir un observable \\(\\hat{A}\\) son:",
+                options: [ "Sus autovectores.", "Sus autovalores.", "Su traza.", "Los elementos de su diagonal." ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Los autovectores son los estados en los que colapsa el sistema, no los resultados numéricos de la medición.",
+                    "¡Correcto! Este es un pilar de la mecánica cuántica. Los posibles valores clásicos que podemos obtener de una medición están determinados por los autovalores del operador Hermitiano que representa a dicha medición.",
+                    "Incorrecto. La traza es la suma de los autovalores, que corresponde al valor esperado si el estado es una mezcla equitativa, pero no es el resultado de una única medición.",
+                    "Incorrecto. Los elementos de la diagonal solo coinciden con los autovalores si la matriz ya está diagonalizada."
+                ],
+                hint: "Recuerda la diferencia entre el estado en el que queda el sistema y el valor numérico que se obtiene.",
+                theoryHTML: `<h2>El Postulado de la Medición</h2>
+                    <p>Este es uno de los postulados fundamentales de la mecánica cuántica, que conecta el álgebra con el experimento.</p>
+                    <ol>
+                        <li>Toda cantidad físicamente medible (un <b>observable</b>, como el espín) se representa por un <b>operador</b>.</li>
+                        <li>Los únicos resultados posibles de la medición de ese observable son los <b>autovalores</b> de dicho operador.</li>
+                        <li>Inmediatamente después de la medición, el estado del sistema <b>colapsa</b> al <b>autovector</b> correspondiente al autovalor que se obtuvo.</li>
+                    </ol>`
+            },
+            {
+                question: "Un vector \\(|\\psi\\rangle\\) es un autovector de un operador \\(\\hat{A}\\) si al aplicar el operador, el vector:",
+                options: [ "Se convierte en el vector nulo.", "Rota 90 grados.", "No cambia su dirección, solo es re-escalado.", "Se invierte." ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esto solo ocurre si el autovalor es 0 y el operador no es invertible.",
+                    "Incorrecto. Una rotación generalmente cambia la dirección del vector.",
+                    "¡Correcto! Esta es la definición conceptual. La ecuación \\(\\hat{A}|\\psi\\rangle = \\lambda|\\psi\\rangle\\) significa que el vector resultante \\(\\hat{A}|\\psi\\rangle\\) es paralelo al vector original \\(|\\psi\\rangle\\), y \\(\\lambda\\) es el factor de escala.",
+                    "Incorrecto. La inversión es un caso particular donde el factor de escala (autovalor) es -1."
+                ],
+                hint: "Piensa en la definición matemática: \\(\\hat{A}|\\psi\\rangle = \\lambda|\\psi\\rangle\\). ¿Qué le pasa al vector \\(|\\psi\\rangle\\)?",
+                theoryHTML: `<h2>Autovectores y Autovalores</h2>
+                    <p>Para casi todo operador, existen ciertos <b>vectores especiales</b> que la transformación los afecta de una manera especial. Al aplicar el operador, estos vectores <b>no cambian su dirección</b>. Lo único que les ocurre es que son re-escalados (estirados o encogidos).</p>
+                    <ul>
+                        <li>Estos vectores se llaman <b>autovectores</b>.</li>
+                        <li>El factor por el cual son re-escalados se llama <b>autovalor</b>.</li>
+                    </ul>
+                    <h3>Definición Formal</h3>
+                    <p>Un vector no nulo \\(|\\psi\\rangle\\) es un <b>autovector</b> de un operador \\(\\hat{A}\\) si existe un escalar \\(\\lambda\\) tal que:</p>
+                    <p style="text-align:center;">\\( \\hat{A}|\\psi\\rangle = \\lambda|\\psi\\rangle \\)</p>`
+            },
+            {
+                question: "Para que una cantidad física sea un observable (medible), debe ser representada por un operador Hermitiano. Esto es crucial porque los operadores Hermitianos garantizan que:",
+                options: [ "Sus autovalores son complejos y sus autovectores son ortogonales.", "Sus autovalores son reales y sus autovectores son colineales.", "Sus autovalores son reales y sus autovectores (para autovalores distintos) son ortogonales.", "Son siempre operadores unitarios." ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Los resultados de una medición deben ser reales, no complejos.",
+                    "Incorrecto. Sus autovectores forman una base, por lo que deben ser ortogonales, no colineales.",
+                    "¡Correcto! Estas dos propiedades son fundamentales. Los autovalores reales aseguran que los resultados de la medición sean números reales, y los autovectores ortogonales forman una base completa de estados perfectamente distinguibles (Teorema Espectral).",
+                    "Incorrecto. Un operador puede ser Hermitiano sin ser Unitario (y viceversa). Por ejemplo, los proyectores son Hermitianos pero no unitarios."
+                ],
+                hint: "Los resultados de laboratorio son números reales, y los estados de respuesta definitiva deben ser distinguibles entre sí.",
+                theoryHTML: `<h2>Operadores Hermitianos (o Hermíticos)</h2>
+                    <p>En un laboratorio, los resultados de las mediciones son siempre <b>números reales</b>. Por lo tanto, necesitamos una clase de operadores que garanticen que sus autovalores sean siempre números reales.</p>
+                    <p>Un operador \\(\\hat{A}\\) es <b>Hermitiano</b> si es igual a su adjunto hermitiano: \\( \\hat{A} = \\hat{A}^\\dagger \\).</p>
+                    <p>Esta condición garantiza dos propiedades fundamentales:</p>
+                    <ol>
+                        <li><b>Sus autovalores son siempre REALES.</b></li>
+                        <li><b>Sus autovectores correspondientes a autovalores DIFERENTES son siempre ORTOGONALES.</b></li>
+                    </ol>
+                    <p>Por esto, los <b>observables</b> físicos se representan por <b>operadores Hermitianos</b>.</p>`
+            },
+            {
+                question: "¿Cuál es la ecuación característica que se debe resolver para encontrar los autovalores \\(\\lambda\\) de una matriz A?",
+                options: [ "\\( \\det(A + \\lambda I) = 0 \\)", "\\( A - \\lambda I = 0 \\)", "\\( \\text{Tr}(A - \\lambda I) = 0 \\)", "\\( \\det(A - \\lambda I) = 0 \\)" ],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. El signo es incorrecto.",
+                    "Incorrecto. Esta es una ecuación matricial, y buscamos una ecuación escalar para \\(\\lambda\\).",
+                    "Incorrecto. Se debe usar el determinante, no la traza.",
+                    "¡Correcto! Esta ecuación surge de la condición de que la matriz \\((A - \\lambda I)\\) debe transformar un vector no nulo al vector nulo, lo que implica que no es invertible y su determinante debe ser cero."
+                ],
+                hint: "La solución requiere que una matriz no sea invertible. ¿Qué propiedad matemática de una matriz se relaciona con su invertibilidad?",
+                theoryHTML: `<h2>La Ecuación Característica</h2>
+                    <p>Para encontrar los autovalores, debemos resolver la ecuación \\( \\hat{A}|\\psi\\rangle = \\lambda|\\psi\\rangle \\). La reescribimos como:</p>
+                    <p style="text-align:center;">\\( (\\hat{A} - \\lambda\\hat{I})|\\psi\\rangle = \\vec{0} \\)</p>
+                    <p>Esta ecuación nos dice que la matriz \\((A-\\lambda I)\\) transforma el vector <b>no nulo</b> \\(|\\psi\\rangle\\) en el vector cero. Esto solo puede ocurrir si la matriz \\((A-\\lambda I)\\) <b>no es invertible</b>, es decir, su <b>determinante debe ser cero</b>.</p>
+                    <p>Por lo tanto, la ecuación a resolver es:</p>
+                    <p style="text-align:center;">\\( \\det(A - \\lambda I) = 0 \\)</p>`
+            },
+            {
+                question: "El Teorema Espectral es fundamental para la medición porque garantiza que:",
+                options: [ "Todo operador tiene autovalores reales.", "Los autovectores de cualquier operador Hermitiano forman una base ortonormal completa.", "Toda medición es un proceso reversible.", "La suma de las probabilidades siempre es 1." ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esto es una propiedad de los operadores Hermitianos, pero el Teorema Espectral va más allá.",
+                    "¡Correcto! Esto asegura que no hay 'puntos ciegos'. Cualquier estado cuántico se puede expresar como una superposición de los estados de respuesta de cualquier medición posible, haciendo la teoría consistente y predictiva.",
+                    "Incorrecto. La medición es un proceso irreversible.",
+                    "Incorrecto. La consistencia de las probabilidades es una consecuencia del Teorema Espectral, pero no es el teorema en sí."
+                ],
+                hint: "Este teorema asegura que no existen 'puntos ciegos' en el espacio de estados para ninguna medición.",
+                theoryHTML: `<h2>El Teorema Espectral</h2>
+                    <p>Para cualquier operador Hermitiano \\(\\hat{A}\\) que actúa sobre un espacio de N dimensiones, está garantizado que se pueden encontrar <b>N autovectores</b> que forman una <b>base ortonormal</b> para todo el espacio.</p>
+                    <p><b>¿Por qué es fundamental?</b><br>
+                    Garantiza que los "estados de respuesta" de cualquier observable (sus autovectores) forman una base completa. Esto asegura que la teoría de la medición cuántica sea lógicamente consistente. Si no formaran una base, existirían estados "ciegos" para los cuales la suma de probabilidades de medición no sería 1, lo cual sería una contradicción.</p>`
+            },
+            {
+                question: "Los autovalores del observable Pauli-Z son \\( \\lambda = +1, -1 \\). El autovector correspondiente al autovalor -1 es:",
+                options: [ "\\( |+\\rangle \\)", "\\( |0\\rangle \\)", "\\( |-\\rangle \\)", "\\( |1\\rangle \\)" ],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. Este es un autovector del observable Pauli-X.",
+                    "Incorrecto. \\(|0\\rangle\\) es el autovector de Z con autovalor +1.",
+                    "Incorrecto. Este es un autovector del observable Pauli-X.",
+                    "¡Correcto! Al aplicar Z a \\(|1\\rangle\\), obtenemos \\(\\hat{Z}|1\\rangle = -|1\\rangle = (-1) \\cdot |1\\rangle\\). Por lo tanto, \\(|1\\rangle\\) es el autovector con autovalor -1."
+                ],
+                hint: "Recuerda la acción de la compuerta Z sobre los estados de la base computacional: \\(\\hat{Z}|0\\rangle = |0\\rangle\\) y \\(\\hat{Z}|1\\rangle = -|1\\rangle\\).",
+                theoryHTML: `<h2>Autovectores del Observable Z</h2>
+                    <p>Para el operador Pauli-Z, \\(Z = \\begin{pmatrix} 1 & 0 \\\\ 0 & -1 \\end{pmatrix}\\), los autovalores y autovectores son:</p>
+                    <ul>
+                        <li><b>Autovalor \\(\\lambda_1 = +1\\):</b><br>
+                        Resolviendo \\(Z|\\psi\\rangle = 1 \\cdot |\\psi\\rangle\\), encontramos que el autovector es \\( |0\\rangle = \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix} \\).</li>
+                        <li><b>Autovalor \\(\\lambda_2 = -1\\):</b><br>
+                        Resolviendo \\(Z|\\psi\\rangle = -1 \\cdot |\\psi\\rangle\\), encontramos que el autovector es \\( |1\\rangle = \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix} \\).</li>
+                    </ul>`
+            },
+            {
+                question: "Si medimos un qubit en el estado \\(|+\\rangle\\) usando el observable Pauli-X, ¿cuál será el resultado?",
+                options: [ "Siempre +1.", "Siempre -1.", "50% de probabilidad de obtener +1 y 50% de -1.", "El resultado es indefinido." ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! El estado \\(|+\\rangle\\) es un autovector del observable X con autovalor +1. Los autovectores son 'estados de respuesta definitiva'. Si el sistema ya está en un autovector, la medición de ese observable siempre dará el autovalor correspondiente con 100% de certeza.",
+                    "Incorrecto. El autovalor correspondiente a \\(|+\\rangle\\) es +1.",
+                    "Incorrecto. La aleatoriedad ocurre cuando el estado medido es una superposición de los autovectores del observable.",
+                    "Incorrecto. El resultado es completamente predecible en este caso."
+                ],
+                hint: "El sistema ya está en uno de los 'estados de respuesta definitiva' para la pregunta que se le está haciendo.",
+                theoryHTML: `<h2>Medición y Estados Estables</h2>
+                    <p>Los únicos estados que son <b>"estables"</b> bajo una medición son aquellos que no son alterados por el operador de esa medición (salvo por un factor numérico). Es decir, sus autovectores.</p>
+                    <p>El estado \\(|+\\rangle\\) es un autovector del observable X, con autovalor +1:</p>
+                    <p style="text-align:center;">\\( \\hat{X}|+\\rangle = \\hat{X} \\left(\\frac{1}{\\sqrt{2}}(|0\\rangle+|1\\rangle)\\right) = \\frac{1}{\\sqrt{2}}(|1\\rangle+|0\\rangle) = (+1) \\cdot |+\\rangle \\)</p>
+                    <p>Si el sistema ya se encuentra en un autovector de un observable, el resultado de la medición de ese observable es 100% seguro: será el autovalor correspondiente.</p>`
+            },
+            {
+                question: "El valor esperado de un observable \\(\\hat{A}\\) en un estado \\(|\\psi\\rangle\\), denotado \\(\\langle \\hat{A} \\rangle\\), se calcula como:",
+                options: [ "\\( \\langle \\psi | \\psi \\rangle \\)", "\\( |\\langle \\psi | \\hat{A} | \\psi \\rangle|^2 \\)", "\\( \\langle \\psi | \\hat{A} | \\psi \\rangle \\)", "\\( \\text{Tr}(\\hat{A}) \\)" ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esto calcula la norma al cuadrado del estado, que es 1.",
+                    "Incorrecto. El valor esperado no es una probabilidad, por lo que no se eleva al cuadrado.",
+                    "¡Correcto! Esta fórmula 'sándwich' representa el promedio ponderado de los autovalores del observable, donde cada autovalor se pondera por la probabilidad de obtenerlo.",
+                    "Incorrecto. La traza es la suma de los autovalores, no su promedio ponderado por probabilidades."
+                ],
+                hint: "La fórmula tiene una estructura de 'sándwich' con el operador en el medio.",
+                theoryHTML: `<h2>El Valor Esperado (Expectation Value)</h2>
+                    <p>Si un qubit está en una superposición, cada medición puede dar un resultado diferente. El <b>promedio</b> de los resultados si repitiéramos el experimento muchas veces se llama el <b>valor esperado</b>.</p>
+                    <p>Se denota \\(\\langle \\hat{A} \\rangle\\) y se calcula con la fórmula:</p>
+                    <p style="text-align:center;">\\( \\langle \\hat{A} \\rangle = \\langle \\psi | \\hat{A} | \\psi \\rangle \\)</p>
+                    <p>El valor esperado es un <b>promedio ponderado</b> de los autovalores del operador, donde cada autovalor se pondera por la probabilidad de obtener ese resultado: \\( \\langle \\hat{A} \\rangle = \\sum_i \\lambda_i \\cdot P(\\lambda_i) \\).</p>`
+            },
+            {
+                question: "Un operador de proyección \\( \\hat{P}_\\phi = |\\phi\\rangle\\langle\\phi| \\) es un operador que:",
+                options: [ "Es siempre unitario.", "Es Hermitiano e Idempotente (\\(\\hat{P}^2 = \\hat{P}\\)).", "Tiene autovalores complejos.", "No es lineal." ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Un proyector (excepto la Identidad) no es unitario porque la proyección es un proceso irreversible que pierde información.",
+                    "¡Correcto! Un proyector es Hermitiano (\\(\\hat{P}^\\dagger = \\hat{P}\\)) y aplicarlo dos veces es lo mismo que aplicarlo una vez (Idempotente). Estas dos propiedades lo definen.",
+                    "Incorrecto. Al ser Hermitiano, sus autovalores son reales (de hecho, son 0 y 1).",
+                    "Incorrecto. Se puede demostrar que los proyectores son operadores lineales."
+                ],
+                hint: "Piensa en las dos propiedades que definen a un proyector, una relacionada con su adjunto y otra con aplicarlo dos veces.",
+                theoryHTML: `<h2>Operadores de Proyección</h2>
+                    <p>Un proyector se define como \\( \\hat{P}_\\phi = |\\phi\\rangle\\langle\\phi| \\). Tiene dos propiedades clave:</p>
+                    <ol>
+                        <li><b>Es Hermitiano:</b> \\( \\hat{P}_\\phi^\\dagger = ( |\\phi\\rangle\\langle\\phi| )^\\dagger = (\\langle\\phi|)^\\dagger ( |\\phi\\rangle)^\\dagger = |\\phi\\rangle\\langle\\phi| = \\hat{P}_\\phi \\).</li>
+                        <li><b>Es Idempotente:</b> Aplicarlo dos veces es igual que aplicarlo una vez. \\( \\hat{P}_\\phi^2 = ( |\\phi\\rangle\\langle\\phi| ) ( |\\phi\\rangle\\langle\\phi| ) = |\\phi\\rangle (\\langle\\phi|\\phi\\rangle) \\langle\\phi| = |\\phi\\rangle (1) \\langle\\phi| = \\hat{P}_\\phi \\).</li>
+                    </ol>`
+            },
+            {
+                question: "¿Cuál es la relación entre el valor esperado de un proyector \\(\\hat{P}_\\phi\\) y la probabilidad de medir el estado \\(|\\phi\\rangle\\)?",
+                options: [ "No tienen relación.", "El valor esperado es la raíz cuadrada de la probabilidad.", "El valor esperado es igual a la probabilidad.", "La probabilidad es el valor esperado al cuadrado." ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Tienen una relación fundamental.",
+                    "Incorrecto.",
+                    "¡Correcto! Se demuestra que \\(\\langle \\psi | \\hat{P}_\\phi | \\psi \\rangle = |\\langle \\phi | \\psi \\rangle|^2\\). Esto significa que la Regla de Born es un caso especial de la fórmula del valor esperado cuando el observable es un proyector.",
+                    "Incorrecto."
+                ],
+                hint: "Calcula \\(\\langle \\psi | ( |\\phi\\rangle\\langle\\phi| ) | \\psi \\rangle\\) y reagrupa los términos.",
+                theoryHTML: `<h2>Proyectores y Probabilidad</h2>
+                    <p>El <b>valor esperado</b> de un operador de proyección \\(\\hat{P}_\\phi\\) es igual a la <b>probabilidad</b> de que la medición colapse el sistema al estado \\(|\\phi\\rangle\\).</p>
+                    <p><b>Demostración:</b></p>
+                    <p>\\( \\langle \\psi | \\hat{P}_\\phi | \\psi \\rangle = \\langle \\psi | ( |\\phi\\rangle\\langle\\phi| ) | \\psi \\rangle \\)</p>
+                    <p>Reagrupando con asociatividad:</p>
+                    <p>\\( = (\\langle \\psi | \\phi \\rangle) (\\langle \\phi | \\psi \\rangle) \\)</p>
+                    <p>Un término es el conjugado del otro, \\((\\langle \\phi | \\psi \\rangle)^* (\\langle \\phi | \\psi \\rangle)\\), lo que por definición es el módulo al cuadrado:</p>
+                    <p style="text-align:center;">\\( \\langle \\psi | \\hat{P}_\\phi | \\psi \\rangle = |\\langle \\phi | \\psi \\rangle|^2 = P(\\phi) \\)</p>`
+            },
+            {
+                question: "La descomposición espectral de un observable \\(\\hat{A}\\) lo expresa como:",
+                options: [ "Una suma de sus autovectores.", "Un producto de sus autovalores.", "Una suma ponderada de sus proyectores, donde los pesos son los autovalores.", "La resta de la identidad y sus proyectores." ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. No se pueden sumar directamente los autovectores.",
+                    "Incorrecto. No es un producto.",
+                    "¡Correcto! La fórmula \\( \\hat{A} = \\sum_i \\lambda_i |v_i\\rangle\\langle v_i| \\) muestra cómo un observable está construido a partir de sus resultados (autovalores) y los estados de colapso correspondientes (a través de sus proyectores).",
+                    "Incorrecto."
+                ],
+                hint: "Relaciona los tres componentes de la medición: el observable, sus resultados y sus estados de colapso.",
+                theoryHTML: `<h2>La Descomposición Espectral</h2>
+                    <p>Este teorema une todos los conceptos de la medición en una sola ecuación. Afirma que todo operador Hermitiano \\(\\hat{A}\\) puede ser reescrito como una suma ponderada de sus proyectores, donde los pesos son sus autovalores.</p>
+                    <p style="text-align:center;">\\( \\hat{A} = \\sum_i \\lambda_i |v_i\\rangle\\langle v_i| = \\sum_i \\lambda_i \\hat{P}_i \\)</p>
+                    <p>Esto nos da una profunda intuición física sobre la estructura matemática de los observables.</p>`
+            },
+            {
+                question: "Si medimos el observable Z en un qubit en el estado \\(|+\\rangle\\), ¿cuál es el valor esperado \\(\\langle Z \\rangle\\)?",
+                options: [ "1", "-1", "1/2", "0" ],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. 1 sería el valor esperado si el estado fuera \\(|0\\rangle\\).",
+                    "Incorrecto. -1 sería el valor esperado si el estado fuera \\(|1\\rangle\\).",
+                    "Incorrecto. 1/2 es la probabilidad de cada resultado, pero no el promedio de los resultados (+1 y -1).",
+                    "¡Correcto! Hay un 50% de probabilidad de obtener +1 y un 50% de obtener -1. El promedio ponderado es \\((0.5 \\cdot 1) + (0.5 \\cdot -1) = 0\\). Alternativamente, \\(\\langle + | Z | + \\rangle = 0\\)."
+                ],
+                hint: "El valor esperado es el promedio de los posibles resultados, ponderado por sus probabilidades.",
+                theoryHTML: `<h2>Cálculo del Valor Esperado</h2>
+                    <p>Para el estado \\(|+\\rangle = \\frac{1}{\\sqrt{2}}(|0\\rangle+|1\\rangle)\\) y el observable \\(\\hat{Z}\\).</p>
+                    <p><b>Método 1: Usando probabilidades</b></p>
+                    <ul>
+                        <li>Resultados de Z: \\(\\lambda_1=+1\\) (para \\(|0\\rangle\\)), \\(\\lambda_2=-1\\) (para \\(|1\\rangle\\)).</li>
+                        <li>Probabilidades: \\(P(0)=|\\langle0|+\\rangle|^2 = 1/2\\), \\(P(1)=|\\langle1|+\\rangle|^2 = 1/2\\).</li>
+                        <li>Valor Esperado: \\(\\langle Z \\rangle = (+1) \\cdot P(0) + (-1) \\cdot P(1) = 1/2 - 1/2 = 0\\).</li>
+                    </ul>
+                    <p><b>Método 2: Fórmula sándwich</b></p>
+                    <p>\\( \\langle Z \\rangle = \\langle + | \\hat{Z} | + \\rangle = \\langle + | (\\hat{Z}|+\\rangle) \\)</p>
+                    <p>Como \\(\\hat{Z}|+\\rangle = |-\\rangle\\), tenemos:</p>
+                    <p>\\( \\langle + | - \\rangle = 0 \\). El resultado es el mismo.</p>`
+            },
+            {
+                question: "La 'relación de cierre' (o 'completeness relation') establece que la suma de los proyectores sobre una base ortonormal es:",
+                options: [ "El operador nulo.", "El operador Identidad.", "El operador de Hadamard.", "Un proyector sobre el primer estado de la base." ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto.",
+                    "¡Correcto! La expresión \\( \\sum_i |i\\rangle\\langle i| = \\hat{I} \\) es un 'truco' matemático muy útil que nos permite descomponer vectores y operadores en términos de una base completa.",
+                    "Incorrecto.",
+                    "Incorrecto."
+                ],
+                hint: "Si proyectas un vector sobre todos los ejes de una base y sumas los resultados, ¿qué obtienes?",
+                theoryHTML: `<h2>Relación de Cierre</h2>
+                    <p>La suma de los proyectores sobre una base ortonormal es el operador Identidad.</p>
+                    <p style="text-align:center;">\\( \\hat{I} = \\sum_i |i\\rangle\\langle i| \\)</p>
+                    <p>Para un qubit en la base computacional:</p>
+                    <p style="text-align:center;">\\( |0\\rangle\\langle0| + |1\\rangle\\langle1| = \\begin{pmatrix} 1 & 0 \\\\ 0 & 0 \\end{pmatrix} + \\begin{pmatrix} 0 & 0 \\\\ 0 & 1 \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} = \\hat{I} \\)</p>
+                    <p><b>Intuición:</b> Si sumas la proyección de un vector en el eje X y su proyección en el eje Y, reconstruyes el vector original completo.</p>`
+            },
+            {
+                question: "Si aplicamos el proyector \\( \\hat{P}_1 = |1\\rangle\\langle 1| \\) al estado \\( |\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle \\), el resultado es:",
+                options: [ "\\( \\beta|1\\rangle \\)", "\\( |1\\rangle \\)", "\\( \\beta \\)", "\\( |\\beta|^2 \\)" ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! \\( \\hat{P}_1|\\psi\\rangle = |1\\rangle\\langle 1|(\\alpha|0\\rangle + \\beta|1\\rangle) = \\alpha|1\\rangle\\langle 1|0\\rangle + \\beta|1\\rangle\\langle 1|1\\rangle = \\beta|1\\rangle \\). El proyector 'filtra' la componente del estado en la dirección sobre la que se proyecta.",
+                    "Incorrecto. El resultado es un vector escalado por la amplitud original.",
+                    "Incorrecto. El resultado de aplicar un operador a un ket es otro ket, no un escalar.",
+                    "Incorrecto. Este es el valor de la probabilidad, que se obtiene de la norma al cuadrado del estado proyectado."
+                ],
+                hint: "Usa la asociatividad: \\((|1\\rangle\\langle 1|)|\\psi\\rangle = |1\\rangle(\\langle 1|\\psi\\rangle)\\). Primero calcula el producto interno.",
+                theoryHTML: `<h2>La Acción de un Proyector</h2>
+                    <p>Un proyector \\(\\hat{P}_\\phi = |\\phi\\rangle\\langle\\phi|\\) actúa sobre un estado \\(|\\psi\\rangle\\) de la siguiente forma:</p>
+                    <p style="text-align:center;">\\( \\hat{P}_\\phi |\\psi\\rangle = ( |\\phi\\rangle\\langle\\phi| ) |\\psi\\rangle = |\\phi\\rangle ( \\langle\\phi|\\psi\\rangle ) \\)</p>
+                    <p>La acción se puede leer en dos pasos:</p>
+                    <ol>
+                        <li><b>Calcula la "sombra":</b> El producto interno \\(\\langle\\phi|\\psi\\rangle\\) calcula un escalar complejo que representa la proyección de \\(|\\psi\\rangle\\) sobre \\(|\\phi\\rangle\\).</li>
+                        <li><b>Escala el vector base:</b> El resultado es un nuevo vector que apunta en la dirección de \\(|\\phi\\rangle\\), pero cuya longitud ha sido escalada por ese factor de proyección.</li>
+                    </ol>`
+            },
+            {
+                question: "La principal diferencia entre la evolución (compuerta unitaria) y la medición (observable Hermitiano) es que:",
+                options: [ "La evolución es probabilística y la medición es determinista.", "La evolución es irreversible y la medición es reversible.", "La evolución es reversible y determinista, mientras que la medición es irreversible y probabilística.", "No hay una diferencia fundamental; ambos son operadores." ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Es al revés.",
+                    "Incorrecto. Es al revés.",
+                    "¡Correcto! La evolución (\\( |\\psi'\\rangle = \\hat{U}|\\psi\\rangle \\)) es un proceso suave, predecible y que se puede deshacer. La medición es un proceso disruptivo, con un resultado aleatorio (probabilístico) y que causa un colapso irreversible del estado.",
+                    "Incorrecto. Aunque ambos se describen con operadores, representan procesos físicos completamente distintos y usan clases diferentes de operadores (Unitarios vs. Hermitianos)."
+                ],
+                hint: "Piensa en las propiedades de reversibilidad y aleatoriedad de cada proceso.",
+                theoryHTML: `<h2>Los Dos Procesos Fundamentales</h2>
+                    <p><b>1. Evolución (Operadores Unitarios)</b></p>
+                    <ul>
+                        <li><b>Proceso:</b> Un estado cuántico cambia en el tiempo de forma aislada.</li>
+                        <li><b>Acción Matemática:</b> Aplicación directa del operador: \\(|\\psi'\\rangle = \\hat{U}|\\psi\\rangle\\).</li>
+                        <li><b>Resultado:</b> Un nuevo estado de superposición. Es <b>reversible</b>.</li>
+                    </ul>
+                    <p><b>2. Medición (Operadores Hermitianos)</b></p>
+                    <ul>
+                        <li><b>Proceso:</b> Un aparato externo interactúa con el sistema.</li>
+                        <li><b>Acción Matemática:</b> El operador Hermitiano define las reglas (autovalores, autovectores).</li>
+                        <li><b>Resultado:</b> Un número clásico y el colapso del estado. Es <b>irreversible</b>.</li>
+                    </ul>`
+            },
+            {
+                question: "Los autovectores del observable Pauli-X son:",
+                options: [ "\\( |0\\rangle \\) y \\( |1\\rangle \\)", "\\( |i\\rangle \\) y \\( |-i\\rangle \\)", "\\( |0\\rangle \\) y \\( |+\\rangle \\)", "\\( |+\\rangle \\) y \\( |-\\rangle \\)" ],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. Estos son los autovectores del observable Z.",
+                    "Incorrecto. Estos son los autovectores del observable Y.",
+                    "Incorrecto. \\(|0\\rangle\\) no es autovector de X.",
+                    "¡Correcto! Estos dos estados, que forman la base de Hadamard, son los 'estados de respuesta definitiva' para una medición en la base X. \\(\\hat{X}|+\\rangle = |+\\rangle\\) y \\(\\hat{X}|-\\rangle = -|-\\rangle\\)."
+                ],
+                hint: "Son los estados que se obtienen al aplicar la compuerta de Hadamard a la base computacional.",
+                theoryHTML: `<h2>Autovectores del Observable X</h2>
+                     <p>Para el operador Pauli-X, \\(X = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}\\), los autovalores son +1 y -1. Los autovectores correspondientes son:</p>
+                    <ul>
+                        <li><b>Autovalor \\(\\lambda_1 = +1\\):</b><br>
+                        El autovector es \\( |+\\rangle = \\frac{1}{\\sqrt{2}}\\begin{pmatrix} 1 \\\\ 1 \\end{pmatrix} \\).</li>
+                        <li><b>Autovalor \\(\\lambda_2 = -1\\):</b><br>
+                        El autovector es \\( |-\\rangle = \\frac{1}{\\sqrt{2}}\\begin{pmatrix} 1 \\\\ -1 \\end{pmatrix} \\).</li>
+                    </ul>
+                    <p>La base de medición para el observable X es la base de Hadamard \\(\\{|+\\rangle, |-\\rangle\\}\\).</p>`
+            },
+            {
+                question: "Si el valor esperado de una medición Z, \\(\\langle Z \\rangle\\), para un estado \\(|\\psi\\rangle\\) es 1, ¿qué podemos concluir sobre el estado \\(|\\psi\\rangle\\)?",
+                options: [ "El estado es \\( |1\\rangle \\).", "El estado es \\( |+\\rangle \\).", "El estado es \\( |0\\rangle \\).", "El estado es una superposición equitativa." ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Si el estado fuera \\(|1\\rangle\\), el resultado siempre sería -1, y el valor esperado sería -1.",
+                    "Incorrecto. Si el estado fuera \\(|+\\rangle\\), el valor esperado sería 0.",
+                    "¡Correcto! El valor esperado es un promedio ponderado de los autovalores (+1, -1). Para que el promedio sea +1, la probabilidad de obtener +1 debe ser del 100%, y la de obtener -1 debe ser 0. Esto solo ocurre si el estado es el autovector correspondiente al autovalor +1, es decir, \\(|0\\rangle\\).",
+                    "Incorrecto. En una superposición equitativa como \\(|+\\rangle\\), el valor esperado es 0."
+                ],
+                hint: "¿En qué estado la probabilidad de obtener el resultado +1 es del 100%?",
+                theoryHTML: `<h2>Interpretación del Valor Esperado</h2>
+                    <p>El valor esperado, \\(\\langle \\hat{A} \\rangle = \\sum_i \\lambda_i \\cdot P(\\lambda_i) \\), es un promedio de los resultados posibles (autovalores \\(\\lambda_i\\)) ponderado por sus probabilidades \\(P(\\lambda_i)\\).</p>
+                    <p>Para el observable Z, los autovalores son +1 y -1. Para que el valor esperado \\(\\langle Z \\rangle\\) sea 1, la ecuación debe ser:</p>
+                    <p style="text-align:center;">\\( (+1) \\cdot P(+1) + (-1) \\cdot P(-1) = 1 \\)</p>
+                    <p>Dado que \\(P(+1) + P(-1) = 1\\), la única solución es que \\(P(+1) = 1\\) y \\(P(-1) = 0\\). Esto solo ocurre si el estado del sistema es el autovector asociado al autovalor +1, que es el estado \\(|0\\rangle\\).</p>`
+            },
+            {
+                question: "El operador Pauli-Z se puede escribir usando su descomposición espectral como:",
+                options: [ "\\( (+1)|+\\rangle\\langle +| + (-1)|-\\rangle\\langle -| \\)", "\\( (+1)|0\\rangle\\langle 0| - (-1)|1\\rangle\\langle 1| \\)", "\\( (+1)|0\\rangle\\langle 0| + (-1)|1\\rangle\\langle 1| \\)", "\\( |0\\rangle\\langle 1| + |1\\rangle\\langle 0| \\)" ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esta es la descomposición espectral del operador Pauli-X.",
+                    "Incorrecto. El signo del segundo término es incorrecto.",
+                    "¡Correcto! La fórmula es \\( \\sum_i \\lambda_i \\hat{P}_i \\). Para Z, los autovalores son +1 y -1, y los proyectores correspondientes son \\(|0\\rangle\\langle 0|\\) y \\(|1\\rangle\\langle 1|\\).",
+                    "Incorrecto. Esto no sigue la forma de la descomposición espectral."
+                ],
+                hint: "Suma los proyectores de Z (\\(|0\\rangle\\langle0|\\) y \\(|1\\rangle\\langle1|\\)), ponderando cada uno por su autovalor correspondiente (+1 y -1).",
+                theoryHTML: `<h2>Reconstruyendo el Operador Z</h2>
+                    <p>Usamos la fórmula de la descomposición espectral: \\( \\hat{A} = \\sum_i \\lambda_i \\hat{P}_i \\).</p>
+                    <p>Para el observable \\(\\hat{Z}\\):</p>
+                    <ul>
+                        <li>\\(\\lambda_1 = +1\\), \\(\\hat{P}_1 = |0\\rangle\\langle0| = \\begin{pmatrix} 1 & 0 \\\\ 0 & 0 \\end{pmatrix}\\)</li>
+                        <li>\\(\\lambda_2 = -1\\), \\(\\hat{P}_2 = |1\\rangle\\langle1| = \\begin{pmatrix} 0 & 0 \\\\ 0 & 1 \\end{pmatrix}\\)</li>
+                    </ul>
+                    <p>La suma es:</p>
+                    <p>\\( \\hat{Z} = (+1) \\cdot \\begin{pmatrix} 1 & 0 \\\\ 0 & 0 \\end{pmatrix} + (-1) \\cdot \\begin{pmatrix} 0 & 0 \\\\ 0 & 1 \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & -1 \\end{pmatrix} \\)</p>`
+            },
+            {
+                question: "¿Cuál es el resultado de aplicar el proyector \\( |+\\rangle\\langle +| \\) al estado \\( |0\\rangle \\)?",
+                options: [ "\\( \\frac{1}{2}|+\\rangle \\)", "\\( \\frac{1}{\\sqrt{2}}|+\\rangle \\)", "\\( \\frac{1}{\\sqrt{2}}|0\\rangle \\)", "\\( |+\\rangle \\)" ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Cuidado con los factores de \\(1/\\sqrt{2}\\).",
+                    "¡Correcto! El cálculo es \\( |+\\rangle\\langle + | 0 \\rangle \\). El producto interno \\(\\langle + | 0 \\rangle = \\frac{1}{\\sqrt{2}}(\\langle 0| + \\langle 1|)|0\\rangle = \\frac{1}{\\sqrt{2}}\\). Por lo tanto, el resultado final es \\( |+\\rangle \\cdot \\frac{1}{\\sqrt{2}} \\).",
+                    "Incorrecto. El resultado debe estar en la dirección de \\(|+\\rangle\\), ya que estamos proyectando sobre él.",
+                    "Incorrecto. El resultado está escalado por el producto interno, que no es 1."
+                ],
+                hint: "El resultado es el vector \\(|+\\rangle\\) escalado por el producto interno \\(\\langle + | 0 \\rangle\\).",
+                theoryHTML: `<h2>Proyectando una Superposición</h2>
+                    <p>Calculamos \\( \\hat{P}_+ |0\\rangle = |+\\rangle\\langle + | 0 \\rangle \\).</p>
+                    <p><b>Paso 1: Calcular el producto interno.</b></p>
+                    <p>\\( \\langle + | 0 \\rangle = \\left( \\frac{1}{\\sqrt{2}}(\\langle 0| + \\langle 1|) \\right) |0\\rangle = \\frac{1}{\\sqrt{2}}(\\langle 0|0\\rangle + \\langle 1|0\\rangle) = \\frac{1}{\\sqrt{2}}(1+0) = \\frac{1}{\\sqrt{2}} \\)</p>
+                    <p><b>Paso 2: Escalar el vector base.</b></p>
+                    <p>El resultado es el vector \\(|+\\rangle\\) multiplicado por el escalar que encontramos:</p>
+                    <p style="text-align:center;">\\( \\frac{1}{\\sqrt{2}} |+\\rangle \\)</p>`
+            },
+            {
+                question: "¿Cuál es el rol de la matriz del observable \\(\\hat{Z}\\) durante una medición?",
+                options: [ "La matriz se multiplica por el estado para obtener el resultado.", "Define las reglas de la medición: sus autovalores son los resultados y sus autovectores los estados post-colapso.", "Rota el estado en la esfera de Bloch antes de medir.", "Calcula directamente la probabilidad de obtener el estado \\(|0\\rangle\\)." ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. La multiplicación directa de la matriz por el estado corresponde a la evolución (aplicar una compuerta), no a la medición.",
+                    "¡Correcto! Durante una medición, el operador no actúa directamente. En su lugar, actúa como un 'manual de instrucciones' que define los posibles resultados (autovalores) y los estados en los que puede colapsar el sistema (autovectores).",
+                    "Incorrecto. La rotación del estado es lo que hace \\(\\hat{Z}\\) cuando actúa como una compuerta (evolución unitaria), no cuando define una medición.",
+                    "Incorrecto. Para calcular la probabilidad se usan los operadores de proyección derivados del observable, como \\(\\hat{P}_0 = |0\\rangle\\langle 0|\\), no el operador del observable directamente."
+                ],
+                hint: "Piensa en la diferencia entre aplicar una compuerta y realizar una medición. El operador del observable es como el 'manual' del aparato de medición.",
+                theoryHTML: `<h2>Observable vs. Proyector: La Distinción Clave</h2>
+                    <p>El <b>Observable \\(\\hat{Z}\\)</b> no se aplica directamente al estado durante la medición. En su lugar, <b>define el "tipo" de medición</b> que se va a realizar.</p>
+                    <p>Realizar una <b>medición con respecto a \\(\\hat{Z}\\)</b> significa que:</p>
+                    <ol>
+                        <li>El estado \\(|\\psi\\rangle\\) <b>colapsará</b> a uno de los autovectores de \\(\\hat{Z}\\): \\(|0\\rangle\\) o \\(|1\\rangle\\).</li>
+                        <li>La naturaleza elige el resultado de forma <b>aleatoria</b>, con probabilidades dadas por los proyectores correspondientes: \\(P(0) = \\langle \\psi | \\hat{P}_0 | \\psi \\rangle\\) y \\(P(1) = \\langle \\psi | \\hat{P}_1 | \\psi \\rangle\\).</li>
+                    </ol>`
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let score = 0;
+
+        const questionCounterEl = document.getElementById('question-counter');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const feedbackPanelEl = document.getElementById('feedback-panel');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const quizContentEl = document.getElementById('quiz-content');
+        const scoreContainerEl = document.getElementById('score-container');
+        const scoreTextEl = document.getElementById('score-text');
+        const hintSectionEl = document.getElementById('hint-section');
+        const modalEl = document.getElementById('theory-modal');
+        const modalTextEl = document.getElementById('modal-text');
+
+
+        function displayQuestion() {
+            feedbackPanelEl.style.display = 'none';
+            optionsContainerEl.innerHTML = '';
+            hintSectionEl.innerHTML = '';
+
+            if (currentQuestionIndex >= quizData.length) {
+                showScore();
+                return;
+            }
+
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            questionCounterEl.textContent = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+            questionTextEl.innerHTML = currentQuestion.question;
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerHTML = option;
+                button.className = 'option-btn';
+                button.onclick = () => checkAnswer(index);
+                optionsContainerEl.appendChild(button);
+            });
+
+            // Add Hint functionality
+            const hintBtn = document.createElement('button');
+            hintBtn.textContent = 'Necesito una pista';
+            hintBtn.className = 'hint-btn';
+            const hintText = document.createElement('div');
+            hintText.id = 'hint-text';
+            hintText.innerHTML = currentQuestion.hint;
+            hintBtn.onclick = () => {
+                hintText.style.display = 'block';
+                hintBtn.style.display = 'none';
+            };
+            hintSectionEl.appendChild(hintBtn);
+            hintSectionEl.appendChild(hintText);
+
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset();
+            }
+
+            updateNavButtons();
+
+            if(userAnswers[currentQuestionIndex] !== null){
+                showPreviousAnswer();
+            }
+        }
+
+        function showPreviousAnswer(){
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const currentQuestion = quizData[currentQuestionIndex];
+            const correctIndex = currentQuestion.correctAnswer;
+            const optionButtons = optionsContainerEl.querySelectorAll('.option-btn');
+            const hintBtn = hintSectionEl.querySelector('.hint-btn');
+            if(hintBtn) hintBtn.style.display = 'none';
+
+
+            optionButtons.forEach((btn, i) => {
+                if (i === correctIndex) {
+                    btn.classList.add('correct');
+                } else if (i === userAnswer.selectedIndex) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+
+            feedbackPanelEl.innerHTML = `<p>${currentQuestion.feedback[userAnswer.selectedIndex]}</p>`;
+
+            const theoryBtn = document.createElement('button');
+            theoryBtn.textContent = 'Ver Teoría';
+            theoryBtn.className = 'theory-btn';
+            theoryBtn.onclick = () => showTheory(currentQuestion.theoryHTML);
+            feedbackPanelEl.appendChild(theoryBtn);
+
+            feedbackPanelEl.className = userAnswer.isCorrect ? 'correct-feedback' : 'incorrect-feedback';
+            feedbackPanelEl.style.display = 'block';
+
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset();
+            }
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(userAnswers[currentQuestionIndex] !== null) return;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedIndex === currentQuestion.correctAnswer;
+
+            userAnswers[currentQuestionIndex] = { selectedIndex, isCorrect };
+
+            if(isCorrect) {
+                score++;
+            }
+
+            showPreviousAnswer();
+        }
+
+        function showTheory(htmlContent) {
+            modalTextEl.innerHTML = htmlContent;
+            modalEl.style.display = 'flex';
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset([modalTextEl]);
+            }
+        }
+
+        function closeModal() {
+            modalEl.style.display = 'none';
+        }
+
+        function updateNavButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === quizData.length -1) {
+                nextBtn.textContent = 'Finalizar';
+            } else {
+                 nextBtn.textContent = 'Siguiente';
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function showScore(){
+            quizContentEl.style.display = 'none';
+            document.querySelector('.navigation-controls').style.display = 'none';
+            scoreContainerEl.style.display = 'block';
+
+            scoreTextEl.textContent = `Tu puntuación es ${score} de ${quizData.length}.`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            score = 0;
+
+            scoreContainerEl.style.display = 'none';
+            quizContentEl.style.display = 'block';
+            document.querySelector('.navigation-controls').style.display = 'flex';
+
+            displayQuestion();
+        }
+
+        // Iniciar el cuestionario
+        displayQuestion();
+    </script>
+
+</body>
+</html>
+

@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario: Operadores y Evolución</title>
+
+    <!-- Inclusión de MathJax para renderizar LaTeX -->
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['\\(', '\\)'], ['$', '$']],
+            displayMath: [['\\[', '\\]'], ['$$', '$$']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+
+    <!-- Estilos CSS para la aplicación -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            box-sizing: border-box;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #0056b3;
+            margin: 0;
+        }
+
+        .quiz-header p {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-top: 8px;
+        }
+
+        #question-counter {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        #question-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            min-height: 80px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        @media (min-width: 640px) {
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+
+        .option-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #0056b3;
+            background-color: #f7fafc;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background-color: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .hint-section {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .hint-btn {
+            background: none;
+            border: none;
+            color: #0056b3;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        #hint-text {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            color: #475569;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        #feedback-panel {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #feedback-panel.correct-feedback {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00BCD4;
+        }
+
+        #feedback-panel.incorrect-feedback {
+            background-color: #fff1f2;
+            border-left: 5px solid #f43f5e;
+        }
+
+        .theory-btn {
+            background-color: transparent;
+            color: #0056b3;
+            border: 2px solid #0056b3;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .theory-btn:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .navigation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 30px;
+        }
+
+        .nav-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #004494;
+        }
+
+        .nav-btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        #score-container {
+            text-align: center;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 16px;
+            text-align: left;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            color: #0056b3;
+            margin-top: 0;
+        }
+
+        .modal-close-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Cuestionario</h1>
+            <p>Basado en la Teoría 4</p>
+        </div>
+
+        <div id="quiz-content">
+            <div id="question-counter"></div>
+            <div id="question-text"></div>
+            <div class="options-grid" id="options-container"></div>
+            <div class="hint-section" id="hint-section"></div>
+            <div id="feedback-panel"></div>
+        </div>
+
+        <div id="score-container" style="display: none;">
+             <h2>Cuestionario Finalizado</h2>
+             <p id="score-text" style="font-size: 1.2rem;"></p>
+             <button class="nav-btn" onclick="restartQuiz()">Volver a Intentar</button>
+        </div>
+
+
+        <div class="navigation-controls">
+            <button class="nav-btn" id="prev-btn" onclick="prevQuestion()">Anterior</button>
+            <button class="nav-btn" id="next-btn" onclick="nextQuestion()">Siguiente</button>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="theory-modal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modal-text"></div>
+            <button class="modal-close-btn" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Un operador lineal \\( \\hat{A} \\) queda completamente definido por:",
+                options: [
+                    "Su matriz adjunta.",
+                    "La forma en que actúa sobre cualquier vector del espacio.",
+                    "La forma en que actúa sobre los vectores de una base.",
+                    "Su producto externo."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. La matriz adjunta es una propiedad del operador, pero no lo define por completo.",
+                    "Incorrecto. Si bien es cierto, es una definición demasiado general. Se necesita algo más específico.",
+                    "¡Correcto! Debido a la linealidad, si conocemos cómo un operador transforma los vectores de la base, podemos determinar cómo transformará cualquier combinación lineal de ellos, es decir, cualquier vector del espacio.",
+                    "Incorrecto. El producto externo es una forma de construir operadores, pero no todos los operadores se definen directamente así."
+                ],
+                hint: "Piensa en la propiedad de linealidad y cómo se aplica a una combinación lineal de vectores base.",
+                theoryHTML: `<h2>Operadores como Matrices</h2>
+                    <p>Un operador <b>lineal</b> queda <b>completamente definido</b> por la forma en que actúa sobre los vectores de una base. Si conocemos \\(\\hat{A}|0\\rangle\\) y \\(\\hat{A}|1\\rangle\\), conocemos \\(\\hat{A}|\\psi\\rangle\\) para cualquier \\(|\\psi\\rangle\\).</p>
+                    <p>Esto se debe a que cualquier \\(|\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle\\), y por linealidad, \\(\\hat{A}|\\psi\\rangle = \\alpha(\\hat{A}|0\\rangle) + \\beta(\\hat{A}|1\\rangle)\\).</p>`
+            },
+            {
+                question: "¿Cuál es la primera columna de la matriz que representa a un operador \\( \\hat{A} \\) en la base computacional?",
+                options: [
+                    "El vector \\( \\langle 0 | \\hat{A} | 0 \\rangle \\)",
+                    "El vector \\( \\hat{A}|1\\rangle \\)",
+                    "El vector \\( \\hat{A}|0\\rangle \\)",
+                    "El vector \\( \\langle 1 | \\hat{A} | 0 \\rangle \\)"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esto corresponde al elemento \\(M_{00}\\) de la matriz, no a la columna entera.",
+                    "Incorrecto. Este vector corresponde a la segunda columna de la matriz.",
+                    "¡Correcto! La receta para construir la matriz de un operador es que la j-ésima columna es el vector resultante de aplicar el operador al j-ésimo vector de la base. Por tanto, la primera columna es \\(\\hat{A}|0\\rangle\\).",
+                    "Incorrecto. Esto corresponde al elemento \\(M_{10}\\) de la matriz."
+                ],
+                hint: "La receta para construir la matriz \\(M\\) es \\( M = \\begin{pmatrix} | & | \\\\ \\hat{A}|0\\rangle & \\hat{A}|1\\rangle \\\\ | & | \\end{pmatrix} \\).",
+                theoryHTML: `<h2>La receta para construir la matriz de un operador</h2>
+                    <p>La matriz \\(M\\) de un operador \\(\\hat{A}\\) se construye de la siguiente manera:</p>
+                    <ul>
+                        <li><b>Primera Columna:</b> El vector resultante \\(\\hat{A}|0\\rangle\\).</li>
+                        <li><b>Segunda Columna:</b> El vector resultante \\(\\hat{A}|1\\rangle\\).</li>
+                    </ul>
+                    <p style="text-align:center;">\\( M = \\begin{pmatrix} | & | \\\\ \\hat{A}|0\\rangle & \\hat{A}|1\\rangle \\\\ | & | \\end{pmatrix} \\)</p>
+                    <p>La fórmula para cada elemento es \\(M_{ij} = \\langle i | \\hat{A} | j \\rangle\\).</p>`
+            },
+            {
+                question: "¿Cuál de las siguientes es la matriz de la compuerta Pauli-X (NOT)?",
+                options: [
+                    "\\( \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} \\)",
+                    "\\( \\begin{pmatrix} 1 & 0 \\\\ 0 & -1 \\end{pmatrix} \\)",
+                    "\\( \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix} \\)",
+                    "\\( \\frac{1}{\\sqrt{2}}\\begin{pmatrix} 1 & 1 \\\\ 1 & -1 \\end{pmatrix} \\)"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esta es la matriz Identidad (I).",
+                    "Incorrecto. Esta es la matriz Pauli-Z.",
+                    "¡Correcto! La compuerta X transforma \\(|0\\rangle\\) en \\(|1\\rangle = \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}\\) (primera columna) y \\(|1\\rangle\\) en \\(|0\\rangle = \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}\\) (segunda columna).",
+                    "Incorrecto. Esta es la matriz de Hadamard (H)."
+                ],
+                hint: "Esta compuerta intercambia (hace un 'flip') los estados \\(|0\\rangle\\) y \\(|1\\rangle\\).",
+                theoryHTML: `<h2>Compuerta Pauli-X (NOT o Bit-Flip)</h2>
+                    <ul>
+                        <li><b>Acción:</b> Invierte el estado. Análogo a la compuerta NOT clásica.</li>
+                        <li>\\(\\hat{X}|0\\rangle = |1\\rangle\\)</li>
+                        <li>\\(\\hat{X}|1\\rangle = |0\\rangle\\)</li>
+                    </ul>
+                    <p>Usando la receta de construcción:</p>
+                    <ul>
+                        <li>Primera columna: \\(\\hat{X}|0\\rangle = |1\\rangle = \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}\\)</li>
+                        <li>Segunda columna: \\(\\hat{X}|1\\rangle = |0\\rangle = \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}\\)</li>
+                    </ul>
+                    <p><b>Matriz:</b> \\( X = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix} \\)</p>`
+            },
+            {
+                question: "La compuerta Hadamard (H) aplicada al estado \\( |1\\rangle \\) da como resultado el estado:",
+                options: [
+                    "\\( |0\\rangle \\)",
+                    "\\( |+\\rangle \\)",
+                    "\\( |-\\rangle \\)",
+                    "\\( |1\\rangle \\)"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. La compuerta H aplicada a \\(|+\\rangle\\) da como resultado \\(|0\\rangle\\).",
+                    "Incorrecto. La compuerta H aplicada a \\(|0\\rangle\\) da como resultado \\(|+\\rangle\\).",
+                    "¡Correcto! La compuerta de Hadamard crea superposiciones. Específicamente, \\( H|1\\rangle = \\frac{|0\\rangle - |1\\rangle}{\\sqrt{2}} \\), que se denota como el estado \\(|-\\rangle\\).",
+                    "Incorrecto. La compuerta que no altera el estado \\(|1\\rangle\\) es la Identidad."
+                ],
+                hint: "La compuerta Hadamard crea una superposición, pero con una fase negativa para el estado \\(|1\\rangle\\).",
+                theoryHTML: `<h2>La Compuerta de Hadamard (\\(\\hat{H}\\))</h2>
+                    <ul>
+                        <li><b>Acción:</b> Crea superposiciones. Es la compuerta más importante para iniciar algoritmos cuánticos.</li>
+                        <li>\\(\\hat{H}|0\\rangle = \\frac{|0\\rangle+|1\\rangle}{\\sqrt{2}} = |+\\rangle\\)</li>
+                        <li>\\(\\hat{H}|1\\rangle = \\frac{|0\\rangle-|1\\rangle}{\\sqrt{2}} = |-\\rangle\\)</li>
+                    </ul>`
+            },
+            {
+                question: "Toda compuerta cuántica válida debe ser un operador unitario. Esto se debe a que la evolución cuántica debe:",
+                options: [
+                    "Ser reversible.",
+                    "Preservar la norma del estado.",
+                    "Ser representable por una matriz.",
+                    "Ser una transformación lineal."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Si bien la reversibilidad es una consecuencia de la unitariedad, la razón física fundamental es otra.",
+                    "¡Correcto! La norma al cuadrado de un estado representa la probabilidad total, que debe ser siempre 1. Los operadores unitarios son precisamente aqueles que garantizan que si \\(\\|\\psi\\| = 1\\), entonces \\(\\|\\hat{U}\\psi\\| = 1\\).",
+                    "Incorrecto. No toda matriz representa una evolución cuántica válida.",
+                    "Incorrecto. La linealidad es necesaria, pero no suficiente. No todos los operadores lineales son unitarios."
+                ],
+                hint: "La probabilidad total de un sistema debe conservarse durante su evolución.",
+                theoryHTML: `<h2>La Condición para ser una Compuerta Válida</h2>
+                    <p><b>El Principio Físico:</b> La aplicación de una compuerta <b>no puede alterar la probabilidad total</b> del sistema. Si un estado comienza con norma 1, debe seguir teniendo norma 1 después de la transformación.</p>
+                    <p style="text-align:center;">Si \\( \\|\\psi\\| = 1 \\), entonces \\( \\|\\hat{U}\\psi\\| \\) debe ser \\( 1 \\)</p>
+                    <p>Las transformaciones que garantizan esto se llaman <b>unitarias</b>.</p>`
+            },
+            {
+                question: "Un operador \\( \\hat{U} \\) es unitario si cumple la condición:",
+                options: [
+                    "\\( \\hat{U}^\\dagger = \\hat{U} \\)",
+                    "\\( \\hat{U}^\\dagger\\hat{U} = \\hat{I} \\)",
+                    "\\( \\hat{U}^2 = \\hat{I} \\)",
+                    "\\( \\det(\\hat{U}) = 1 \\)"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esta es la definición de un operador Hermitiano, no unitario. Algunas compuertas (como las Pauli y Hadamard) son ambas, pero no es la definición general.",
+                    "¡Correcto! Esta es la definición formal. Un operador es unitario si su adjunto hermitiano (daga) es también su inverso. Multiplicar un operador por su inverso da la identidad.",
+                    "Incorrecto. Esta condición (ser su propia inversa) la cumplen algunas compuertas como Pauli-X y Hadamard, pero no todas las compuertas unitarias.",
+                    "Incorrecto. Aunque el determinante de una matriz unitaria tiene módulo 1, esta no es la definición."
+                ],
+                hint: "Un operador unitario es aquel cuyo inverso es igual a su adjunto hermitiano.",
+                theoryHTML: `<h2>Operadores Unitarios</h2>
+                    <p><b>Definición Formal:</b> Un operador \\(\\hat{U}\\) es <b>Unitario</b> si su daga (adjunto hermitiano) es igual a su inverso.</p>
+                    <p style="text-align:center;">\\( \\hat{U}^\\dagger = \\hat{U}^{-1} \\)</p>
+                    <p>La forma más común de verificar esto es comprobar si:</p>
+                    <p style="text-align:center;">\\( \\hat{U}^\\dagger \\hat{U} = \\hat{I} \\)</p>`
+            },
+            {
+                question: "La operación 'daga' (\\( \\dagger \\)) sobre una matriz consiste en:",
+                options: [
+                    "Calcular su inversa y luego conjugarla.",
+                    "Transponerla y luego conjugarla.",
+                    "Conjugarla y luego calcular su inversa.",
+                    "Solo transponerla."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. La inversa y la daga solo son iguales en el caso de operadores unitarios.",
+                    "¡Correcto! El adjunto hermitiano o 'daga' de una matriz se calcula obteniendo primero su transpuesta y luego tomando el conjugado complejo de cada elemento.",
+                    "Incorrecto. Se debe transponer, no invertir.",
+                    "Incorrecto. La transposición por sí sola no es suficiente si la matriz tiene elementos complejos."
+                ],
+                hint: "La daga es una operación de dos pasos que convierte un vector columna en uno fila.",
+                theoryHTML: `<h2>El Adjunto Hermitiano (Daga \\(\\dagger\\))</h2>
+                    <p>Consiste en dos pasos: <b>transponer</b> y luego <b>conjugar complejamente</b>.</p>
+                    <p><b>Adjunto Hermitiano (\\(\\dagger\\)) = Transponer + Conjugar Complejamente</b></p>
+                    <p>Esta es la receta práctica para calcularla en espacios de dimensión finita, donde los operadores se representan por matrices.</p>`
+            },
+            {
+                question: "¿Cuál es el resultado de \\( (\\hat{A}\\hat{B})^\\dagger \\)?",
+                options: [
+                    "\\( \\hat{A}^\\dagger\\hat{B}^\\dagger \\)",
+                    "\\( \\hat{B}^\\dagger\\hat{A}^\\dagger \\)",
+                    "\\( \\hat{A}\\hat{B} \\)",
+                    "\\( (\\hat{B}\\hat{A})^\\dagger \\)"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. La daga de un producto de operadores no es simplemente el producto de las dagas.",
+                    "¡Correcto! Una propiedad fundamental del adjunto hermitiano es que invierte el orden del producto. \\((\\hat{A}\\hat{B})^\\dagger = \\hat{B}^\\dagger\\hat{A}^\\dagger\\).",
+                    "Incorrecto. Esto solo sería cierto si el producto fuera Hermitiano.",
+                    "Incorrecto. Esto sería \\(\\hat{A}^\\dagger\\hat{B}^\\dagger\\), que no es la respuesta correcta."
+                ],
+                hint: "La daga actúa sobre un producto de manera similar a como lo hace la transposición o la inversión de matrices.",
+                theoryHTML: `<h2>Propiedades Generales del Adjunto Hermitiano (\\(\\dagger\\))</h2>
+                    <p>Para matrices arbitrarias \\(A\\) y \\(B\\):</p>
+                    <ul>
+                        <li><b>Aditividad:</b> \\( (A+B)^\\dagger = A^\\dagger + B^\\dagger \\)</li>
+                        <li><b>Antilinealidad:</b> \\( (kA)^\\dagger = k^* A^\\dagger \\)</li>
+                        <li><b>Producto de Matrices:</b> La daga de un producto invierte el orden.
+                        <p style="text-align:center;">\\( (AB)^\\dagger = B^\\dagger A^\\dagger \\)</p></li>
+                    </ul>`
+            },
+            {
+                question: "La propiedad de que los operadores unitarios \\( \\hat{U} \\) preservan el producto interior se expresa como:",
+                options: [
+                    "\\( \\langle \\hat{U}\\psi | \\hat{U}\\phi \\rangle = \\langle \\psi | \\phi \\rangle \\)",
+                    "\\( \\langle \\psi | \\hat{U} | \\phi \\rangle = \\langle \\phi | \\hat{U} | \\psi \\rangle \\)",
+                    "\\( \\hat{U}\\langle \\psi | \\phi \\rangle = \\langle \\psi | \\phi \\rangle \\)",
+                    "\\( \\langle \\hat{U}\\psi | \\phi \\rangle = \\langle \\psi | \\hat{U}\\phi \\rangle \\)"
+                ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! Esto significa que la 'relación' (proyección y fase relativa) entre dos estados no cambia después de aplicar la misma evolución a ambos. Es como una rotación rígida del espacio de Hilbert.",
+                    "Incorrecto. Esta no es una propiedad general de los operadores unitarios.",
+                    "Incorrecto. Un operador no puede actuar sobre un escalar (el resultado del producto interior).",
+                    "Incorrecto. Esto implicaría que \\(\\hat{U}^\\dagger = \\hat{U}\\) (ser Hermitiano), lo cual no es siempre cierto para un operador unitario."
+                ],
+                hint: "Una compuerta cuántica actúa como una 'rotación rígida' que no altera las relaciones geométricas entre los vectores.",
+                theoryHTML: `<h2>Preservar el Producto Interior</h2>
+                    <p>Esta propiedad significa que si tomamos dos vectores cualesquiera, \\(|\\psi\\rangle\\) y \\(|\\phi\\rangle\\), y les aplicamos la <b>misma</b> compuerta \\(\\hat{U}\\), el producto interior entre los vectores transformados es <b>idéntico</b> al original.</p>
+                    <p style="text-align:center;">\\( \\langle \\hat{U}\\psi | \\hat{U}\\phi \\rangle = \\langle \\psi | \\phi \\rangle \\)</p>
+                    <p><b>Demostración:</b> \\( \\langle \\hat{U}\\psi | \\hat{U}\\phi \\rangle = \\langle\\psi|\\hat{U}^\\dagger \\hat{U}|\\phi\\rangle = \\langle\\psi| \\hat{I} |\\phi\\rangle = \\langle\\psi|\\phi\\rangle \\).</p>`
+            },
+            {
+                question: "En la esfera de Bloch, el estado \\( |+\\rangle \\) se encuentra:",
+                options: [
+                    "En el polo norte.",
+                    "En el polo sur.",
+                    "En el ecuador, sobre el eje X positivo.",
+                    "En el ecuador, sobre el eje Y positivo."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. El polo norte corresponde al estado \\(|0\\rangle\\).",
+                    "Incorrecto. El polo sur corresponde al estado \\(|1\\rangle\\).",
+                    "¡Correcto! El estado \\(|+\\rangle\\) tiene \\(\\theta=\\pi/2\\) y \\(\\varphi=0\\), lo que lo sitúa en el punto donde el ecuador intersecta el eje X positivo.",
+                    "Incorrecto. Este punto corresponde al estado \\(|i\\rangle = \\frac{1}{\\sqrt{2}}(|0\\rangle+i|1\\rangle)\\)."
+                ],
+                hint: "Este estado es una superposición equitativa sin fase relativa compleja.",
+                theoryHTML: `<h2>La Esfera de Bloch</h2>
+                    <p>\\( |\\psi\\rangle = \\cos(\\frac{\\theta}{2})|0\\rangle + e^{i\\varphi}\\sin(\\frac{\\theta}{2})|1\\rangle \\)</p>
+                    <ul>
+                        <li><b>Polo Norte (\\(\\theta=0\\)):</b> Estado \\(|0\\rangle\\).</li>
+                        <li><b>Polo Sur (\\(\\theta=\\pi\\)):</b> Estado \\(|1\\rangle\\).</li>
+                        <li><b>Ecuador (\\(\\theta=\\pi/2\\)):</b> Superposiciones equitativas.
+                            <ul>
+                                <li><b>Eje X positivo (\\(\\varphi=0\\)):</b> Estado \\(|+\\rangle\\).</li>
+                                <li><b>Eje Y positivo (\\(\\varphi=\\pi/2\\)):</b> Estado \\(|i\\rangle\\).</li>
+                            </ul>
+                        </li>
+                    </ul>`
+            },
+            {
+                question: "La representación general de un qubit \\( |\\psi\\rangle = \\cos(\\frac{\\theta}{2})|0\\rangle + e^{i\\varphi}\\sin(\\frac{\\theta}{2})|1\\rangle \\) depende de solo dos ángulos reales porque:",
+                options: [
+                    "Los números complejos no son necesarios.",
+                    "La condición de normalización y la irrelevancia de la fase global eliminan dos grados de libertad.",
+                    "Es una aproximación para facilitar la visualización.",
+                    "Solo los estados en el ecuador de la esfera son importantes."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. La fase relativa \\(e^{i\\varphi}\\) es un número complejo y es crucial.",
+                    "¡Correcto! Un estado general \\(\\alpha|0\\rangle + \\beta|1\\rangle\\) tiene 4 parámetros reales. La normalización (\\(|\\alpha|^2+|\\beta|^2=1\\)) elimina uno, y la libertad de elegir la fase global (\\(e^{i\\gamma}|\\psi\\rangle\\)) elimina otro, dejando solo 2 parámetros, que pueden ser representados por los ángulos \\(\\theta\\) y \\(\\varphi\\).",
+                    "Incorrecto. No es una aproximación, es una representación exacta y completa del estado de un qubit.",
+                    "Incorrecto. Todos los puntos en la superficie de la esfera representan estados de qubit válidos."
+                ],
+                hint: "Un estado general de un qubit tiene 4 parámetros reales, pero hay dos restricciones que reducen este número.",
+                theoryHTML: `<h2>Visualizando un Qubit en 3D</h2>
+                    <p>El estado de un qubit, \\(|\\psi\\rangle = \\alpha|0\\rangle + \\beta|1\\rangle\\), se define por dos números complejos (4 números reales).</p>
+                    <ol>
+                        <li><b>Condición de Normalización:</b> \\(|\\alpha|^2 + |\\beta|^2 = 1\\). Esta restricción elimina un grado de libertad.</li>
+                        <li><b>Fase Global:</b> El estado \\(|\\psi\\rangle\\) y el estado \\(e^{i\\gamma}|\\psi\\rangle\\) son físicamente indistinguibles. Podemos usar esta libertad para hacer que la amplitud de \\(|0\\rangle\\) sea un número real, eliminando otro grado de libertad.</li>
+                    </ol>
+                    <p>Esto reduce los 4 parámetros originales a solo 2, que se pueden parametrizar como los ángulos \\(\\theta\\) y \\(\\varphi\\) en una esfera.</p>`
+            },
+            {
+                question: "¿Qué representa el ángulo \\( \\theta \\) en la esfera de Bloch?",
+                options: [
+                    "La fase relativa entre las amplitudes de \\(|0\\rangle\\) y \\(|1\\rangle\\).",
+                    "La probabilidad de medir \\(|0\\rangle\\) y \\(|1\\rangle\\).",
+                    "La fase global del estado.",
+                    "La velocidad de rotación del qubit."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. La fase relativa está representada por el ángulo \\(\\varphi\\).",
+                    "¡Correcto! El ángulo polar \\(\\theta\\) está directamente relacionado con las magnitudes de las amplitudes. La probabilidad de medir \\(|0\\rangle\\) es \\(\\cos^2(\\theta/2)\\) y la de medir \\(|1\\rangle\\) es \\(\\sin^2(\\theta/2)\\). Un \\(\\theta\\) pequeño significa alta probabilidad de medir 0.",
+                    "Incorrecto. La fase global es físicamente irrelevante y se elimina para obtener esta representación.",
+                    "Incorrecto. La velocidad de rotación no es un parámetro estático del estado."
+                ],
+                hint: "Este ángulo determina qué tan 'cerca' está el estado del polo norte (\\(|0\\rangle\\)) o del polo sur (\\(|1\\rangle\\)).",
+                theoryHTML: `<h2>La Esfera de Bloch</h2>
+                     <p>\\( |\\psi\\rangle = \\cos(\\frac{\\theta}{2})|0\\rangle + e^{i\\varphi}\\sin(\\frac{\\theta}{2})|1\\rangle \\)</p>
+                     <p><b>Ángulo Polar (\\(\\theta\\)):</b> Mide la "latitud" desde el polo norte. Determina la ponderación entre \\(|0\\rangle\\) y \\(|1\\rangle\\).</p>
+                     <ul>
+                         <li>\\(\\theta=0\\): El estado es \\(|0\\rangle\\). Probabilidad de medir 0 es 100%.</li>
+                         <li>\\(\\theta=\\pi\\): El estado es \\(|1\\rangle\\). Probabilidad de medir 1 es 100%.</li>
+                         <li>\\(\\theta=\\pi/2\\): El estado está en el ecuador. Hay 50% de probabilidad de medir 0 y 50% de medir 1.</li>
+                     </ul>`
+            },
+            {
+                question: "Si dos estados son ortogonales, ¿dónde aparecen en la esfera de Bloch?",
+                options: [
+                    "En el mismo punto.",
+                    "En puntos opuestos (diametralmente opuestos).",
+                    "En el ecuador.",
+                    "A 90 grados de distancia sobre la superficie."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Si estuvieran en el mismo punto, serían el mismo estado.",
+                    "¡Correcto! Los pares de estados ortogonales, como \\(|0\\rangle\\) y \\(|1\\rangle\\), o \\(|+\\rangle\\) y \\(|-\\rangle\\), siempre se encuentran en puntos antipodales en la esfera.",
+                    "Incorrecto. Aunque hay pares ortogonales en el ecuador (como \\(|+\\rangle\\) y \\(|-\\rangle\\)), no todos los estados ortogonales están allí.",
+                    "Incorrecto. Deben ser diametralmente opuestos, no a 90 grados."
+                ],
+                hint: "Piensa en la ubicación de pares conocidos como \\(|0\\rangle\\) y \\(|1\\rangle\\).",
+                theoryHTML: `<h2>Ortogonalidad en la Esfera de Bloch</h2>
+                    <p>Los estados ortogonales se ven en puntos opuestos de la esfera:</p>
+                    <ul>
+                        <li>\\(|0\\rangle\\) (polo norte) y \\(|1\\rangle\\) (polo sur) son opuestos en el eje Z.</li>
+                        <li>\\(|+\\rangle\\) (eje X+) y \\(|-\\rangle\\) (eje X-) son opuestos en el eje X.</li>
+                        <li>\\(|i\\rangle\\) (eje Y+) y \\(|-i\\rangle\\) (eje Y-) son opuestos en el eje Y.</li>
+                    </ul>`
+            },
+            {
+                question: "La identidad \\( HZH = X \\) significa que:",
+                options: [
+                    "Las compuertas H y Z son la misma.",
+                    "Aplicar una secuencia H, Z, H es equivalente a aplicar una compuerta X.",
+                    "La compuerta Z es la inversa de H.",
+                    "El producto de matrices no es asociativo."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. H y Z son compuertas muy diferentes.",
+                    "¡Correcto! Esta es una identidad fundamental. Muestra cómo se pueden construir operaciones a partir de otras. Una rotación sobre el eje Z (Z) conjugada por cambios de base (H) equivale a una rotación sobre el eje X (X).",
+                    "Incorrecto. La inversa de H es H misma (\\(H^2=I\\)), no Z.",
+                    "Incorrecto. El producto de matrices es asociativo, lo que permite calcular \\(H(ZH)\\) o \\((HZ)H\\)."
+                ],
+                hint: "Lee la ecuación como una secuencia de operaciones de izquierda a derecha.",
+                theoryHTML: `<h2>Identidades de Compuertas</h2>
+                    <p>Una identidad importante es \\(HZH = X\\). Se puede demostrar analíticamente multiplicando las matrices:</p>
+                    <p>\\( H(ZH) = \\frac{1}{\\sqrt{2}}\\begin{pmatrix} 1 & 1 \\\\ 1 & -1 \\end{pmatrix} \\left( \\frac{1}{\\sqrt{2}}\\begin{pmatrix} 1 & 1 \\\\ -1 & 1 \\end{pmatrix} \\right) \\)</p>
+                    <p>\\( = \\frac{1}{2} \\begin{pmatrix} 0 & 2 \\\\ 2 & 0 \\end{pmatrix} = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix} = X \\)</p>
+                    <p>Visualmente, en la esfera de Bloch, aplicar H, luego Z, y luego H de nuevo a cualquier estado tiene el mismo efecto final que aplicar una sola compuerta X.</p>`
+            },
+            {
+                question: "El resultado de la operación producto externo \\( |v\\rangle\\langle w| \\) es:",
+                options: [
+                    "Un escalar complejo.",
+                    "Un vector ket.",
+                    "Una matriz.",
+                    "Un vector bra."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Un escalar complejo es el resultado de un producto *interno* \\(\\langle w|v\\rangle\\).",
+                    "Incorrecto. Un ket es un vector columna.",
+                    "¡Correcto! El producto externo, o 'outer product', multiplica un vector columna (ket, n×1) por un vector fila (bra, 1×n), resultando en una matriz de n×n.",
+                    "Incorrecto. Un bra es un vector fila."
+                ],
+                hint: "A diferencia del producto interno (bra-ket), el producto externo es un ket-bra.",
+                theoryHTML: `<h2>Producto Externo (Outer Product)</h2>
+                    <p>El producto de un ket \\(|v\\rangle\\) con un bra \\(\\langle w|\\), escrito como \\(|v\\rangle\\langle w|\\), es una herramienta matemática que produce una <b>matriz</b>.</p>
+                    <p>\\( |v\\rangle\\langle w| = \\begin{pmatrix} v_1 \\\\ \\vdots \\\\ v_n \\end{pmatrix} \\begin{pmatrix} w_1^* & \\dots & w_n^* \\end{pmatrix} = \\text{Matriz } n \\times n \\)</p>`
+            },
+            {
+                question: "Si aplicamos el operador \\( |0\\rangle\\langle 1| \\) al estado \\( |1\\rangle \\), ¿qué obtenemos?",
+                options: [
+                    "El estado \\( |0\\rangle \\)",
+                    "El estado \\( |1\\rangle \\)",
+                    "El número 0",
+                    "El número 1"
+                ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! Usando la asociatividad: \\((|0\\rangle\\langle 1|)|1\\rangle = |0\\rangle(\\langle 1|1\\rangle)\\). Como \\(\\langle 1|1\\rangle = 1\\), el resultado es \\(|0\\rangle \\cdot 1 = |0\\rangle\\).",
+                    "Incorrecto. El operador proyecta sobre \\(\\langle 1|\\) y luego crea el estado \\(|0\\rangle\\).",
+                    "Incorrecto. El resultado de un operador actuando sobre un ket es otro ket, no un número.",
+                    "Incorrecto. El resultado de un operador actuando sobre un ket es otro ket, no un número."
+                ],
+                hint: "Usa la asociatividad: \\((|v\\rangle\\langle w|)|\\psi\\rangle = |v\\rangle(\\langle w|\\psi\\rangle)\\). Primero calcula el producto interno.",
+                theoryHTML: `<h2>Acción de un Operador de Producto Externo</h2>
+                    <p>La acción del operador \\(|v\\rangle\\langle w|\\) sobre un ket \\(|\\psi\\rangle\\) se puede simplificar usando la asociatividad de la multiplicación de matrices:</p>
+                    <p style="text-align:center;">\\( (|v\\rangle\\langle w|) |\\psi\\rangle = |v\\rangle (\\langle w|\\psi \\rangle) \\)</p>
+                    <p>Primero se calcula el producto interno \\(\\langle w|\\psi \\rangle\\), que da como resultado un escalar complejo. Luego, ese escalar multiplica al ket \\(|v\\rangle\\).</p>`
+            },
+            {
+                question: "¿Qué resultado se obtiene al aplicar la compuerta de Hadamard (H) dos veces seguidas a cualquier estado de qubit \\(|\\psi\\rangle\\)?",
+                options: [
+                    "El estado se invierte (equivalente a una compuerta X).",
+                    "El estado resultante es siempre \\(|0\\rangle\\).",
+                    "Se obtiene el estado original \\(|\\psi\\rangle\\) (equivalente a la compuerta Identidad).",
+                    "El estado resultante es siempre \\(|+\\rangle\\)."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. La compuerta X es \\(HZH\\), no \\(H^2\\).",
+                    "Incorrecto. Esto solo es cierto si el estado inicial es \\(|+\\rangle\\) (\\(H|+\\rangle = |0\\rangle\\)).",
+                    "¡Correcto! La compuerta de Hadamard es su propia inversa. Aplicarla dos veces deshace la operación, lo que se expresa matemáticamente como \\(H^2 = I\\). Por lo tanto, \\(H(H|\\psi\\rangle) = I|\\psi\\rangle = |\\psi\\rangle\\).",
+                    "Incorrecto. Esto solo es cierto si el estado inicial es \\(|0\\rangle\\) (\\(H|0\\rangle = |+\\rangle\\))."
+                ],
+                hint: "La compuerta de Hadamard es su propia inversa. ¿Qué significa eso matemáticamente?",
+                theoryHTML: `<h2>La Magia de Hadamard</h2>
+                    <p>La compuerta Hadamard es especial. Actúa como su propia inversa.</p>
+                    <ul>
+                        <li>Transforma la base computacional a la de Hadamard: \\(H|0\\rangle = |+\\rangle, H|1\\rangle = |-\\rangle\\)</li>
+                        <li>Y viceversa: \\(H|+\\rangle = |0\\rangle, H|-\\rangle = |1\\rangle\\)</li>
+                    </ul>
+                    <p>Esto implica que aplicar Hadamard dos veces seguidas es equivalente a no hacer nada:</p>
+                    <p>\\( H(H|0\\rangle) = H|+\\rangle = |0\\rangle \\)</p>
+                    <p>\\( H(H|1\\rangle) = H|-\\rangle = |1\\rangle \\)</p>
+                    <p>Como la compuerta devuelve los estados base originales, por linealidad, devolverá cualquier superposición a su estado original. Matemáticamente, esto se escribe como:</p>
+                    <p style="text-align:center;">\\( H^2 = I \\)</p>`
+            },
+            {
+                question: "¿Cuál es el adjunto hermitiano (daga) del operador \\( \\hat{A} = i|0\\rangle\\langle 1| \\)?",
+                options: [
+                    "\\( i|1\\rangle\\langle 0| \\)",
+                    "\\( -i|0\\rangle\\langle 1| \\)",
+                    "\\( -i|1\\rangle\\langle 0| \\)",
+                    "\\( i|0\\rangle\\langle 1| \\)"
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Olvidaste conjugar el escalar \\(i\\).",
+                    "Incorrecto. Olvidaste intercambiar el bra y el ket.",
+                    "¡Correcto! Usando las propiedades de la daga: \\((i|0\\rangle\\langle 1|)^\\dagger = i^* (|0\\rangle\\langle 1|)^\\dagger = (-i) |1\\rangle\\langle 0|\\).",
+                    "Incorrecto. No aplicaste ninguna de las reglas de la operación daga."
+                ],
+                hint: "Recuerda las reglas para la daga de un producto y de un escalar: \\((kA)^\\dagger=k^*A^\\dagger\\) y \\((|v\\rangle\\langle w|)^\\dagger = |w\\rangle\\langle v|\\).",
+                theoryHTML: `<h2>Daga de un Producto Externo con Escalar</h2>
+                    <p>Aplicamos las reglas del adjunto hermitiano:</p>
+                    <p>\\( (k|v\\rangle\\langle w|)^\\dagger = k^* (|v\\rangle\\langle w|)^\\dagger = k^* ((\\langle w|)^\\dagger (|v\\rangle)^\\dagger) = k^*|w\\rangle\\langle v| \\)</p>
+                    <p>En el caso de \\( \\hat{A} = i|0\\rangle\\langle 1| \\):</p>
+                    <p>\\( \\hat{A}^\\dagger = i^* (|0\\rangle\\langle 1|)^\\dagger = (-i) |1\\rangle\\langle 0| \\)</p>`
+            },
+            {
+                question: "La compuerta Pauli-Y, cuya matriz es \\( Y = \\begin{pmatrix} 0 & -i \\\\ i & 0 \\end{pmatrix} \\), es:",
+                options: [
+                    "Solo Unitaria.",
+                    "Solo Hermitiana.",
+                    "Tanto Unitaria como Hermitiana.",
+                    "Ni Unitaria ni Hermitiana."
+                ],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. También tiene otra propiedad importante.",
+                    "Incorrecto. También tiene otra propiedad importante.",
+                    "¡Correcto! Se puede verificar que \\(Y^\\dagger = Y\\), lo que la hace Hermitiana. Además, se puede verificar que \\(Y^\\dagger Y = I\\), lo que la hace Unitaria. Las compuertas Pauli (X, Y, Z) y Hadamard comparten esta doble propiedad.",
+                    "Incorrecto. Es una compuerta cuántica fundamental y válida."
+                ],
+                hint: "Calcula su daga (\\(Y^\\dagger\\)) y compárala con \\(Y\\). Luego, calcula el producto \\(Y^\\dagger Y\\).",
+                theoryHTML: `<h2>Compuerta Pauli-Y</h2>
+                    <p>La matriz es \\( Y = \\begin{pmatrix} 0 & -i \\\\ i & 0 \\end{pmatrix} \\).</p>
+                    <p><b>Verificando si es Hermitiana (\\(Y^\\dagger = Y\\)):</b></p>
+                    <p>\\( Y^T = \\begin{pmatrix} 0 & i \\\\ -i & 0 \\end{pmatrix} \\). Conjugando, \\( Y^\\dagger = (Y^T)^* = \\begin{pmatrix} 0 & -i \\\\ i & 0 \\end{pmatrix} = Y \\). Sí es Hermitiana.</p>
+                    <p><b>Verificando si es Unitaria (\\(Y^\\dagger Y = I\\)):</b></p>
+                    <p>Como \\(Y^\\dagger = Y\\), calculamos \\(Y^2\\):</p>
+                    <p>\\( Y^2 = \\begin{pmatrix} 0 & -i \\\\ i & 0 \\end{pmatrix} \\begin{pmatrix} 0 & -i \\\\ i & 0 \\end{pmatrix} = \\begin{pmatrix} -i^2 & 0 \\\\ 0 & -i^2 \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix} = I \\). Sí es Unitaria.</p>`
+            },
+            {
+                question: "¿Qué representa el elemento de matriz \\( M_{ij} = \\langle i | \\hat{A} | j \\rangle \\)?",
+                options: [
+                    "La probabilidad de que el estado \\(|j\\rangle\\) se transforme en \\(|i\\rangle\\).",
+                    "La amplitud de probabilidad de la componente \\(|i\\rangle\\) en el vector transformado \\(\\hat{A}|j\\rangle\\).",
+                    "El autovalor del operador \\(\\hat{A}\\) para el estado \\(|j\\rangle\\).",
+                    "El producto interno entre los estados \\(|i\\rangle\\) y \\(|j\\rangle\\) después de la transformación."
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. La probabilidad sería el módulo al cuadrado de esta cantidad: \\(|\\langle i | \\hat{A} | j \\rangle|^2\\).",
+                    "¡Correcto! Esta 'fórmula sándwich' calcula la proyección del estado transformado \\(\\hat{A}|j\\rangle\\) sobre el vector base \\(|i\\rangle\\), lo cual es precisamente la definición de la componente (amplitud) \\(i\\) de ese vector resultante.",
+                    "Incorrecto. Esto solo sería cierto si \\(|j\\rangle\\) fuera un autovector y \\(i=j\\).",
+                    "Incorrecto. El operador \\(\\hat{A}\\) está actuando solo sobre \\(|j\\rangle\\) dentro del 'sándwich'."
+                ],
+                hint: "La fórmula se puede leer de derecha a izquierda: primero actúa el operador, y luego se proyecta.",
+                theoryHTML: `<h2>La "Fórmula Sándwich": \\(M_{ij} = \\langle i | \\hat{A} | j \\rangle\\)</h2>
+                    <p>El elemento \\(M_{ij}\\) (fila \\(i\\), columna \\(j\\)) nos dice:</p>
+                    <blockquote>"Toma el j-ésimo vector de la base, \\(|j\\rangle\\), aplícale el operador \\(\\hat{A}\\). Luego, toma ese vector resultante y proyéctalo sobre el i-ésimo vector de la base, \\(\\langle i|\\). El número complejo resultante es el elemento \\(M_{ij}\\)."</blockquote>
+                    <p>Es la "cantidad" (amplitud de probabilidad) de la componente \\(|i\\rangle\\) que hay en el vector transformado \\(\\hat{A}|j\\rangle\\).</p>`
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let score = 0;
+
+        const questionCounterEl = document.getElementById('question-counter');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const feedbackPanelEl = document.getElementById('feedback-panel');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const quizContentEl = document.getElementById('quiz-content');
+        const scoreContainerEl = document.getElementById('score-container');
+        const scoreTextEl = document.getElementById('score-text');
+        const hintSectionEl = document.getElementById('hint-section');
+        const modalEl = document.getElementById('theory-modal');
+        const modalTextEl = document.getElementById('modal-text');
+
+
+        function displayQuestion() {
+            feedbackPanelEl.style.display = 'none';
+            optionsContainerEl.innerHTML = '';
+            hintSectionEl.innerHTML = '';
+
+            if (currentQuestionIndex >= quizData.length) {
+                showScore();
+                return;
+            }
+
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            questionCounterEl.textContent = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+            questionTextEl.innerHTML = currentQuestion.question;
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerHTML = option;
+                button.className = 'option-btn';
+                button.onclick = () => checkAnswer(index);
+                optionsContainerEl.appendChild(button);
+            });
+
+            // Add Hint functionality
+            const hintBtn = document.createElement('button');
+            hintBtn.textContent = 'Necesito una pista';
+            hintBtn.className = 'hint-btn';
+            const hintText = document.createElement('div');
+            hintText.id = 'hint-text';
+            hintText.innerHTML = currentQuestion.hint;
+            hintBtn.onclick = () => {
+                hintText.style.display = 'block';
+                hintBtn.style.display = 'none';
+            };
+            hintSectionEl.appendChild(hintBtn);
+            hintSectionEl.appendChild(hintText);
+
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset();
+            }
+
+            updateNavButtons();
+
+            if(userAnswers[currentQuestionIndex] !== null){
+                showPreviousAnswer();
+            }
+        }
+
+        function showPreviousAnswer(){
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const currentQuestion = quizData[currentQuestionIndex];
+            const correctIndex = currentQuestion.correctAnswer;
+            const optionButtons = optionsContainerEl.querySelectorAll('.option-btn');
+            const hintBtn = hintSectionEl.querySelector('.hint-btn');
+            if(hintBtn) hintBtn.style.display = 'none';
+
+
+            optionButtons.forEach((btn, i) => {
+                if (i === correctIndex) {
+                    btn.classList.add('correct');
+                } else if (i === userAnswer.selectedIndex) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+
+            feedbackPanelEl.innerHTML = `<p>${currentQuestion.feedback[userAnswer.selectedIndex]}</p>`;
+
+            const theoryBtn = document.createElement('button');
+            theoryBtn.textContent = 'Ver Teoría';
+            theoryBtn.className = 'theory-btn';
+            theoryBtn.onclick = () => showTheory(currentQuestion.theoryHTML);
+            feedbackPanelEl.appendChild(theoryBtn);
+
+            feedbackPanelEl.className = userAnswer.isCorrect ? 'correct-feedback' : 'incorrect-feedback';
+            feedbackPanelEl.style.display = 'block';
+
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset();
+            }
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(userAnswers[currentQuestionIndex] !== null) return;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedIndex === currentQuestion.correctAnswer;
+
+            userAnswers[currentQuestionIndex] = { selectedIndex, isCorrect };
+
+            if(isCorrect) {
+                score++;
+            }
+
+            showPreviousAnswer();
+        }
+
+        function showTheory(htmlContent) {
+            modalTextEl.innerHTML = htmlContent;
+            modalEl.style.display = 'flex';
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset([modalTextEl]);
+            }
+        }
+
+        function closeModal() {
+            modalEl.style.display = 'none';
+        }
+
+        function updateNavButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === quizData.length -1) {
+                nextBtn.textContent = 'Finalizar';
+            } else {
+                 nextBtn.textContent = 'Siguiente';
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function showScore(){
+            quizContentEl.style.display = 'none';
+            document.querySelector('.navigation-controls').style.display = 'none';
+            scoreContainerEl.style.display = 'block';
+
+            scoreTextEl.textContent = `Tu puntuación es ${score} de ${quizData.length}.`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            score = 0;
+
+            scoreContainerEl.style.display = 'none';
+            quizContentEl.style.display = 'block';
+            document.querySelector('.navigation-controls').style.display = 'flex';
+
+            displayQuestion();
+        }
+
+        // Iniciar el cuestionario
+        displayQuestion();
+    </script>
+
+</body>
+</html>
+

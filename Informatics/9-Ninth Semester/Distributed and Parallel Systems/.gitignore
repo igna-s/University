@@ -1,0 +1,23 @@
+# IDEs
+.vscode/
+
+# LaTeX
+*.aux
+*.log
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.out
+
+# Archives (excluding large workspace files)
+*.zip
+*.7z
+*.rar
+*.exe
+# OS
+Thumbs.db
+.DS_Store
+
+# Python
+__pycache__/

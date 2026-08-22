@@ -1,0 +1,10 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :-------: | :------- | :---------- |
+| 8 | `from qiskit import Aer` | Restructuring -> `Aer` is now part of the `qiskit_aer` package | internal | Aer | `from qiskit_aer import AerSimulator` |
+| 9 | `backend = Aer.get_backend('aer_simulator')` | Deprecation -> `Aer.get_backend` is deprecated, use `AerSimulator()` directly. | internal | Aer.get_backend | `backend = AerSimulator()` |
+| 11 | `from qiskit import execute` | Deprecation -> `qiskit.execute` function is deprecated. | internal | execute | |
+| 12 | `job = execute(qc, backend, shots=1000)` | Deprecation -> `qiskit.execute` is deprecated, use `backend.run()`. | internal | execute | `job = backend.run(qc, shots=1000)` |
+| 14 | `from qiskit.tools.visualization import plot_histogram` | Restructuring -> `plot_histogram` moved from `qiskit.tools.visualization` to `qiskit.visualization`. | internal | plot_histogram | `from qiskit.visualization import plot_histogram` |
+| 17 | `from qiskit.algorithms import VQE` | Restructuring -> `VQE` algorithm class moved to `qiskit.algorithms.minimum_eigensolvers`. | internal | VQE | `from qiskit.algorithms.minimum_eigensolvers import VQE` |
+| 19 | `from qiskit import SPSA` | Restructuring -> `SPSA` optimizer moved to `qiskit.algorithms.optimizers`. | internal | SPSA | `from qiskit.algorithms.optimizers import SPSA` |
+| 20 | `vqe = VQE(TwoLocal(rotation_blocks="ry", entanglement_blocks="cz"), SPSA())` | API Change -> `VQE` constructor signature changed, requiring an `estimator` and keyword arguments for `ansatz` and `optimizer`. | internal | VQE constructor | `from qiskit.primitives import Estimator` <br> `estimator = Estimator()` <br> `ansatz = TwoLocal(rotation_blocks="ry", entanglement_blocks="cz")` <br> `optimizer = SPSA()` <br> `vqe = VQE(ansatz=ansatz, optimizer=optimizer, estimator=estimator)` |

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario: Sistemas Compuestos</title>
+
+    <!-- Inclusión de MathJax para renderizar LaTeX -->
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['\\(', '\\)'], ['$', '$']],
+            displayMath: [['\\[', '\\]'], ['$$', '$$']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+
+    <!-- Estilos CSS para la aplicación -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            box-sizing: border-box;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #0056b3;
+            margin: 0;
+        }
+
+        .quiz-header p {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-top: 8px;
+        }
+
+        #question-counter {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        #question-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            min-height: 80px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        @media (min-width: 640px) {
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+
+        .option-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #0056b3;
+            background-color: #f7fafc;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background-color: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #b91c1c;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .hint-section {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .hint-btn {
+            background: none;
+            border: none;
+            color: #0056b3;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        #hint-text {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            color: #475569;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        #feedback-panel {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #feedback-panel.correct-feedback {
+            background-color: #e0f7fa;
+            border-left: 5px solid #00BCD4;
+        }
+
+        #feedback-panel.incorrect-feedback {
+            background-color: #fff1f2;
+            border-left: 5px solid #f43f5e;
+        }
+
+        .theory-btn {
+            background-color: transparent;
+            color: #0056b3;
+            border: 2px solid #0056b3;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .theory-btn:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .navigation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 30px;
+        }
+
+        .nav-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #004494;
+        }
+
+        .nav-btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        #score-container {
+            text-align: center;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 16px;
+            text-align: left;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content h2 {
+            text-align: center;
+            color: #0056b3;
+            margin-top: 0;
+        }
+
+        .modal-close-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Cuestionario</h1>
+            <p>Basado en la Teoría 6</p>
+        </div>
+
+        <div id="quiz-content">
+            <div id="question-counter"></div>
+            <div id="question-text"></div>
+            <div class="options-grid" id="options-container"></div>
+            <div class="hint-section" id="hint-section"></div>
+            <div id="feedback-panel"></div>
+        </div>
+
+        <div id="score-container" style="display: none;">
+             <h2>Cuestionario Finalizado</h2>
+             <p id="score-text" style="font-size: 1.2rem;"></p>
+             <button class="nav-btn" onclick="restartQuiz()">Volver a Intentar</button>
+        </div>
+
+
+        <div class="navigation-controls">
+            <button class="nav-btn" id="prev-btn" onclick="prevQuestion()">Anterior</button>
+            <button class="nav-btn" id="next-btn" onclick="nextQuestion()">Siguiente</button>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="theory-modal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div id="modal-text"></div>
+            <button class="modal-close-btn" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Si un qubit tiene un espacio de Hilbert de dimensión 2, ¿cuál es la dimensión del espacio de Hilbert de un sistema de 3 qubits?",
+                options: ["6 (2+2+2)", "8 (2x2x2)", "9 (3^2)", "5 (2+3)"],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Las dimensiones no se suman.",
+                    "¡Correcto! La dimensión del espacio compuesto es el producto de las dimensiones de los espacios individuales. Para N qubits, la dimensión es 2^N.",
+                    "Incorrecto. El número de qubits no es la base de la potencia.",
+                    "Incorrecto."
+                ],
+                hint: "La dimensión de un espacio compuesto se obtiene multiplicando, no sumando, las dimensiones individuales.",
+                theoryHTML: `<h2>El Espacio Compuesto: \\(\\mathcal{H} = \\mathcal{H}_1 \\otimes \\mathcal{H}_2\\)</h2>
+                    <p><b>La Regla Clave: Multiplicación de Dimensiones</b></p>
+                    <p>La dimensión del nuevo espacio compuesto es el <b>producto</b> de las dimensiones de los espacios originales. Si \\(\\text{dim}(\\mathcal{H}_1) = N_1\\) y \\(\\text{dim}(\\mathcal{H}_2) = N_2\\), entonces:</p>
+                    <p style="text-align:center;">\\( \\text{dim}(\\mathcal{H}) = N_1 \\cdot N_2 \\)</p>
+                    <p>Esto explica el crecimiento exponencial del poder computacional. Cada qubit que añadimos (dimensión 2) <b>multiplica</b> el tamaño del espacio de estados.</p>`
+            },
+            {
+                question: "¿Qué es un 'estado producto' (o separable)?",
+                options: ["Un estado que no puede ser factorizado.", "Un estado en el que cada subsistema puede ser descrito de forma independiente.", "Un estado que resulta de la suma de dos kets.", "Un estado que siempre se encuentra en la base computacional."],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Un estado que no puede ser factorizado se llama estado entrelazado.",
+                    "¡Correcto! Un estado producto es aquel que se puede escribir como el producto tensorial de los estados de sus subsistemas, como \\(|\\psi\\rangle = |\\phi\\rangle \\otimes |\\chi\\rangle\\).",
+                    "Incorrecto. La suma de kets crea una superposición, no necesariamente un estado producto.",
+                    "Incorrecto. Los estados producto pueden estar formados por superposiciones, como \\(|+\\rangle|+\\rangle\\)."
+                ],
+                hint: "El nombre 'producto' da una pista sobre cómo se construye.",
+                theoryHTML: `<h2>Estados Producto (o Separables)</h2>
+                    <p>Aquellos estados en los que cada subsistema puede ser descrito de forma independiente se llaman <b>estados producto</b> (o separables).</p>
+                    <p>Estos estados se construyen tomando el producto tensorial de los vectores de estado de los espacios individuales.</p>
+                    <p>Si tenemos un estado \\(|\\phi\\rangle \\in \\mathcal{H}_1\\) y un estado \\(|\\chi\\rangle \\in \\mathcal{H}_2\\), su estado producto \\(|\\psi\\rangle \\in \\mathcal{H}\\) es:</p>
+                    <p style="text-align:center;">\\( |\\psi\\rangle = |\\phi\\rangle \\otimes |\\chi\\rangle \\)</p>`
+            },
+            {
+                question: "Según la convención de notación, ¿cómo se abrevia el estado \\(|0\\rangle \\otimes |1\\rangle\\)?",
+                options: ["\\(|0+1\\rangle\\)", "\\(|0\\rangle|1\\rangle\\)", "\\(|01\\rangle\\)", "No se puede abreviar."],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. La suma se usa para superposiciones, no para productos tensoriales.",
+                    "Incorrecto. Aunque omitir el símbolo \\(\\otimes\\) es una abreviatura válida (\\(|0\\rangle|1\\rangle\\)), hay una convención más específica para la base computacional.",
+                    "¡Correcto! Para la base computacional, la convención es fusionar los kets concatenando sus etiquetas. \\(|0\\rangle \\otimes |1\\rangle \\equiv |01\\rangle\\).",
+                    "Incorrecto. Existen convenciones estándar para simplificar la notación."
+                ],
+                hint: "Para la base computacional, las etiquetas de los kets se fusionan.",
+                theoryHTML: `<h2>Notación Abreviada: Dos Convenciones Clave</h2>
+                    <ol>
+                        <li><b>Omisión del Símbolo \\(\\otimes\\) (Regla General):</b> \\( |\\phi\\rangle \\otimes |\\chi\\rangle \\equiv |\\phi\\rangle|\\chi\\rangle \\)</li>
+                        <li><b>Fusión de Kets (Regla Específica):</b> Para la <b>base computacional</b>, las etiquetas de los kets se concatenan en uno solo.
+                        <p style="text-align:center;">\\( |a\\rangle \\otimes |b\\rangle \\equiv |ab\\rangle \\quad \\text{(donde } a, b \\in \\{0, 1\\}\\text{)} \\)</p>
+                        </li>
+                    </ol>`
+            },
+            {
+                question: "Dado \\(|\\phi\\rangle = \\alpha_0|0\\rangle + \\alpha_1|1\\rangle\\) y \\(|\\chi\\rangle = \\beta_0|0\\rangle + \\beta_1|1\\rangle\\), ¿cuál es la amplitud del estado base \\(|01\\rangle\\) en el estado producto \\(|\\phi\\rangle \\otimes |\\chi\\rangle\\)?",
+                options: ["\\(\\alpha_0\\beta_1\\)", "\\(\\alpha_1\\beta_0\\)", "\\(\\alpha_0+\\beta_1\\)", "\\(\\alpha_1+\\beta_0\\)"],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! La amplitud del estado base \\(|u_i v_j\\rangle\\) es el producto de las amplitudes individuales \\(\\alpha_i \\beta_j\\). Para \\(|01\\rangle\\), esto corresponde a \\(\\alpha_0 \\beta_1\\).",
+                    "Incorrecto. Esto correspondería a la amplitud del estado base \\(|10\\rangle\\).",
+                    "Incorrecto. Las amplitudes se multiplican, no se suman.",
+                    "Incorrecto. Las amplitudes se multiplican, no se suman."
+                ],
+                hint: "La amplitud de un estado base compuesto es el producto de las amplitudes originales correspondientes.",
+                theoryHTML: `<h2>Expansión de un Estado Producto</h2>
+                    <p>Si \\(|\\phi\\rangle = \\sum_i \\alpha_i|u_i\\rangle\\) y \\(|\\chi\\rangle = \\sum_j \\beta_j|v_j\\rangle\\), entonces su producto tensorial es:</p>
+                    <p style="text-align:center;">\\( |\\psi\\rangle = \\sum_{i,j} \\alpha_i \\beta_j (|u_i\\rangle \\otimes |v_j\\rangle) \\)</p>
+                    <p>La amplitud del estado base \\(|u_i v_j\\rangle\\) en el estado compuesto es el producto de las amplitudes originales, \\(\\alpha_i \\beta_j\\).</p>`
+            },
+            {
+                question: "Usando el Producto de Kronecker, calcula \\(|0\\rangle \\otimes |1\\rangle\\), donde \\(|0\\rangle = \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix}\\) y \\(|1\\rangle = \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix}\\).",
+                options: [
+                    "\\(\\begin{pmatrix} 1 \\\\ 0 \\\\ 0 \\\\ 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 0 \\\\ 1 \\\\ 0 \\\\ 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 0 \\\\ 0 \\\\ 1 \\\\ 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 0 \\\\ 0 \\\\ 0 \\\\ 1 \\end{pmatrix}\\)"
+                ],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Este es el vector para \\(|00\\rangle\\).",
+                    "¡Correcto! Se calcula como \\(\\begin{pmatrix} 1 \\cdot \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix} \\\\ 0 \\cdot \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix} \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 1 \\\\ 0 \\\\ 0 \\end{pmatrix}\\).",
+                    "Incorrecto. Este es el vector para \\(|10\\rangle\\).",
+                    "Incorrecto. Este es el vector para \\(|11\\rangle\\)."
+                ],
+                hint: "Reemplaza cada elemento del primer vector por ese elemento multiplicado por el segundo vector completo.",
+                theoryHTML: `<h2>El Producto de Kronecker</h2>
+                    <p>Si \\(|\\psi\\rangle = \\begin{pmatrix} \\alpha_1 \\\\ \\vdots \\end{pmatrix}\\) y \\(|\\phi\\rangle = \\begin{pmatrix} \\beta_1 \\\\ \\vdots \\end{pmatrix}\\), entonces:</p>
+                    <p style="text-align:center;">\\( |\\psi\\rangle \\otimes |\\phi\\rangle = \\begin{pmatrix} \\alpha_1 |\\phi\\rangle \\\\ \\alpha_2 |\\phi\\rangle \\\\ \\vdots \\end{pmatrix} \\)</p>
+                    <p><b>Ejemplo:</b> \\(|01\\rangle = |0\\rangle \\otimes |1\\rangle = \\begin{pmatrix} 1 \\\\ 0 \\end{pmatrix} \\otimes \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix} = \\begin{pmatrix} 1 \\cdot \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix} \\\\ 0 \\cdot \\begin{pmatrix} 0 \\\\ 1 \\end{pmatrix} \\end{pmatrix} = \\begin{pmatrix} 0 \\\\ 1 \\\\ 0 \\\\ 0 \\end{pmatrix}\\)</p>`
+            },
+            {
+                question: "¿Cuál de las siguientes afirmaciones sobre el producto tensorial de vectores es correcta?",
+                options: ["Es conmutativo: \\(|v\\rangle \\otimes |w\\rangle = |w\\rangle \\otimes |v\\rangle\\).", "No es conmutativo: \\(|v\\rangle \\otimes |w\\rangle \\neq |w\\rangle \\otimes |v\\rangle\\).", "Es anticonmutativo: \\(|v\\rangle \\otimes |w\\rangle = -|w\\rangle \\otimes |v\\rangle\\).", "El orden es irrelevante."],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. El orden de los elementos en el vector columna resultante cambia si se invierte el orden de la operación.",
+                    "¡Correcto! El cálculo práctico mediante el Producto de Kronecker demuestra que el orden de los vectores importa y el resultado no es el mismo. El orden de los qubits en un registro es fundamental.",
+                    "Incorrecto. No hay un cambio de signo general.",
+                    "Incorrecto. El orden es crucial para la representación del vector y la aplicación de operadores."
+                ],
+                hint: "Calcula \\(|0\\rangle \\otimes |1\\rangle\\) y \\(|1\\rangle \\otimes |0\\rangle\\) y compara los vectores resultantes.",
+                theoryHTML: `<h2>El Producto Tensorial es NO Conmutativo</h2>
+                    <p>\\( |\\phi\\rangle \\otimes |\\chi\\rangle = \\begin{pmatrix} \\alpha\\gamma \\\\ \\alpha\\delta \\\\ \\beta\\gamma \\\\ \\beta\\delta \\end{pmatrix} \\quad \\neq \\quad |\\chi\\rangle \\otimes |\\phi\\rangle = \\begin{pmatrix} \\gamma\\alpha \\\\ \\gamma\\beta \\\\ \\delta\\alpha \\\\ \\delta\\beta \\end{pmatrix} \\)</p>
+                    <p><b>Nota:</b> Para todos los propósitos prácticos de cálculo y programación, <b>el orden es fundamental y la operación no es conmutativa.</b></p>`
+            },
+            {
+                question: "Si \\(|\\psi_1\\rangle = |\\phi_1\\rangle \\otimes |\\chi_1\\rangle\\) y \\(|\\psi_2\\rangle = |\\phi_2\\rangle \\otimes |\\chi_2\\rangle\\), ¿cuál es la regla para calcular el producto interno \\(\\langle\\psi_1|\\psi_2\\rangle\\)?",
+                options: ["\\(\\langle\\phi_1|\\phi_2\\rangle + \\langle\\chi_1|\\chi_2\\rangle\\)", "\\(\\langle\\phi_1|\\phi_2\\rangle \\cdot \\langle\\chi_1|\\chi_2\\rangle\\)", "\\(\\langle\\phi_1|\\chi_1\\rangle \\cdot \\langle\\phi_2|\\chi_2\\rangle\\)", "\\(\\langle\\phi_1|\\chi_2\\rangle \\otimes \\langle\\chi_1|\\phi_2\\rangle\\)"],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Los productos internos individuales se multiplican, no se suman.",
+                    "¡Correcto! El producto interno de dos estados producto se calcula multiplicando los productos internos de sus componentes individuales.",
+                    "Incorrecto. Se deben agrupar los componentes del primer espacio y los del segundo espacio.",
+                    "Incorrecto. El resultado final debe ser un escalar, no un producto tensorial."
+                ],
+                hint: "El producto interno de un estado tensorial se descompone en operaciones más simples.",
+                theoryHTML: `<h2>Productos Internos en Espacios Compuestos</h2>
+                    <p><b>La Regla:</b> El producto interno de dos estados producto se calcula multiplicando los productos internos de sus componentes individuales.</p>
+                    <p>Si \\(|\\psi_1\\rangle = |\\phi_1\\rangle \\otimes |\\chi_1\\rangle\\) y \\(|\\psi_2\\rangle = |\\phi_2\\rangle \\otimes |\\chi_2\\rangle\\), entonces:</p>
+                    <p style="text-align:center;">\\( \\langle\\psi_1|\\psi_2\\rangle = \\langle\\phi_1|\\phi_2\\rangle \\cdot \\langle\\chi_1|\\chi_2\\rangle \\)</p>`
+            },
+            {
+                question: "Para un estado compuesto \\(|\\psi\\rangle = |\\phi\\rangle \\otimes |\\chi\\rangle\\), ¿cuál es su bra correspondiente, \\(\\langle\\psi|\\)?",
+                options: ["\\(\\langle\\phi| \\otimes \\langle\\chi|\\)", "\\(\\langle\\chi| \\otimes \\langle\\phi|\\)", "\\(\\langle\\phi| + \\langle\\chi|\\)", "\\((\\langle\\phi|\\langle\\chi|)\\)"],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! La operación daga se distribuye sobre el producto tensorial, convirtiendo cada ket en su bra correspondiente: \\((|\\phi\\rangle \\otimes |\\chi\\rangle)^\\dagger = |\\phi\\rangle^\\dagger \\otimes |\\chi\\rangle^\\dagger = \\langle\\phi| \\otimes \\langle\\chi|\\).",
+                    "Incorrecto. El orden no se invierte para la daga de un producto tensorial.",
+                    "Incorrecto. La operación no se convierte en una suma.",
+                    "Incorrecto. Esto es una notación ambigua."
+                ],
+                hint: "La operación daga (\\(\\dagger\\)) se distribuye sobre el producto tensorial (\\(\\otimes\\)).",
+                theoryHTML: `<h2>El Adjunto (\\(\\dagger\\)) de un Producto Tensorial</h2>
+                    <p>La daga de un producto tensorial es el producto tensorial de las dagas.</p>
+                    <p style="text-align:center;">\\( (A \\otimes B)^\\dagger = A^\\dagger \\otimes B^\\dagger \\)</p>
+                    <p><b>Aplicación a Kets:</b> Como la daga de un ket es un bra, esto nos da la regla para construir el bra de un estado compuesto:</p>
+                    <p style="text-align:center;">\\( (|\\phi\\rangle \\otimes |\\chi\\rangle)^\\dagger = |\\phi\\rangle^\\dagger \\otimes |\\chi\\rangle^\\dagger = \\langle\\phi| \\otimes \\langle\\chi| \\)</p>`
+            },
+            {
+                question: "¿Cuál es la regla para el producto de dos operadores tensoriales \\((A \\otimes B)(C \\otimes D)\\)?",
+                options: ["\\((AC) \\otimes (BD)\\)", "\\((AD) \\otimes (BC)\\)", "\\((A+C) \\otimes (B+D)\\)", "\\((AB) \\otimes (CD)\\)"],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! Los operadores que actúan sobre el primer espacio (A, C) se agrupan, y los que actúan sobre el segundo espacio (B, D) se agrupan.",
+                    "Incorrecto. Los operadores no se cruzan entre espacios.",
+                    "Incorrecto. La operación es un producto, no una suma.",
+                    "Incorrecto. Revisa el orden de las matrices en el producto."
+                ],
+                hint: "Los operadores que actúan en el mismo subespacio se agrupan.",
+                theoryHTML: `<h2>Multiplicación de Productos Tensoriales</h2>
+                    <p>El producto de dos operadores tensoriales es el producto tensorial de los productos de sus componentes individuales.</p>
+                    <p style="text-align:center;">\\( (A \\otimes B)(C \\otimes D) = (AC) \\otimes (BD) \\)</p>
+                    <p><b>La Intuición:</b> Los operadores que actúan sobre el primer espacio (A, C) se agrupan, y los que actúan sobre el segundo espacio (B, D) se agrupan.</p>`
+            },
+            {
+                question: "En un estado de 2 qubits \\(|\\Psi\\rangle = c_{00}|00\\rangle + c_{01}|01\\rangle + c_{10}|10\\rangle + c_{11}|11\\rangle\\), ¿cómo se calcula la probabilidad de medir el estado \\(|10\\rangle\\)?",
+                options: ["\\(|c_{10}|^2\\)", "\\(c_{10}\\)", "\\(|c_{01}|^2\\)", "\\(c_{10}^*\\)"],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! La Regla de Born se generaliza directamente. La probabilidad de medir un estado base es el módulo al cuadrado de su amplitud correspondiente.",
+                    "Incorrecto. Esto es la amplitud, que es un número complejo. La probabilidad debe ser un número real.",
+                    "Incorrecto. Esta sería la probabilidad de medir el estado \\(|01\\rangle\\).",
+                    "Incorrecto. Este es el conjugado de la amplitud."
+                ],
+                hint: "La Regla de Born es la misma que para un solo qubit, pero aplicada a las amplitudes del estado compuesto.",
+                theoryHTML: `<h2>Amplitudes y Probabilidad en Sistemas Compuestos</h2>
+                    <p>La amplitud \\(c_{ab}\\) del estado base \\(|ab\\rangle\\) en un estado compuesto general \\(|\\Psi\\rangle\\) se calcula con el producto interno: \\( c_{ab} = \\langle ab | \\Psi \\rangle \\)</p>
+                    <p>La probabilidad de medir \\(|ab\\rangle\\) sigue siendo la Regla de Born:</p>
+                    <p style="text-align:center;">\\( P(ab) = |\\langle ab | \\Psi \\rangle|^2 = |c_{ab}|^2 \\)</p>`
+            },
+            {
+                question: "Si \\(|v\\rangle\\) es un autovector del operador A con autovalor \\(\\lambda_v\\), y \\(|w\\rangle\\) es un autovector de B con autovalor \\(\\lambda_w\\), ¿cuál es el autovalor del estado \\(|v\\rangle \\otimes |w\\rangle\\) con respecto al operador \\(A \\otimes B\\)?",
+                options: ["\\(\\lambda_v + \\lambda_w\\)", "\\(\\lambda_v / \\lambda_w\\)", "\\(\\lambda_v \\cdot \\lambda_w\\)", "\\(\\lambda_v - \\lambda_w\\)"],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Los autovalores se multiplican, no se suman.",
+                    "Incorrecto.",
+                    "¡Correcto! El autovalor del estado producto es el producto de los autovalores individuales. \\((A \\otimes B)(|v\\rangle \\otimes |w\\rangle) = \\lambda_v\\lambda_w(|v\\rangle \\otimes |w\\rangle)\\).",
+                    "Incorrecto."
+                ],
+                hint: "Aplica el operador \\((A \\otimes B)\\) al estado y usa las ecuaciones de autovalores individuales.",
+                theoryHTML: `<h2>Autovectores de Operadores Tensoriales</h2>
+                    <p>Si \\(A|v\\rangle = \\lambda_v|v\\rangle\\) y \\(B|w\\rangle = \\lambda_w|w\\rangle\\), entonces:</p>
+                    <p>\\( (A \\otimes B)(|v\\rangle \\otimes |w\\rangle) = (A|v\\rangle) \\otimes (B|w\\rangle) = (\\lambda_v|v\\rangle) \\otimes (\\lambda_w|w\\rangle) = \\lambda_v\\lambda_w(|v\\rangle \\otimes |w\\rangle) \\)</p>
+                    <p><b>Conclusión:</b> Si un estado producto está formado por autovectores de los operadores individuales, también es un autovector del operador tensorial. El nuevo autovalor es el <b>producto</b> de los autovalores originales.</p>`
+            },
+            {
+                question: "Si los operadores \\(\\hat{A}\\) y \\(\\hat{B}\\) son ambos Unitarios, ¿qué se puede afirmar sobre el operador \\(\\hat{A} \\otimes \\hat{B}\\)?",
+                options: ["Es Hermitiano.", "Es un proyector.", "También es Unitario.", "Es el operador Identidad."],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. La Hermiticidad se conserva si los operadores originales son Hermitianos, no necesariamente si son Unitarios.",
+                    "Incorrecto.",
+                    "¡Correcto! El producto tensorial preserva las propiedades fundamentales. Si las acciones individuales son válidas (unitarias), la acción combinada también lo es.",
+                    "Incorrecto. Solo sería la Identidad si \\(\\hat{A}\\) y \\(\\hat{B}\\) fueran la Identidad."
+                ],
+                hint: "El producto tensorial preserva las propiedades algebraicas importantes.",
+                theoryHTML: `<h2>Propiedades de los Operadores Tensoriales</h2>
+                    <p>El producto tensorial \\(\\hat{A} \\otimes \\hat{B}\\) hereda las buenas cualidades de los operadores individuales:</p>
+                    <ul>
+                        <li>Si \\(\\hat{A}\\) y \\(\\hat{B}\\) son <b>Hermitianos</b>, entonces \\(\\hat{A} \\otimes \\hat{B}\\) es <b>Hermitiano</b>.</li>
+                        <li>Si \\(\\hat{A}\\) y \\(\\hat{B}\\) son <b>Unitarios</b>, entonces \\(\\hat{A} \\otimes \\hat{B}\\) es <b>Unitario</b>.</li>
+                        <li>Si \\(\\hat{A}\\) y \\(\\hat{B}\\) son <b>Proyectores</b>, entonces \\(\\hat{A} \\otimes \\hat{B}\\) es un <b>Proyector</b>.</li>
+                    </ul>`
+            },
+            {
+                question: "¿Qué operador representa la acción de aplicar una compuerta \\(\\hat{A}\\) al primer qubit de un sistema de dos qubits, sin modificar el segundo?",
+                options: ["\\(\\hat{A} \\otimes \\hat{A}\\)", "\\(\\hat{I} \\otimes \\hat{A}\\)", "\\(\\hat{A} + \\hat{I}\\)", "\\(\\hat{A} \\otimes \\hat{I}\\)"],
+                correctAnswer: 3,
+                feedback: [
+                    "Incorrecto. Esto aplicaría la compuerta \\(\\hat{A}\\) a ambos qubits.",
+                    "Incorrecto. Esto aplicaría la compuerta \\(\\hat{A}\\) al segundo qubit y dejaría intacto el primero.",
+                    "Incorrecto. La suma de operadores no es la forma de combinar acciones en sistemas compuestos.",
+                    "¡Correcto! La operación 'no hacer nada' se representa con el operador Identidad (\\(\\hat{I}\\)). Para actuar solo sobre el primer qubit, se usa el producto tensorial \\(\\hat{A} \\otimes \\hat{I}\\)."
+                ],
+                hint: "La operación 'no hacer nada' se representa con la matriz Identidad.",
+                theoryHTML: `<h2>Actuando sobre un Solo Qubit</h2>
+                    <p>Una de las operaciones más comunes es aplicar una compuerta a <b>un solo qubit</b> mientras los demás <b>no se modifican</b>. La acción de "no hacer nada" se representa con el <b>operador Identidad (\\(\\hat{I}\\))</b>.</p>
+                    <p>Para construir un operador que actúa con \\(\\hat{A}\\) sobre el primer qubit y deja intacto al segundo, usamos el producto tensorial:</p>
+                    <p style="text-align:center;">\\( \\hat{A} \\otimes \\hat{I} \\)</p>`
+            },
+            {
+                question: "Si aplicamos el operador \\(\\hat{H} \\otimes \\hat{I}\\) al estado \\(|00\\rangle\\), ¿cuál es el estado resultante?",
+                options: ["\\(|+\\rangle|0\\rangle\\)", "\\(|0\\rangle|+\\rangle\\)", "\\(|+\\rangle|+\\rangle\\)", "\\(|0\\rangle|0\\rangle\\)"],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! La operación es \\((\\hat{H}|0\\rangle) \\otimes (\\hat{I}|0\\rangle) = |+\\rangle \\otimes |0\\rangle\\), que se abrevia como \\(|+\\rangle|0\\rangle\\). La fusión de kets como \\(|+0\\rangle\\) se evita fuera de la base computacional.",
+                    "Incorrecto. Este sería el resultado de aplicar \\(\\hat{I} \\otimes \\hat{H}\\).",
+                    "Incorrecto. Este sería el resultado de aplicar \\(\\hat{H} \\otimes \\hat{H}\\).",
+                    "Incorrecto. La compuerta H cambia el estado del primer qubit."
+                ],
+                hint: "El operador \\(\\hat{H}\\) actúa sobre el primer ket y el operador \\(\\hat{I}\\) sobre el segundo.",
+                theoryHTML: `<h2>Ejemplo: La Compuerta Hadamard en un Sistema de 2 Qubits</h2>
+                    <p>Si el estado inicial es \\(|00\\rangle\\), el estado final al aplicar \\(\\hat{H} \\otimes \\hat{I}\\) será:</p>
+                    <p>\\( (\\hat{H} \\otimes \\hat{I}) |00\\rangle = (\\hat{H}|0\\rangle) \\otimes (\\hat{I}|0\\rangle) = |+\\rangle \\otimes |0\\rangle \\)</p>
+                    <p>Expandiendo \\(|+\\rangle\\):</p>
+                    <p>\\( = \\frac{1}{\\sqrt{2}}(|0\\rangle+|1\\rangle) \\otimes |0\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |10\\rangle) \\)</p>`
+            },
+            {
+                question: "¿Cuál es la regla para calcular el producto tensorial de matrices (Producto de Kronecker)?",
+                options: ["Se multiplican los elementos correspondientes de cada matriz.", "Se suma cada elemento de la primera matriz con la segunda matriz completa.", "Se reemplaza cada elemento de la primera matriz por ese elemento multiplicado por la segunda matriz completa.", "Se concatena la segunda matriz a la derecha de la primera."],
+                correctAnswer: 2,
+                feedback: [
+                    "Incorrecto. Esta operación se llama producto de Hadamard.",
+                    "Incorrecto.",
+                    "¡Correcto! Esta es la definición del Producto de Kronecker para matrices. Si la primera matriz es \\(m \\times n\\) y la segunda es \\(p \\times q\\), el resultado es una matriz de bloques de tamaño \\((mp) \\times (nq)\\).",
+                    "Incorrecto."
+                ],
+                hint: "Es una operación de 'bloques' donde la segunda matriz se inserta repetidamente dentro de la primera.",
+                theoryHTML: `<h2>Producto Tensorial de Matrices (Producto de Kronecker)</h2>
+                    <p><b>La Regla:</b> Se reemplaza cada elemento de la primera matriz por ese elemento multiplicado por la <b>segunda matriz completa</b>.</p>
+                    <p style="text-align:center;">\\( \\hat{A} \\otimes \\hat{B} = \\begin{pmatrix} a_{11} & a_{12} \\\\ a_{21} & a_{22} \\end{pmatrix} \\otimes \\hat{B} = \\begin{pmatrix} a_{11}\\hat{B} & a_{12}\\hat{B} \\\\ a_{21}\\hat{B} & a_{22}\\hat{B} \\end{pmatrix} \\)</p>`
+            },
+            {
+                question: "Dadas las matrices \\(X = \\begin{pmatrix} 0 & 1 \\\\ 1 & 0 \\end{pmatrix}\\) y \\(Z = \\begin{pmatrix} 1 & 0 \\\\ 0 & -1 \\end{pmatrix}\\), ¿cuál es la matriz de \\(X \\otimes Z\\)?",
+                options: [
+                    "\\(\\begin{pmatrix} 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & -1 \\\\ 1 & 0 & 0 & 0 \\\\ 0 & -1 & 0 & 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 0 & 1 & 0 & 0 \\\\ 1 & 0 & 0 & 0 \\\\ 0 & 0 & 0 & -1 \\\\ 0 & 0 & -1 & 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 0 & 1 & 1 & 0 \\\\ 1 & 0 & 0 & -1 \\\\ 1 & 0 & 0 & 1 \\\\ 0 & -1 & 1 & 0 \\end{pmatrix}\\)",
+                    "\\(\\begin{pmatrix} 1 & 0 & 0 & 1 \\\\ 0 & -1 & 1 & 0 \\\\ 0 & 1 & 1 & 0 \\\\ 1 & 0 & 0 & -1 \\end{pmatrix}\\)"
+                ],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! Se calcula como \\(\\begin{pmatrix} 0 \\cdot Z & 1 \\cdot Z \\\\ 1 \\cdot Z & 0 \\cdot Z \\end{pmatrix}\\), que al expandir los bloques da esta matriz.",
+                    "Incorrecto. Esta es la matriz de \\(Z \\otimes X\\). El producto tensorial de matrices no es conmutativo.",
+                    "Incorrecto. Revisa el cálculo del Producto de Kronecker.",
+                    "Incorrecto. Revisa el cálculo del Producto de Kronecker."
+                ],
+                hint: "Construye la matriz de bloques \\(\\begin{pmatrix} 0 \\cdot Z & 1 \\cdot Z \\\\ 1 \\cdot Z & 0 \\cdot Z \\end{pmatrix}\\) y luego expande cada bloque.",
+                theoryHTML: `<h2>Ejemplo: La Matriz de \\(X \\otimes Z\\)</h2>
+                    <p>\\( X \\otimes Z = \\begin{pmatrix} 0 \\cdot Z & 1 \\cdot Z \\\\ 1 \\cdot Z & 0 \\cdot Z \\end{pmatrix} = \\begin{pmatrix} \\begin{pmatrix} 0 & 0 \\\\ 0 & 0 \\end{pmatrix} & \\begin{pmatrix} 1 & 0 \\\\ 0 & -1 \\end{pmatrix} \\\\ \\begin{pmatrix} 1 & 0 \\\\ 0 & -1 \\end{pmatrix} & \\begin{pmatrix} 0 & 0 \\\\ 0 & 0 \\end{pmatrix} \\end{pmatrix} \\)</p>
+                    <p>Juntando los bloques, la matriz \\(4 \\times 4\\) final es:</p>
+                    <p style="text-align:center;">\\( X \\otimes Z = \\begin{pmatrix} 0 & 0 & 1 & 0 \\\\ 0 & 0 & 0 & -1 \\\\ 1 & 0 & 0 & 0 \\\\ 0 & -1 & 0 & 0 \\end{pmatrix} \\)</p>`
+            },
+            {
+                question: "Según la convención de Qiskit, para un sistema de dos qubits \\(q_1, q_0\\), el estado \\(|10\\rangle\\) representa:",
+                options: ["\\(q_1\\) en estado \\(|0\\rangle\\) y \\(q_0\\) en estado \\(|1\\rangle\\).", "\\(q_1\\) en estado \\(|1\\rangle\\) y \\(q_0\\) en estado \\(|0\\rangle\\).", "El número 10 en binario.", "Un estado entrelazado."],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. En la convención de Qiskit, el qubit de mayor índice (el más significativo) se escribe a la izquierda.",
+                    "¡Correcto! La notación \\(|q_1 q_0\\rangle\\) significa que el ket de la izquierda corresponde al qubit de mayor índice. Por tanto, \\(|10\\rangle\\) significa \\(q_1=|1\\rangle\\) y \\(q_0=|0\\rangle\\).",
+                    "Incorrecto. Aunque la notación usa 0 y 1, representa un estado cuántico, no un número.",
+                    "Incorrecto. \\(|10\\rangle\\) es un estado producto, es separable."
+                ],
+                hint: "El qubit más significativo (con el índice más alto) va a la izquierda.",
+                theoryHTML: `<h2>Una Advertencia Crucial: El Orden de los Qubits Importa</h2>
+                    <p><b>Nuestra Convención (Informática Cuántica / Qiskit):</b></p>
+                    <ul>
+                        <li><b>Ket:</b> El qubit de mayor índice (más significativo) va a la izquierda: \\(|q_1 q_0\\rangle\\).</li>
+                        <li><b>Operador Compuesto:</b> La compuerta para \\(q_1\\) va a la izquierda. Si quiero aplicar \\(X\\) a \\(q_1\\) y \\(H\\) a \\(q_0\\) aplicaría: \\((X \\otimes H)|q_1 q_0\\rangle\\).</li>
+                    </ul>`
+            },
+            {
+                question: "Si queremos aplicar la compuerta X al qubit \\(q_0\\) y la compuerta H al qubit \\(q_1\\) de un estado \\(|q_1 q_0\\rangle\\), ¿cuál es el operador correcto según la convención de Qiskit?",
+                options: ["\\(X \\otimes H\\)", "\\(H \\otimes X\\)", "\\(X + H\\)", "\\(H + X\\)"],
+                correctAnswer: 1,
+                feedback: [
+                    "Incorrecto. Esto aplicaría X al qubit de la izquierda (\\(q_1\\)) y H al de la derecha (\\(q_0\\)).",
+                    "¡Correcto! En la convención de Qiskit, el operador para el qubit de la izquierda (\\(q_1\\)) se escribe a la izquierda en el producto tensorial. Por lo tanto, para aplicar H a \\(q_1\\) y X a \\(q_0\\) se usa \\(H \\otimes X\\).",
+                    "Incorrecto. Las operaciones no se suman.",
+                    "Incorrecto. Las operaciones no se suman."
+                ],
+                hint: "El orden de los operadores en el producto tensorial debe coincidir con el orden de los qubits en el ket.",
+                theoryHTML: `<h2>Convención de Qiskit para Operadores</h2>
+                    <p>El orden de los operadores en el producto tensorial sigue el orden de los qubits en el ket.</p>
+                    <p><b>Ket:</b> \\(|q_1 q_0\\rangle\\) (el qubit 1 está a la izquierda).</p>
+                    <p><b>Operador Compuesto:</b> La compuerta para \\(q_1\\) va a la izquierda.</p>
+                    <p><b>Ejemplo:</b> Si quiero aplicar \\(X\\) a \\(q_1\\) y \\(H\\) a \\(q_0\\), el operador total es \\((X \\otimes H)\\) y la acción es \\((X \\otimes H)|q_1 q_0\\rangle\\).</p>`
+            },
+            {
+                question: "Si el estado de un sistema de 2 qubits es \\(|\\psi\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |11\\rangle)\\), ¿cuál es la probabilidad de medir el estado \\(|00\\rangle\\)?",
+                options: ["1/2", "1/\\(\\sqrt{2}\\)", "1", "0"],
+                correctAnswer: 0,
+                feedback: [
+                    "¡Correcto! La amplitud del estado \\(|00\\rangle\\) es \\(c_{00} = \\frac{1}{\\sqrt{2}}\\). La probabilidad es el módulo al cuadrado de esta amplitud: \\(|c_{00}|^2 = (\\frac{1}{\\sqrt{2}})^2 = \\frac{1}{2}\\).",
+                    "Incorrecto. Esto es la amplitud, no la probabilidad.",
+                    "Incorrecto. La probabilidad total es 1, pero no la de un solo resultado en una superposición.",
+                    "Incorrecto. Hay una componente no nula de \\(|00\\rangle\\) en el estado."
+                ],
+                hint: "Aplica la Regla de Born a la amplitud del estado base que te interesa.",
+                theoryHTML: `<h2>Amplitudes y Probabilidad en Sistemas Compuestos</h2>
+                    <p>Para un estado general \\(|\\Psi\\rangle = \\sum_{ij} c_{ij}|ij\\rangle\\), la probabilidad de medir el estado base \\(|ab\\rangle\\) es:</p>
+                    <p style="text-align:center;">\\( P(ab) = |c_{ab}|^2 \\)</p>
+                    <p>En el estado \\(|\\psi\\rangle = \\frac{1}{\\sqrt{2}}(|00\\rangle + |11\\rangle)\\), la amplitud de \\(|00\\rangle\\) es \\(\\frac{1}{\\sqrt{2}}\\). Por lo tanto, \\(P(00) = |\\frac{1}{\\sqrt{2}}|^2 = \\frac{1}{2}\\).</p>`
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let score = 0;
+
+        const questionCounterEl = document.getElementById('question-counter');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const feedbackPanelEl = document.getElementById('feedback-panel');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const quizContentEl = document.getElementById('quiz-content');
+        const scoreContainerEl = document.getElementById('score-container');
+        const scoreTextEl = document.getElementById('score-text');
+        const hintSectionEl = document.getElementById('hint-section');
+        const modalEl = document.getElementById('theory-modal');
+        const modalTextEl = document.getElementById('modal-text');
+
+
+        function displayQuestion() {
+            feedbackPanelEl.style.display = 'none';
+            optionsContainerEl.innerHTML = '';
+            hintSectionEl.innerHTML = '';
+
+            if (currentQuestionIndex >= quizData.length) {
+                showScore();
+                return;
+            }
+
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            questionCounterEl.textContent = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+            questionTextEl.innerHTML = currentQuestion.question;
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerHTML = option;
+                button.className = 'option-btn';
+                button.onclick = () => checkAnswer(index);
+                optionsContainerEl.appendChild(button);
+            });
+
+            // Add Hint functionality
+            const hintBtn = document.createElement('button');
+            hintBtn.textContent = 'Necesito una pista';
+            hintBtn.className = 'hint-btn';
+            const hintText = document.createElement('div');
+            hintText.id = 'hint-text';
+            hintText.innerHTML = currentQuestion.hint;
+            hintBtn.onclick = () => {
+                hintText.style.display = 'block';
+                hintBtn.style.display = 'none';
+            };
+            hintSectionEl.appendChild(hintBtn);
+            hintSectionEl.appendChild(hintText);
+
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset();
+            }
+
+            updateNavButtons();
+
+            if(userAnswers[currentQuestionIndex] !== null){
+                showPreviousAnswer();
+            }
+        }
+
+        function showPreviousAnswer(){
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const currentQuestion = quizData[currentQuestionIndex];
+            const correctIndex = currentQuestion.correctAnswer;
+            const optionButtons = optionsContainerEl.querySelectorAll('.option-btn');
+            const hintBtn = hintSectionEl.querySelector('.hint-btn');
+            if(hintBtn) hintBtn.style.display = 'none';
+
+
+            optionButtons.forEach((btn, i) => {
+                if (i === correctIndex) {
+                    btn.classList.add('correct');
+                } else if (i === userAnswer.selectedIndex) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+
+            feedbackPanelEl.innerHTML = `<p>${currentQuestion.feedback[userAnswer.selectedIndex]}</p>`;
+
+            const theoryBtn = document.createElement('button');
+            theoryBtn.textContent = 'Ver Teoría';
+            theoryBtn.className = 'theory-btn';
+            theoryBtn.onclick = () => showTheory(currentQuestion.theoryHTML);
+            feedbackPanelEl.appendChild(theoryBtn);
+
+            feedbackPanelEl.className = userAnswer.isCorrect ? 'correct-feedback' : 'incorrect-feedback';
+            feedbackPanelEl.style.display = 'block';
+
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset();
+            }
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(userAnswers[currentQuestionIndex] !== null) return;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedIndex === currentQuestion.correctAnswer;
+
+            userAnswers[currentQuestionIndex] = { selectedIndex, isCorrect };
+
+            if(isCorrect) {
+                score++;
+            }
+
+            showPreviousAnswer();
+        }
+
+        function showTheory(htmlContent) {
+            modalTextEl.innerHTML = htmlContent;
+            modalEl.style.display = 'flex';
+            if (window.MathJax && MathJax.typeset) {
+                 MathJax.typeset([modalTextEl]);
+            }
+        }
+
+        function closeModal() {
+            modalEl.style.display = 'none';
+        }
+
+        function updateNavButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === quizData.length -1) {
+                nextBtn.textContent = 'Finalizar';
+            } else {
+                 nextBtn.textContent = 'Siguiente';
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function showScore(){
+            quizContentEl.style.display = 'none';
+            document.querySelector('.navigation-controls').style.display = 'none';
+            scoreContainerEl.style.display = 'block';
+
+            scoreTextEl.textContent = `Tu puntuación es ${score} de ${quizData.length}.`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers.fill(null);
+            score = 0;
+
+            scoreContainerEl.style.display = 'none';
+            quizContentEl.style.display = 'block';
+            document.querySelector('.navigation-controls').style.display = 'flex';
+
+            displayQuestion();
+        }
+
+        // Iniciar el cuestionario
+        displayQuestion();
+    </script>
+
+</body>
+</html>
+
+

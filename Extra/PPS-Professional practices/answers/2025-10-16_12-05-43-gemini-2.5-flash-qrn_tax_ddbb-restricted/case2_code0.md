@@ -1,0 +1,3 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :-------: | :------- | :---------- |
+| 8 | `job = estimator.run([psi1], [H1], [theta1])` | Deprecation -> Implicit conversion from a dense BaseOperator to a SparsePauliOp in Estimator observable arguments is deprecated as of Qiskit 0.46 and will be removed in Qiskit 1.0. | f8f5e7ed-990e-4a31-9035-2032af8be117 | Estimator.run() | `job = estimator.run([psi1], [SparsePauliOp.from_operator(H1)], [theta1])` |

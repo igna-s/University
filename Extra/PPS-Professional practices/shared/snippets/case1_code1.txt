@@ -1,0 +1,13 @@
+1. import os
+2. from qiskit import QuantumCircuit 
+3. from qiskit import Aer
+4. from qiskit import qasm
+5. from datetime import datetime
+6. 
+7. qc = QuantumCircuit(2, 2)
+8. qc.h(0)
+9. qc.cx(0, 1)
+10. qc.measure(0, 0)
+11. qc.measure(1, 1)
+12.
+13. print("work done !")

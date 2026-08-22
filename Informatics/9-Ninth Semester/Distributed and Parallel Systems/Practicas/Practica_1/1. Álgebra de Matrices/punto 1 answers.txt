@@ -1,0 +1,55 @@
+Álgebra de Matrices - Resultados de Performance (N=1024)
+
+a. Multiplicación Naive y Locality
+----------------------------------
+| Versión                  | Tiempo (s) | Notas                               |
+|--------------------------|------------|-------------------------------------|
+| mm_naive (con calls)     | 28.56      | Elevado overhead por llamadas       |
+| mm_direct (acceso dir)   | 12.37      | ~56% de mejora al eliminar calls    |
+| mm_col (B column-major)  | 4.18       | Gran mejora por localidad espacial  |
+
+iii. ¿Son realmente necesarias getValor/setValor?
+No son necesarias para el cálculo, son una abstracción. El overhead es muy significativo (más del 50% del tiempo en esta arquitectura) debido a que las llamadas se encuentran en el bucle más interno ($O(N^3)$).
+
+iv. Comparación Row-major vs Column-major (B)
+La versión con B en column-major es considerablemente más rápida.
+¿Cómo se relaciona con el principio de localidad?
+Se relaciona con la Localidad Espacial. Al estar B en column-major, el acceso B[j*N+k] en el bucle interno (índice k) es contiguo en memoria, lo que permite aprovechar mejor las líneas de caché y reducir los cache misses. En la versión row-major, cada acceso a B salta una fila entera (N elementos), provocando constantes fallos de caché.
+
+b. Multiplicación C = A*A
+-------------------------
+| Estrategia               | Tiempo (s) | Notas                               |
+|--------------------------|------------|-------------------------------------|
+| Estrategia 1 (Row-Row)   | 28.56      | Misma performance que naive         |
+| Estrategia 2 (Row-Col)   | 4.46       | Incluye tiempo de reordenamiento    |
+
+¿Cuál obtiene mejor rendimiento?
+La Estrategia 2 (reordenar A a column-major antes de multiplicar). El impacto de las instrucciones adicionales para reordenar es despreciable ($O(N^2)$) frente al beneficio de la mejora en localidad durante la multiplicación ($O(N^3)$).
+
+c. Algoritmo mmblk (Bloques)
+----------------------------
+Funciona dividiendo las matrices en sub-matrices (bloques) de tamaño BSxBS. Esto mejora la Localidad Temporal, ya que los datos de un bloque permanecen en los niveles superiores de la jerarquía de memoria (caché L1/L2) mientras se operan, en lugar de ser desalojados.
+
+| Tamaño de Bloque (BS) | Tiempo (s) - mmblk | Tiempo (s) - mmblk_blas |
+|-----------------------|--------------------|-------------------------|
+| 16                    | 3.70               | 3.50                    |
+| 32                    | 3.95               | 3.12                    |
+| 64                    | 3.50               | 2.90 (Óptimo)           |
+| 128                   | 3.50               | 3.06                    |
+
+El mejor rendimiento se obtiene con BS=64 para mmblk_blas. Comparado con mm_naive (28.56s), la mejora es de casi 10x.
+
+d. Algoritmo mmblk_blas
+-----------------------
+A diferencia de mmblk.c, mmblk_blas optimiza el acceso al bloque de B copiándolo a un buffer temporal en orden column-major (packing). Esto garantiza que el bucle más interno siempre acceda a memoria de forma contigua, independientemente de cómo esté almacenada la matriz B original.
+
+e. Matrices Triangulares
+------------------------
+| Operación | Naive (s) | Optimizado (s) | Mejora |
+|-----------|-----------|----------------|--------|
+| MU        | 13.64     | 5.06           | ~2.7x  |
+| ML        | 15.07     | 5.36           | ~2.8x  |
+| UM        | 17.51     | 5.79           | ~3.0x  |
+| LM        | 17.61     | 5.86           | ~3.0x  |
+
+La solución que no almacena ceros (o que no los opera) es significativamente más rápida porque reduce el número de operaciones de floating point a la mitad (aprox $\frac{1}{2} N^3$) y mejora el tráfico de memoria al no leer datos innecesarios.

@@ -1,0 +1,3 @@
+| Line | Code | Scenario | Scenario Id | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :---------: | :-------: | :------- | :---------- |
+| 10 | `from qiskit import QuantumCircuit` | Deprecation -> The `qiskit.QuantumCircuit` import is deprecated. Use `qiskit.circuit.QuantumCircuit` instead. | 15c4f8a0-9a7f-4c18-a55f-4701f3832e91 | internal | qiskit.QuantumCircuit | `from qiskit.circuit import QuantumCircuit` |

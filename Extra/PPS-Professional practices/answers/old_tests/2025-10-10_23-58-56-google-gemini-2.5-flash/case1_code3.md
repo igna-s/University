@@ -1,0 +1,6 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :-------: | :------- | :---------- |
+| 4 | `from qiskit import QuantumCircuit, execute, Aer, qasm` | Deprecation -> The `qiskit.execute()` function is deprecated. It has been replaced by `qiskit.primitives.backend.run()` for running circuits on a backend. | 02c83a5a-c28d-46c6-acc2-4db931c4c15a | qiskit.execute | `from qiskit import QuantumCircuit` |
+| 4 | `from qiskit import QuantumCircuit, execute, Aer, qasm` | Deprecation -> The `Aer` module is deprecated. It has been replaced by `qiskit.providers.basic_provider.BasicProvider` | 02c83a5a-c28d-46c6-acc2-4db931c4c15a | qiskit.Aer | `from qiskit import QuantumCircuit` |
+| 4 | `from qiskit import QuantumCircuit, execute, Aer, qasm` | Deprecation -> The `qiskit.qasm` module is deprecated. It has been replaced by `qiskit.qasm2` or `qiskit.qasm3` | 02c83a5a-c28d-46c6-acc2-4db931c4c15a | qiskit.qasm | `from qiskit import QuantumCircuit` |
+| 12 | `backend = Aer.get_backend('aer_simulator')` | Deprecation -> The `Aer.get_backend()` method is deprecated. To create an `AerSimulator` instance, use `AerSimulator()` directly. | 02c83a5a-c28d-46c6-acc2-4db931c4c15a | Aer.get_backend | `backend = AerSimulator()` |

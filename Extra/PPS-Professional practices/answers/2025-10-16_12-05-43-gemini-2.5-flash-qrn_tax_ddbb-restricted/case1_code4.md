@@ -1,0 +1,5 @@
+| Line | Code | Scenario | Reference | Artifact | Refactoring |
+| :--: | :--- | :------- | :-------: | :------- | :---------- |
+| 10 | `from qiskit import Aer` | Deprecation -> Importing from qiskit.providers.aer is deprecated and will stop working in Qiskit 1.0. You should instead import from qiskit_aer, which is a drop-in replacement. | qrn_tax_ddbb-084696d9-2c75-437a-8e84-96506e6766aa | qiskit.Aer | `from qiskit_aer import Aer` |
+| 11 | `backend = Aer.get_backend('aer_simulator')` | Deprecation -> Importing from qiskit.providers.aer is deprecated and will stop working in Qiskit 1.0. You should instead import from qiskit_aer, which is a drop-in replacement. | qrn_tax_ddbb-084696d9-2c75-437a-8e84-96506e6766aa | Aer.get_backend | `backend = AerSimulator()` |
+| 14 | `job = getJob(qc, backend, 1000).result().get_counts(qc)` | Deprecation -> The .result() method no longer accepts a QuantumCircuit object as an argument; this will raise an error in Qiskit 1.0. | IK | .get_counts | `job = getJob(qc, backend, 1000).result().get_counts()` |

@@ -1,0 +1,373 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=2
+}
+
+\title{Respuestas - Práctica 2\\Programación Paralela (Pthreads y OpenMP)}
+\author{Concurrencia - Sistemas Distribuidos y Paralelos}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introducción}
+En esta práctica se paralelizaron los algoritmos de la Práctica 1 utilizando Pthreads y OpenMP. Los experimentos se ejecutaron con $N=1024$ (matrices cuadradas), $BS=64$ (mejor bloque de la Práctica 1), hilos $T \in \{1, 2, 4, 8\}$ y compilando con \texttt{-O2}.
+
+\tableofcontents
+
+\newpage
+
+% ============================
+% RESUMEN GENERAL
+% ============================
+\section*{Tabla Resumen de Speedup ($T=8$ hilos)}
+
+\begin{center}
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Algoritmo} & \textbf{Speedup Pthreads} & \textbf{Speedup OpenMP} \\
+\hline
+mm\_naive            & 1.64$\times$ & 2.88$\times$ \\
+mm\_sq (C=A$\cdot$A) & 7.93$\times$ & 7.95$\times$ \\
+mmblk                & 6.00$\times$ & 5.84$\times$ \\
+mmblk\_blas          & 6.12$\times$ & 5.66$\times$ \\
+Stats (Min/Max/Prom) & 1.20$\times$ & 1.01$\times$ \\
+Traspuesta           & 2.28$\times$ & 2.03$\times$ \\
+N-Reinas             & 3.79$\times$ & 4.06$\times$ \\
+Merge Sort           & 4.62$\times$ & 3.79$\times$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\newpage
+
+% ============================
+% EJERCICIO 1: ÁLGEBRA DE MATRICES PARALELO
+% ============================
+\section{Álgebra de Matrices Paralelo}
+
+\subsection*{Estrategia de Diseño de Foster}
+\begin{enumerate}
+    \item \textbf{Particionamiento:} Se dividió la matriz resultado $C$ por filas. Cada tarea calcula un bloque contiguo de filas.
+    \item \textbf{Comunicación:} No hay comunicación entre tareas. Todos los hilos leen de las matrices $A$ y $B$ compartidas; cada hilo escribe en un rango exclusivo de filas de $C$.
+    \item \textbf{Aglomeración:} Las filas se agrupan en bloques de tamaño $N/T$, balanceando la carga y minimizando el overhead de creación de hilos.
+    \item \textbf{Mapeo:} En Pthreads, se asigna un rango de filas a cada hilo manualmente. En OpenMP, \texttt{\#pragma omp parallel for} realiza el mapeo estático automáticamente.
+\end{enumerate}
+
+\subsection*{a. Multiplicación mm\_naive paralelo}
+
+La función de hilo itera sobre \texttt{start\_row..end\_row}, calculando $C[i][j] = \sum_k A[i][k] \cdot B[k][j]$. En OpenMP se usa \texttt{collapse(2)} sobre los bucles $i$ y $j$ para maximizar la granularidad de paralelismo.
+
+\begin{center}
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+\textbf{Hilos (T)} & \textbf{Pthreads (s)} & \textbf{Speedup Pth} & \textbf{OpenMP (s)} & \textbf{Speedup OMP} \\
+\hline
+1 & 2.442 & 1.00 & 4.349 & 1.00 \\
+2 & 2.121 & 1.15 & 1.984 & 2.19 \\
+4 & 1.805 & 1.35 & 1.119 & 3.89 \\
+8 & 1.492 & 1.64 & 1.507 & 2.88 \\
+\hline
+\end{tabular}
+\end{center}
+
+El speedup de mm\_naive es limitado porque el acceso a $B$ es por columnas ($B[k \cdot N + j]$), lo que genera muchos fallos de caché ya que las columnas no son contiguas en memoria row-major. Con más hilos aumenta la contención de caché, lo que frena la escalabilidad.
+
+\subsection*{b. Multiplicación C = A$\cdot$A (mm\_sq)}
+
+\textbf{Estrategia:} Se reorganiza $A$ a column-major en un arreglo auxiliar $A_{col}$ (etapa 1), se sincroniza con barrera, y luego se multiplica usando acceso contiguo a ambas matrices (etapa 2).
+
+\begin{itemize}
+    \item Etapa 1: \texttt{Acol[j*N+i] = A[i*N+j]} — cada hilo transpone su rango de filas.
+    \item Barrera: \texttt{pthread\_barrier\_wait} / barrera implícita entre regiones OpenMP.
+    \item Etapa 2: $C[i][j] = \sum_k A[i][k] \cdot A_{col}[j \cdot N + k]$ — acceso contiguo a ambos operandos.
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+\textbf{Hilos (T)} & \textbf{Pthreads (s)} & \textbf{Speedup Pth} & \textbf{OpenMP (s)} & \textbf{Speedup OMP} \\
+\hline
+1 & 1.260 & 1.00 & 1.288 & 1.00 \\
+2 & 0.635 & 1.98 & 0.625 & 2.06 \\
+4 & 0.318 & 3.96 & 0.314 & 4.10 \\
+8 & 0.159 & 7.93 & 0.162 & 7.95 \\
+\hline
+\end{tabular}
+\end{center}
+
+El speedup casi lineal ($\approx 8\times$ con 8 hilos) se debe al acceso contiguo a memoria en ambas matrices tras la reorganización. El cálculo es completamente compute-bound y no hay dependencias entre hilos en la etapa 2.
+
+\subsection*{c. Algoritmo mmblk y mmblk\_blas (BS=64)}
+
+\textbf{mmblk:} La función \texttt{blkmul} opera sobre bloques $BS \times BS$ con acceso a $B$ columna a columna dentro del bloque ($\texttt{bblk}[j \cdot N + k]$), equivalente a $A \cdot B^T$. Se paralelizan las filas de bloques entre hilos.
+
+\textbf{mmblk\_blas:} Variante que reordena localmente cada bloque de $B$ a column-major en un buffer temporal \texttt{btmp[BS*BS]}, luego accede a \texttt{btmp} con stride 1. Compute $A \cdot B$ estándar, con mejor localidad de caché en $B$ que mmblk.
+
+\begin{center}
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+\textbf{Hilos (T)} & \textbf{Pthreads (s)} & \textbf{Speedup Pth} & \textbf{OpenMP (s)} & \textbf{Speedup OMP} \\
+\hline
+\multicolumn{5}{|c|}{\textit{mmblk}} \\
+\hline
+1 & 0.876 & 1.00 & 0.876 & 1.00 \\
+2 & 0.450 & 1.95 & 0.446 & 1.96 \\
+4 & 0.237 & 3.70 & 0.233 & 3.76 \\
+8 & 0.146 & 6.00 & 0.150 & 5.84 \\
+\hline
+\multicolumn{5}{|c|}{\textit{mmblk\_blas}} \\
+\hline
+1 & 0.789 & 1.00 & 0.781 & 1.00 \\
+2 & 0.404 & 1.95 & 0.398 & 1.96 \\
+4 & 0.206 & 3.83 & 0.210 & 3.72 \\
+8 & 0.129 & 6.12 & 0.138 & 5.66 \\
+\hline
+\end{tabular}
+\end{center}
+
+Ambas variantes superan ampliamente a mm\_naive (speedup $\approx 6\times$ vs.\ $\approx 1.6\times$ con 8 hilos), confirmando el impacto crítico de la localidad de caché. mmblk\_blas es ligeramente más rápido que mmblk por el reordenamiento local de bloques de $B$, que elimina el acceso con stride $N$ en el bucle más interno.
+
+\newpage
+
+% ============================
+% EJERCICIO 2: MIN, MAX, PROM
+% ============================
+\section{Estadísticas de Matrices (Min, Max, Prom)}
+
+\subsection*{Estrategia de Diseño de Foster}
+\begin{enumerate}
+    \item \textbf{Particionamiento:} Cada tarea calcula el mínimo, máximo y suma parcial de un rango de filas de la matriz.
+    \item \textbf{Comunicación:} Solo hay comunicación en la reducción final: el hilo principal combina los resultados parciales de cada hilo.
+    \item \textbf{Aglomeración:} Se agrupan filas en bloques de $N/T$; el overhead de reducción es $O(T)$, despreciable.
+    \item \textbf{Mapeo:} Pthreads: cada hilo escribe en una estructura local; el hilo 0 reduce al final. OpenMP: cláusulas \texttt{reduction(min:local\_min) reduction(max:local\_max) reduction(+:local\_sum)}.
+\end{enumerate}
+
+\begin{center}
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+\textbf{Hilos (T)} & \textbf{Pthreads (s)} & \textbf{Speedup Pth} & \textbf{OpenMP (s)} & \textbf{Speedup OMP} \\
+\hline
+1 & 0.002027 & 1.00 & 0.001785 & 1.00 \\
+2 & 0.001274 & 1.59 & 0.001279 & 1.40 \\
+4 & 0.001448 & 1.40 & 0.001210 & 1.48 \\
+8 & 0.001688 & 1.20 & 0.001772 & 1.01 \\
+\hline
+\end{tabular}
+\end{center}
+
+El speedup es muy limitado porque el problema es \emph{memory-bound} y de pequeño tamaño ($N=1024$, $\approx 10^6$ elementos, $\sim 8\,\text{MB}$). Con $T \geq 4$, el overhead de creación de hilos y sincronización domina la ganancia de paralelismo. Según la Ley de Amdahl, si la fracción serial (reducción + overhead) es incluso del 5\%, el speedup máximo teórico es $\approx 8\times$; pero el overhead real supera la ganancia para este tamaño de datos.
+
+% ============================
+% EJERCICIO 3: TRASPUESTA
+% ============================
+\section{Traspuesta de Matriz}
+
+\subsection*{Estrategia de Diseño de Foster}
+\begin{enumerate}
+    \item \textbf{Particionamiento:} El espacio de trabajo es triangular: $\{(i,j) \mid 0 \le i < N,\ i+1 \le j < N\}$, con $N(N-1)/2$ swaps.
+    \item \textbf{Comunicación:} No hay comunicación entre hilos; cada swap es independiente.
+    \item \textbf{Aglomeración:} Se requiere un mapeo que distribuya uniformemente el triángulo entre hilos.
+    \item \textbf{Mapeo:} OpenMP usa \texttt{schedule(dynamic)} para reparto dinámico de iteraciones del bucle externo. Pthreads usa reparto cíclico (hilo $t$ procesa filas $i = t,\ t+T,\ t+2T,\ldots$), que balancea naturalmente la carga triangular.
+\end{enumerate}
+
+\subsection*{a. Solución paralela OpenMP}
+
+\begin{lstlisting}
+#pragma omp parallel for schedule(dynamic) default(none) shared(A, N)
+for (int i = 0; i < N; i++) {
+    for (int j = i + 1; j < N; j++) {
+        double temp = A[i * N + j];
+        A[i * N + j] = A[j * N + i];
+        A[j * N + i] = temp;
+    }
+}
+\end{lstlisting}
+
+\subsection*{b. Problema en el fragmento original}
+El fragmento original usa \texttt{nowait} (sin barrera al final del \texttt{\#pragma omp for}), lo que provoca que algunos hilos impriman su tiempo antes de que otros terminen. Más importante, el bucle externo tiene desbalance de carga: la fila $i=0$ tiene $N-1$ swaps mientras que $i=N-2$ tiene solo 1. Sin \texttt{schedule(dynamic)}, los hilos con filas altas terminan mucho antes, quedando ociosos.
+
+\textbf{Solución:} Agregar \texttt{schedule(dynamic)} redistribuye las iteraciones del bucle externo bajo demanda, equilibrando la carga automáticamente.
+
+\subsection*{c. Solución en Pthreads e inconvenientes}
+
+\begin{center}
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+\textbf{Hilos (T)} & \textbf{Pthreads (s)} & \textbf{Speedup Pth} & \textbf{OpenMP (s)} & \textbf{Speedup OMP} \\
+\hline
+1 & 0.006319 & 1.00 & 0.006147 & 1.00 \\
+2 & 0.003779 & 1.67 & 0.004069 & 1.51 \\
+4 & 0.002762 & 2.29 & 0.003096 & 1.98 \\
+8 & 0.002777 & 2.28 & 0.003025 & 2.03 \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Inconveniente en Pthreads:} El espacio de iteración triangular impide una división estática simple por bloques contiguos de filas, ya que las primeras filas tienen mucho más trabajo. La solución es el reparto cíclico: el hilo \texttt{tid} procesa las filas $i = \texttt{tid},\ \texttt{tid}+T,\ \texttt{tid}+2T,\ldots$, distribuyendo filas largas y cortas de forma uniforme entre todos los hilos. Esto requiere razonamiento explícito sobre el patrón de carga que OpenMP resuelve automáticamente con \texttt{schedule(dynamic)}.
+
+% ============================
+% EJERCICIO 4: N-REINAS
+% ============================
+\section{N-Reinas Paralelo}
+
+\subsection*{Estrategia de Diseño de Foster}
+\begin{enumerate}
+    \item \textbf{Particionamiento:} Se generan $N$ tareas de primer nivel: cada tarea explora el subárbol de búsqueda que comienza con la primera reina en la columna $i$ ($0 \le i < N$).
+    \item \textbf{Comunicación:} Las tareas son completamente independientes (no comparten estado). Solo hay comunicación en la reducción del contador total de soluciones.
+    \item \textbf{Aglomeración:} No se agrupan tareas; cada subtarea de primer nivel puede tener carga muy distinta debido a las podas.
+    \item \textbf{Mapeo:} Se requiere mapeo dinámico para balancear la carga variable.
+\end{enumerate}
+
+\subsection*{a. Estrategia de descomposición}
+Se utilizó descomposición \textbf{funcional por tareas}: cada tarea consiste en resolver recursivamente el subproblema con la primera reina fijada en una columna específica. Las tareas son independientes entre sí.
+
+\subsection*{b. Definición de tareas}
+Una tarea es la ejecución de \texttt{solve\_recursive(bit<<1, bit, bit>>1, mask, \&count)} para cada bit de columna inicial. Las tareas son \textbf{dinámicas}: su tiempo de ejecución es impredecible porque depende del número de podas que ocurran en cada subárbol.
+
+\textbf{Problema del mapeo estático:} Si se asignan columnas fijas (hilo 0 → columnas 0,1; hilo 1 → columnas 2,3; etc.), algunos hilos explorarán subárboles grandes (pocas podas) mientras otros terminan rápido (muchas podas), generando desbalance severo.
+
+\subsection*{c. Herramienta más adecuada}
+\textbf{OpenMP} es más adecuado gracias a \texttt{schedule(dynamic)}: cuando un hilo termina su columna, el runtime le asigna la siguiente disponible automáticamente, sin código adicional.
+
+Con Pthreads se implementó reparto cíclico (hilo $t$ procesa columnas $t, t+T, t+2T,\ldots$), que también balancea bien la carga gracias a la simetría de las soluciones. Sin embargo, el código es más complejo y el reparto cíclico es solo una heurística; OpenMP garantiza el balanceo óptimo mediante trabajo robado.
+
+\begin{center}
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+\textbf{Hilos (T)} & \textbf{Pthreads (s)} & \textbf{Speedup Pth} & \textbf{OpenMP (s)} & \textbf{Speedup OMP} \\
+\hline
+1 & 0.035772 & 1.00 & 0.035454 & 1.00 \\
+2 & 0.019314 & 1.85 & 0.019717 & 1.80 \\
+4 & 0.010790 & 3.32 & 0.011231 & 3.16 \\
+8 & 0.009445 & 3.79 & 0.008726 & 4.06 \\
+\hline
+\end{tabular}
+\end{center}
+
+Resultados: 73712 soluciones para $N=13$ (correcto). Con $T=8$, OpenMP supera a Pthreads (4.06 vs.\ 3.79) gracias al \texttt{schedule(dynamic)}.
+
+\subsection*{d. Solución desarrollada con asistencia de IA}
+
+La implementación se desarrolló con asistencia de Claude (Anthropic). El motor de IA propuso la técnica de representación de columnas con máscaras de bits (\emph{bit manipulation}), que es considerablemente más eficiente que la representación con arreglo:
+
+\begin{lstlisting}
+void solve_recursive(int left, int down, int right, int mask, long *count) {
+    if (down == mask) { (*count)++; return; }
+    int bitmap = mask & ~(left | down | right);
+    while (bitmap) {
+        int bit = -bitmap & bitmap;  // bit de menor peso encendido
+        bitmap ^= bit;
+        solve_recursive((left | bit) << 1, down | bit,
+                        (right | bit) >> 1, mask, count);
+    }
+}
+\end{lstlisting}
+
+La variable \texttt{down} acumula las columnas ocupadas; \texttt{left} y \texttt{right} las diagonales. \texttt{bitmap = mask \& \~{}(left|down|right)} contiene exactamente las columnas disponibles en la fila actual. La expresión \texttt{-bitmap \& bitmap} extrae el bit menos significativo en una sola operación (complemento a dos).
+
+El motor de IA también sugirió la paralelización en el primer nivel del bucle de columnas (\texttt{for (i=0; i<N; i++)}), que es el granulado mínimo sin overhead de sincronización excesivo.
+
+Comparando respuestas de ChatGPT y Claude: ambos propusieron la misma estrategia de bit manipulation; ChatGPT tendió a usar \texttt{omp task} para paralelismo recursivo (mayor overhead para $N=13$), mientras que Claude propuso directamente \texttt{parallel for} en el primer nivel (más eficiente para este tamaño).
+
+% ============================
+% EJERCICIO 5: MERGE SORT
+% ============================
+\section{Merge Sort Paralelo}
+
+\subsection*{Estrategia de Diseño de Foster}
+\begin{enumerate}
+    \item \textbf{Particionamiento:} El arreglo de $N$ elementos se divide en $T$ subarreglos de tamaño $N/T$.
+    \item \textbf{Comunicación:} Después de ordenar los subarreglos en paralelo, se fusionan en $\log_2 T$ fases sucesivas. En cada fase, pares de subarreglos adyacentes se fusionan.
+    \item \textbf{Aglomeración:} El trabajo de ordenamiento es $O(N/T \cdot \log(N/T))$ por hilo; el merge es $O(N)$ por fase y hay $\log_2 T$ fases (parcialmente paralelas).
+    \item \textbf{Mapeo:} Pthreads: etapas con barreras entre fases de merge. OpenMP: modelo de tareas recursivo con \texttt{omp task} + \texttt{taskwait}.
+\end{enumerate}
+
+\subsection*{a. Herramienta más adecuada}
+\textbf{Pthreads} resulta más eficiente para este problema concreto (ver tabla), porque el esquema por etapas tiene overhead mínimo: los hilos trabajan sin interrupciones en fase 1, sincronizados solo por barreras en fases de merge. El modelo de tareas de OpenMP genera overhead al crear y planificar tareas en cada nivel de recursión.
+
+OpenMP sería superior en escenarios donde la profundidad de recursión es mayor (arreglos más grandes, $N \gg 10^6$), ya que \texttt{omp task} escala mejor con árbol de tareas profundo.
+
+\subsection*{b. Merge Sort vs.\ Quick Sort en paralelo}
+
+Se prefiere Merge Sort sobre Quick Sort para paralelización porque:
+\begin{itemize}
+    \item \textbf{División balanceada garantizada:} Merge Sort siempre divide en mitades exactas ($N/2$), produciendo un árbol de tareas simétrico y predecible.
+    \item \textbf{Carga uniforme:} Cada subproblema tiene exactamente el mismo tamaño, facilitando la asignación estática de trabajo sin desbalance.
+    \item \textbf{Quick Sort es impredecible:} Con pivote aleatorio, las particiones pueden ser $1$ y $N-1$ en el peor caso, degenerando el paralelismo a secuencial. Incluso con mediana-de-tres, la variabilidad dificulta el balanceo.
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+\textbf{Hilos (T)} & \textbf{Pthreads (s)} & \textbf{Speedup Pth} & \textbf{OpenMP (s)} & \textbf{Speedup OMP} \\
+\hline
+1 & 0.113418 & 1.00 & 0.112664 & 1.00 \\
+2 & 0.063210 & 1.79 & 0.059598 & 1.89 \\
+4 & 0.035852 & 3.16 & 0.051286 & 2.20 \\
+8 & 0.024562 & 4.62 & 0.029714 & 3.79 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{c. Solución desarrollada con asistencia de IA}
+
+La implementación de Pthreads fue desarrollada con asistencia de Claude. El motor propuso una implementación por etapas:
+\begin{itemize}
+    \item \textbf{Etapa 1:} Todos los $T$ hilos ordenan su subarreglo $[i \cdot N/T,\ (i+1) \cdot N/T)$ independientemente con merge sort recursivo secuencial.
+    \item \textbf{Etapas 2 a $\log_2 T + 1$:} En cada etapa, la mitad de los hilos restantes fusionan pares de subarreglos adyacentes. Una barrera sincroniza cada etapa.
+\end{itemize}
+
+La implementación de OpenMP usa \texttt{omp task} + \texttt{taskwait}: divide recursivamente hasta alcanzar el umbral de un subarreglo por hilo, luego fusiona con taskwait.
+
+Comparando con ChatGPT: ChatGPT propuso también el esquema de etapas para Pthreads, pero con creación múltiple de hilos por etapa (contrario a las pautas de la práctica). Claude propuso usar solo la barrera para reutilizar los hilos ya creados, que es más correcto y eficiente.
+
+\newpage
+
+% ============================
+% ANÁLISIS GENERAL
+% ============================
+\section{Análisis de Herramientas y Lenguajes}
+
+\subsection*{Ventajas y Desventajas}
+\begin{itemize}
+    \item \textbf{Pthreads:}
+    \begin{itemize}
+        \item \textit{Ventajas:} Control total sobre sincronización (barreras, mutex, semáforos). Permite estrategias de mapeo personalizadas (cíclico, por bloque) que pueden superar al runtime de OpenMP en casos específicos (traspuesta, merge sort). Mínimo overhead si se gestiona bien.
+        \item \textit{Desventajas:} Código verboso y propenso a errores. El balanceo de carga dinámica requiere estructuras de datos adicionales (cola de tareas). Difícil de extender a paralelismo anidado.
+    \end{itemize}
+    \item \textbf{OpenMP:}
+    \begin{itemize}
+        \item \textit{Ventajas:} Facilidad de uso mediante directivas de compilación. Soporte nativo para balanceo de carga dinámico (\texttt{schedule(dynamic)}) y paralelismo de tareas recursivo (\texttt{omp task}). Ideal para carga irregular (N-Reinas).
+        \item \textit{Desventajas:} Menor control de grano fino. El modelo de tareas introduce overhead en la gestión del pool de hilos. Variables compartidas/privadas requieren atención explícita.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Alternativas en otros Lenguajes}
+\begin{itemize}
+    \item \textbf{C++ (compilado):} La biblioteca \texttt{<thread>} (C++11) y los algoritmos paralelos de C++17 (\texttt{std::execution::par}) ofrecen abstracciones de alto nivel con rendimiento nativo comparable a OpenMP. TBB (Threading Building Blocks) de Intel provee estructuras de datos paralelas y planificador work-stealing.
+    \item \textbf{Rust (compilado):} El sistema de \emph{ownership} garantiza en tiempo de compilación la ausencia de condiciones de carrera (\emph{data races}). La biblioteca \texttt{rayon} provee iteradores paralelos con sintaxis similar a la programación funcional.
+    \item \textbf{Go (compilado/GC):} Las \emph{goroutines} son hilos ligeros planificados por el runtime, con canales para comunicación. Permite miles de tareas concurrentes con overhead mínimo (pasaje de mensajes, no memoria compartida).
+    \item \textbf{Python (interpretado):} La biblioteca \texttt{multiprocessing} evita el GIL usando procesos; \texttt{concurrent.futures} provee una API de alto nivel. No es adecuado para cómputo numérico de alta performance sin extensiones en C (NumPy, Numba).
+    \item \textbf{Julia (JIT):} Diseñado para cómputo científico paralelo. El macro \texttt{@threads} y \texttt{@distributed} permiten paralelismo de hilos y distribuido con sintaxis limpia y performance cercana a C.
+\end{itemize}
+
+\end{document}
