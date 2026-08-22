@@ -29,10 +29,10 @@ Official curriculum: [UNLP Study Plan (2011)](https://ic.info.unlp.edu.ar/plan-d
 - **Admission**
   - [Math Admission](Engineering/Admission)
 - **1st Semester**
-  - [Chemistry](Engineering/1-First%20Semester/Chemestry)
+  - [Chemistry](Engineering/1-First%20Semester/Chemistry)
   - [Math (A)](Engineering/1-First%20Semester/Math%20%28A%29)
 - **2nd Semester**
-  - [Drawing (AutoCAD)](Engineering/2-Second%20Semester/Drawing%20%28Autocad%29)
+  - [Drawing (AutoCAD)](Engineering/2-Second%20Semester/Drawing%20%28AutoCAD%29)
   - [Math (B)](Engineering/2-Second%20Semester/Math%20%28B%29)
 - **3rd Semester**
   - [Physics I](Engineering/3-Third%20Semester/Physics%20I)
@@ -44,17 +44,17 @@ Official curriculum: [UNLP Study Plan (2011)](https://ic.info.unlp.edu.ar/plan-d
   - [Electronics I](Engineering/5-Fifth%20Semester/Electronics%20I)
   - [Introduction to Logic Design](Engineering/5-Fifth%20Semester/Introduction%20to%20Logic%20Design)
   - [Math (D1)](Engineering/5-Fifth%20Semester/Math%20%28D1%29)
-  - [Statistics](Engineering/5-Fifth%20Semester/Stadistics)
+  - [Statistics](Engineering/5-Fifth%20Semester/Statistics)
 - **6th Semester**
   - [Data Networks I](Engineering/6-Sixth%20Semester/Data%20Networks%20I)
-  - [Introduction to Signal Processing](Engineering/6-Sixth%20Semester/Introduction%20to%20Signal%20Prosesing)
+  - [Introduction to Signal Processing](Engineering/6-Sixth%20Semester/Introduction%20to%20Signal%20Processing)
 - **7th Semester**
-  - [Digital Circuits and Microcontrollers](Engineering/7-Seventh%20Semester/Digital%20circuits%20and%20microcontrollers)
+  - [Digital Circuits and Microcontrollers](Engineering/7-Seventh%20Semester/Digital%20Circuits%20and%20Microcontrollers)
   - [Economy](Engineering/7-Seventh%20Semester/Economy)
-  - [Instrumentation and Control](Engineering/7-Seventh%20Semester/Instrumentation%20and%20control)
+  - [Instrumentation and Control](Engineering/7-Seventh%20Semester/Instrumentation%20and%20Control)
 - **8th Semester**
   - [Professional Texts Seminar](Engineering/8-Eighth%20Semester/Professional%20Texts%20Seminar)
-  - [Project Workshop I](Engineering/8-Eighth%20Semester/Project%20Workshop%20%20I)
+  - [Project Workshop I](Engineering/8-Eighth%20Semester/Project%20Workshop%20I)
 - **9th Semester**
   - [Electronics II *(Elective)*](Engineering/9-Ninth%20Semester/Electronics%20II)
   - [Introduction to Quantum Computer Architecture *(Elective)*](Engineering/9-Ninth%20Semester/Introduction%20to%20Quantum%20Computer%20Architecture)
@@ -75,20 +75,20 @@ Official curriculum: [UNLP Study Plan (2011)](https://ic.info.unlp.edu.ar/plan-d
   - [Languages Workshop I (C)](Informatics/3-Third%20Semester/Languages%20Workshop%20I%20%28C%29)
 - **4th Semester**
   - [Languages Workshop II (Java)](Informatics/4-Fourth%20Semester/Languages%20Workshop%20II)
-  - [Operating Systems](Informatics/4-Fourth%20Semester/Operative%20Systems)
+  - [Operating Systems](Informatics/4-Fourth%20Semester/Operating%20Systems)
 - **5th Semester**
-  - [Introduction to Databases](Informatics/5-Fifth%20Semester/Introduction%20to%20Data%20Bases)
+  - [Introduction to Databases](Informatics/5-Fifth%20Semester/Introduction%20to%20Databases)
 - **6th Semester**
   - [Deep Learning *(Elective)*](Informatics/6-Sixth%20Semester/Deep%20Learning)
   - [Hardware Architecture Design (VHDL)](Informatics/6-Sixth%20Semester/Hardware%20Architecture%20Design)
   - [Software Engineering](Informatics/6-Sixth%20Semester/Software%20Engineering)
 - **7th Semester**
-  - [Concurrency and Parallelism](Informatics/7-Seventh%20Semester/Concurrency%20%20and%20Parallelism)
-  - [Databases](Informatics/7-Seventh%20Semester/Data%20Bases)
+  - [Concurrency and Parallelism](Informatics/7-Seventh%20Semester/Concurrency%20and%20Parallelism)
+  - [Databases](Informatics/7-Seventh%20Semester/Databases)
 - **8th Semester**
   - [Data Networks II](Informatics/8-Eighth%20Semester/Data%20Networks%20II)
   - [Introduction to Quantum Programming *(Elective)*](Informatics/8-Eighth%20Semester/Introduction%20to%20Quantum%20Programming)
-  - [Project Workshop II](Informatics/8-Eighth%20Semester/Project%20Workshop%20%20II)
+  - [Project Workshop II](Informatics/8-Eighth%20Semester/Project%20Workshop%20II)
   - [Real-Time Systems](Informatics/8-Eighth%20Semester/Real-Time%20Systems)
 - **9th Semester**
   - [Distributed and Parallel Systems](Informatics/9-Ninth%20Semester/Distributed%20and%20Parallel%20Systems)

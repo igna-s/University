@@ -1,0 +1,111 @@
+// Archivo: vector_openmp.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+#include <windows.h>  // Para la función Sleep
+#include <time.h>
+
+int main(int argc, char *argv[]) {
+    if(argc < 2){
+        printf("Uso: %s N\n", argv[0]);
+        return 1;
+    }
+    int N = atoi(argv[1]);
+    int *vector = malloc(N * sizeof(int));
+    srand((unsigned) time(NULL));
+
+    // Inicialización: valores aleatorios entre 1 y 30
+    for(int i = 0; i < N; i++){
+        vector[i] = (rand() % 30) + 1;
+    }
+
+    // Paralelización con 4 threads
+    #pragma omp parallel for num_threads(4)
+    for(int i = 0; i < N; i++){
+        int tiempo = vector[i];
+        printf("Thread %d procesando elemento %d (valor %d)...\n", omp_get_thread_num(), i, tiempo);
+        // La función Sleep recibe tiempo en milisegundos (por eso se multiplica por 1000)
+        Sleep(tiempo * 1000);
+    }
+
+    free(vector);
+    return 0;
+}
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+// Archivo: matriz_openmp.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
+#include <time.h>
+
+void initializeMatrix(int **M, int N) {
+    for (int i = 0; i < N; i++){
+        for (int j = 0; j < N; j++){
+            M[i][j] = rand() % 10;  // Números aleatorios entre 0 y 9
+        }
+    }
+}
+
+int main(int argc, char *argv[]){
+    if(argc < 3){
+        printf("Uso: %s N T\n", argv[0]);
+        return 1;
+    }
+    int N = atoi(argv[1]);
+    int T = atoi(argv[2]);
+
+    // Reserva de memoria para las matrices
+    int **A = malloc(N * sizeof(int *));
+    int **B = malloc(N * sizeof(int *));
+    int **C = malloc(N * sizeof(int *));
+    for (int i = 0; i < N; i++){
+        A[i] = malloc(N * sizeof(int));
+        B[i] = malloc(N * sizeof(int));
+        C[i] = calloc(N, sizeof(int));
+    }
+
+    srand((unsigned) time(NULL));
+    initializeMatrix(A, N);
+    initializeMatrix(B, N);
+
+    double start = omp_get_wtime();
+    omp_set_num_threads(T);
+
+    // Multiplicación de matrices en paralelo
+    #pragma omp parallel for collapse(2)
+    for (int i = 0; i < N; i++){
+        for (int j = 0; j < N; j++){
+            for (int k = 0; k < N; k++){
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+    double end = omp_get_wtime();
+    printf("Multiplicación de matrices completada en %f segundos\n", end - start);
+
+    // Liberar memoria
+    for (int i = 0; i < N; i++){
+        free(A[i]);
+        free(B[i]);
+        free(C[i]);
+    }
+    free(A);
+    free(B);
+    free(C);
+
+    return 0;
+}
